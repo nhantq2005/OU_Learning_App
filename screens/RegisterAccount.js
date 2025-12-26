@@ -1,19 +1,29 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import MyStyles from "../styles/MyStyles";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import TextField from "../components/TextField";
-import React, { useState } from "react";
-import { TextInput, Button } from 'react-native-paper';
-import Spacing from "../styles/Spacing";
-import axios from 'axios';
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
 import { Eye, EyeOff, CircleUser, LockKeyhole, Lock } from 'lucide-react-native';
+import { useContext, useEffect, useState } from "react";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Button, HelperText } from "react-native-paper";
+import MyStyles from "../styles/MyStyles";
+import { useNavigation } from "@react-navigation/native";
+import { RegisterContext } from "../utils/MyContexts";
 
+const RegisterAccount = () => {
 
-const Login = ({ navigation }) => {
-    const [loading, setLoading] = useState(false);
-    const [errorMsg, setErrorMsg] = useState();
+    const [user, setUser] = useState({});
     const [isSecure, setIsSecure] = useState(true);
-    const [user, setUser] = useState({})
+    const [errorMsg, setErrorMsg] = useState();
+    const nav = useNavigation();
+    
+        const { registerData, updateRegisterData } = useContext(RegisterContext);
+    // const nav = useNavigation()
+
+
+    // Icon nên có màu và kích thước cụ thể để dễ nhìn
+    const iconColor = "black";
+    const iconSize = 20;
+
     const info = [
         {
             'label': 'Tên đăng nhập',
@@ -25,22 +35,40 @@ const Login = ({ navigation }) => {
             'field': 'password',
             'leadingIcon': <LockKeyhole color={iconColor} size={iconSize} />,
             'secureTextEntry': isSecure
-        }]
+        },
+        {
+            'label': 'Nhập lại mật khẩu',
+            'field': 'confirm',
+            'leadingIcon': <Lock color={iconColor} size={iconSize} />,
+            'secureTextEntry': isSecure
+        }
+    ]
 
 
-
-        const validate=()=> {
+    const validate=()=> {
+        if (user['password'] !== user['confirm']) {
+            setErrorMsg("Mật khẩu không khớp!");
+            return false;
         }
 
-    return (
+        if (!user['username'] || !user['password'] || !user['confirm']) {
+            setErrorMsg("Vui lòng điền đầy đủ thông tin!");
+            return false;
+        }
 
+        setErrorMsg(null);
+        return true;
+    }  
+
+
+    return (
         <KeyboardAwareScrollView
             enableOnAndroid
             keyboardShouldPersistTaps="handled"
             extraScrollHeight={20}
-            style={[{ flex: 1 }, MyStyles.background]}
+            style={[{ flex: 1, }, MyStyles.background]}
         >
-           <View style={[{ flex: 1, alignItems: 'center' }]}>
+           <View style={[{ flex: 1, alignItems: 'center', }]}>
                            <Image source={require('../assets/app_logo.png')} style={{ width: 200, height: 150 }} />
                 {info.map(i =>
                     <TextField key={i.field}
@@ -73,7 +101,16 @@ const Login = ({ navigation }) => {
                 <Button
                     mode="contained"
                     style={[MyStyles.buttonText, MyStyles.button]}
-                    labelStyle={{ fontSize: 18 }}>
+                    labelStyle={{ fontSize: 18 }}
+                    onPress={() => {
+                        if (validate()) {
+                            // Tạo bản sao user không có trường confirm
+                            const { confirm, ...userWithoutConfirm } = user;
+                            updateRegisterData(userWithoutConfirm);
+                            console.log("REGISTER DATA: ", registerData);
+                            nav.navigate('RegisterInfo');
+                        }
+                    }}>
                     Đăng ký
                 </Button>
 
@@ -90,4 +127,4 @@ const Login = ({ navigation }) => {
     )
 }
 
-export default Login;
+export default RegisterAccount;

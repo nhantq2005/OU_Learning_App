@@ -3,16 +3,20 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import Splash from "./screens/Splash";
 import Onboarding from "./screens/Onboarding";
 import Login from "./screens/Login";
-import Register from "./screens/Register";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import axios from "axios";
 import { TextField } from './components/TextField';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Home from './screens/Home';
+import RegisterAccount from './screens/RegisterAccount';
 
 import Spacing from "./styles/Spacing";
 import { use, useEffect, useState } from 'react';
+import ChooseRole from './screens/ChooseRole';
+import { RegisterProvider } from './utils/RegisterProvider';
+import RegisterInfo from './screens/RegisterInfo';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,9 +26,26 @@ const StackNavigatior = () => {
             <Stack.Screen name="Splash" component={Splash} />
             <Stack.Screen name="Onboarding" component={Onboarding} />
             <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="RegisterInfo" component={RegisterInfo} />
 
         </Stack.Navigator>
+    )
+}
+
+const RegisterNavigatior = () => {
+    return (
+        <PaperProvider>
+        <RegisterProvider>
+            <NavigationContainer>
+                <Stack.Navigator  screenOptions={{headerShown: false}}>
+                    <Stack.Screen name="ChooseRole" component={ChooseRole} />
+                    <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
+                    <Stack.Screen name="RegisterInfo" component={RegisterInfo} />
+                    <Stack.Screen name="Login" component={Login} />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </RegisterProvider>
+        </PaperProvider>
     )
 }
 
@@ -33,23 +54,19 @@ const StackNavigatior = () => {
 
 
 export default function App() {
-    const [cate, setCate] = useState([])
+    // const [cate, setCate] = useState([])
 
-const fetchData = async () => {
-    try {
-        const res = await axios.get(
-            "http://192.168.113.105:8000/categories/"
-        );
-        setCate(res.data.results);
-        console.log("RAW DATA:", res.data);
-    } catch (err) {
-        console.log("ERROR:", err.message);
-    }
-};
+    // const [categories, setCategories] = useState([]);
 
-useEffect(() => {
-    fetchData();
-}, []);
+    // const loadCategories = async () => {
+    //     let res = await Apis.get(endpoints['categories']);
+    //     setCategories(res.data.results);
+    //     console.info(`Categories: ${res.data.results}`);
+    // }
+
+    // useEffect(() => {
+    //     loadCategories();;
+    // }, []);
 
 
     return (
@@ -57,7 +74,8 @@ useEffect(() => {
             {/*<NavigationContainer>*/}
             {/*    <StackNavigatior/>*/}
             {/*</NavigationContainer>*/}
-            <Home />
+            {/* <Register /> */}
+            <RegisterNavigatior />
         </SafeAreaView>
     );
 }

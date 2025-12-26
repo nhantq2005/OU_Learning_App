@@ -7,6 +7,28 @@ import ChipCustom from "../components/ChipCustom";
 
 const Home = () => {
     const [search, setSearch] = useState('');
+const [categories, setCategories] = useState([]);
+
+    const loadCategories = async () => {
+        try {
+            // 'Apis' here refers to the axios instance exported as default above
+            let res = await Apis.get(endpoints['categories']);
+
+            // If your API (e.g., Django REST Framework) uses pagination,
+            // the data is often in res.data.results.
+            // If not paginated, use res.data directly.
+            setCategories(res.data.results);
+
+            // Use console.info(obj) instead of template literals to see the full object structure
+            console.info("Categories loaded:", res.data);
+        } catch (ex) {
+            console.error("Failed to load categories:", ex);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
     return (
         <View style={[ MyStyles.background]}>
             <View style={[MyStyles.row, {width: "100%", alignItems: "center", justifyContent: "space-between"}]}>

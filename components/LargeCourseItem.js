@@ -1,3 +1,5 @@
 const LargeCourseItem = () => {
-    return ()
+    return (
+        <></>
+    )
 }

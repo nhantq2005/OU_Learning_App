@@ -10,7 +10,7 @@ export default StyleSheet.create({
     },
     row: {
         flexDirection: "row",
-        flexWrap: "wrap",
+        // flexWrap: "wrap",
     },
     button: {
         alignItems: "center",
@@ -40,10 +40,15 @@ export default StyleSheet.create({
 
     },
     card:{
-        // margin: Spacing.sm
+        margin: Spacing.sm
     },
     title: {
         marginTop:Spacing.sm,
         // marginBottom:Spacing.sm
+    },
+    headline:{
+        marginBottom:Spacing.md,
+        fontWeight: 'bold',
+        fontSize: 30,
     }
 });
