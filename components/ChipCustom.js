@@ -1,25 +1,25 @@
 import { Chip } from 'react-native-paper'
 import Colors from "../styles/Colors"
-import { useState } from "react";
 import Spacing from '../styles/Spacing';
 
-const ChipCustom = () => {
-    const [state, setState] = useState(true)
-    let chipColor = state
-        ? "#167F71"
-        : "#E8F1FF";
-    const textColor = state
-        ? "#FFFFFF"
-        : "#202244"
+const ChipCustom = ({ title, isSelected, onPress }) => {
+    let chipColor = isSelected ? "#167F71" : "#E8F1FF";
+    const textColor = isSelected ? "#FFFFFF" : "#202244";
     return (
         <Chip
-            style={{ backgroundColor: chipColor, color: textColor, margin: Spacing.sm, padding: Spacing.xs }}
+            style={{
+                backgroundColor: chipColor,
+                color: textColor,
+                margin: Spacing.xs,
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                alignSelf: 'flex-start',
+            }}
             textStyle={{ color: textColor }}
-            onPress={() => setState(!state)}
+            onPress={onPress}
         >
-            Example Chip
+            {title}
         </Chip>
-
     )
 }
 

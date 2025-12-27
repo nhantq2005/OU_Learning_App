@@ -8,6 +8,7 @@ import { Button, HelperText } from "react-native-paper";
 import MyStyles from "../styles/MyStyles";
 import { useNavigation } from "@react-navigation/native";
 import { RegisterContext } from "../utils/MyContexts";
+import { Dimensions } from 'react-native';
 
 const RegisterAccount = () => {
 
@@ -15,8 +16,8 @@ const RegisterAccount = () => {
     const [isSecure, setIsSecure] = useState(true);
     const [errorMsg, setErrorMsg] = useState();
     const nav = useNavigation();
-    
-        const { registerData, updateRegisterData } = useContext(RegisterContext);
+    const screenHeight = Dimensions.get('window').height;
+    const { registerData, updateRegisterData } = useContext(RegisterContext);
     // const nav = useNavigation()
 
 
@@ -45,7 +46,7 @@ const RegisterAccount = () => {
     ]
 
 
-    const validate=()=> {
+    const validate = () => {
         if (user['password'] !== user['confirm']) {
             setErrorMsg("Mật khẩu không khớp!");
             return false;
@@ -56,20 +57,26 @@ const RegisterAccount = () => {
             return false;
         }
 
+        if (!user.password || user.password.length < 8) {
+            setErrorMsg("Mật khẩu phải có ít nhất 8 ký tự!");
+            return false;
+        }
+
         setErrorMsg(null);
         return true;
-    }  
+    }
 
 
     return (
         <KeyboardAwareScrollView
             enableOnAndroid
             keyboardShouldPersistTaps="handled"
-            extraScrollHeight={20}
-            style={[{ flex: 1, }, MyStyles.background]}
+            extraScrollHeight={10}
+            style={[{ flex: 1 }, MyStyles.background]}
+            scrollEnabled={false}
         >
-           <View style={[{ flex: 1, alignItems: 'center', }]}>
-                           <Image source={require('../assets/app_logo.png')} style={{ width: 200, height: 150 }} />
+            <View style={[{ flex: 1, height: screenHeight, alignItems: 'center', justifyContent: 'center' }]}>
+                <Image source={require('../assets/app_logo.png')} style={{ width: 200, height: 200 }} />
                 {info.map(i =>
                     <TextField key={i.field}
                         placeholder={i.label}
@@ -93,6 +100,7 @@ const RegisterAccount = () => {
 
                         value={user[i.field]}
                         onChangeText={t => setUser({ ...user, [i.field]: t })}
+                        capitalize="none"
                     />
                 )}
                 <HelperText type="error" visible={errorMsg}>
@@ -111,13 +119,13 @@ const RegisterAccount = () => {
                             nav.navigate('RegisterInfo');
                         }
                     }}>
-                    Đăng ký
+                    Tiếp tục
                 </Button>
 
-                <View style={{ flexDirection: 'row', bottom: 5 }}>
+                <View style={{ flexDirection: 'row', bottom: 25, position: 'absolute' }}>
                     <Text>Bạn đã có tài khoản? </Text>
                     <TouchableOpacity onPress={() => {
-                        // nav.navigate('Login');
+                        nav.navigate('Login');
                     }}>
                         <Text>Đăng nhập</Text>
                     </TouchableOpacity>

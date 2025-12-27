@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView, Dimensions } from "react-native";
 import MyStyles from "../styles/MyStyles";
 import TextField from "../components/TextField";
 import React, { use, useContext, useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import { ClipboardType, Mail, MailCheck, ShieldUser, UserRoundPen } from "lucide-react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { RegisterContext } from "../utils/MyContexts";
+import Spacing from "../styles/Spacing";
 
 
 const RegisterInfo = () => {
@@ -22,6 +23,7 @@ const RegisterInfo = () => {
         { label: "Nam", value: "male" },
         { label: "Nữ", value: "female" },
     ]);
+        const screenHeight = Dimensions.get('window').height;
     const [user, setUser] = useState({})
     const nav = useNavigation();
     const info = [
@@ -68,16 +70,16 @@ const RegisterInfo = () => {
             }
 
             if (i.field === 'email') {
-            const emailRegex = /^\S+@\S+\.\S+$/;
-            if (!emailRegex.test(user.email)) {
-                setErrorMsg("Email không hợp lệ");
-                return false;
+                const emailRegex = /^\S+@\S+\.\S+$/;
+                if (!emailRegex.test(user.email)) {
+                    setErrorMsg("Email không hợp lệ");
+                    return false;
+                }
             }
         }
-        }
 
 
-        
+
 
         setErrorMsg(null);
         return true;
@@ -129,35 +131,75 @@ const RegisterInfo = () => {
         <KeyboardAwareScrollView
             enableOnAndroid
             keyboardShouldPersistTaps="handled"
-            extraScrollHeight={20}
+            extraScrollHeight={90}
             style={[{ flex: 1 }, MyStyles.background]}
+            scrollEnabled={false}
         >
-            <View style={[{ flex: 1, alignItems: 'center' }]}>
-                <Image source={require('../assets/app_logo.png')} style={{ width: 200, height: 150 }} />
+            <View style={[{ flex: 1, alignItems: 'center', height: screenHeight, justifyContent: 'center' }]}>
+                {/* <Image source={require('../assets/app_logo.png')} style={{ width: 200, height: 200 }} /> */}
                 {/* Ô chọn ảnh đại diện */}
-                <TouchableOpacity
-                    onPress={picker}
-                    style={{
-                        width: 110,
-                        height: 110,
-                        borderRadius: 55,
-                        borderWidth: 2,
-                        borderColor: '#ccc',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginBottom: 16,
-                        backgroundColor: '#f5f5f5',
-                    }}
-                >
-                    {user.avatar ? (
-                        <Image
-                            source={{ uri: user.avatar.uri }}
-                            style={{ width: 100, height: 100, borderRadius: 50 }}
-                        />
-                    ) : (
-                        <Text style={{ color: '#888' }}>Chọn ảnh đại diện</Text>
-                    )}
-                </TouchableOpacity>
+                <View style={{ position: 'relative', marginBottom: 20 }}>
+                    <TouchableOpacity
+                        onPress={picker}
+                        activeOpacity={0.7}
+                        style={{
+                            width: 120,
+                            height: 120,
+                            borderRadius: 60,
+                            borderWidth: 2.5,
+                            borderColor: '#4F8EF7',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: '#fff',
+                            elevation: 8,
+                            shadowColor: '#4F8EF7',
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.2,
+                            shadowRadius: 4,
+                        }}
+                    >
+                        {user.avatar ? (
+                            <Image
+                                source={{ uri: user.avatar.uri }}
+                                style={{ width: 110, height: 110, borderRadius: 55 }}
+                            />
+                        ) : (
+                            <View style={{ alignItems: 'center', maxWidth: 100 }}>
+                                <View style={{ marginBottom: 6 }}>
+                                    <ShieldUser color={'#4F8EF7'} size={38} />
+                                </View>
+                                <Text
+                                    style={{ color: '#4F8EF7', fontWeight: 'bold', fontSize: 15, textAlign: 'center' }}
+                                    numberOfLines={1}
+                                    ellipsizeMode="tail"
+                                >
+                                    Chọn ảnh
+                                </Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                    {/* Icon bút xanh ở góc dưới phải */}
+                    <TouchableOpacity
+                        onPress={picker}
+                        activeOpacity={0.7}
+                        style={{
+                            position: 'absolute',
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: '#fff',
+                            borderRadius: 20,
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            width: 40,
+                            height: 40,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            elevation: 4,
+                        }}
+                    >
+                        <UserRoundPen color={'#1976D2'} size={24} />
+                    </TouchableOpacity>
+                </View>
                 {/* ...existing code... */}
                 {info.map(i =>
                     i.field !== "gender" ? (
@@ -169,21 +211,51 @@ const RegisterInfo = () => {
                             onChangeText={t => setUser({ ...user, [i.field]: t })}
                         />
                     ) : (
-                        <DropDownPicker
-                            listMode="SCROLLVIEW"
-                            open={genderOpen}
-                            setOpen={setGenderOpen}
-                            value={genderValue}
-                            setValue={(callback) => {
-                                const value = callback(genderValue);
-                                setGenderValue(value);
-                                updateRegisterData({ gender: value });
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                borderRadius: 20,
+                                backgroundColor: 'white',
+                                elevation: 8,
+                                margin: Spacing.sm,
+                                width: '100%',
+                                zIndex: 1000,
                             }}
-                            items={genderItems}
-                            setItems={setGenderItems}
-                            style={{ width: '90%', marginBottom: 12 }}
-                            containerStyle={{ width: '90%' }}
-                        />
+                        >
+                            <View style={{ marginLeft: 10, marginRight: 8 }}>
+                                <ShieldUser />
+                            </View>
+                            <DropDownPicker
+                                listMode="SCROLLVIEW"
+                                open={genderOpen}
+                                setOpen={setGenderOpen}
+                                value={genderValue}
+                                setValue={(callback) => {
+                                    const value = callback(genderValue);
+                                    setGenderValue(value);
+                                    updateRegisterData({ gender: value });
+                                }}
+                                items={genderItems}
+                                setItems={setGenderItems}
+                                placeholder="Giới tính"
+                                style={{
+                                    borderWidth: 0,
+                                    borderRadius: 20,
+                                    paddingHorizontal: 16,
+                                    fontSize: 16,
+                                    height: 50,
+                                }}
+                                containerStyle={{ width: '85%' }}
+                                dropDownContainerStyle={{
+                                    borderRadius: 20,
+                                    elevation: 8,
+                                    zIndex: 1000,
+                                    borderWidth: 0,
+                                }}
+                                textStyle={{ fontSize: 16 }}
+                            />
+                        </View>
                     )
                 )}
                 <HelperText type="error" visible={errorMsg}>

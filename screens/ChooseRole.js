@@ -1,4 +1,4 @@
-import { TouchableOpacity, View } from "react-native"
+import { TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import MyStyles from "../styles/MyStyles"
 import { Text, Button, Card } from "react-native-paper";
 import { useState, useContext, use, useEffect } from "react";
@@ -28,21 +28,20 @@ const ChooseRole = () => {
     return (
         <View style={[MyStyles.background, MyStyles.center, {justifyContent:"space-evenly"}]}>
             <TouchableOpacity onPress={() => console.log("Selected Role:", selectedRole)} style={{position: "absolute", top: 30, left: 20}}><CircleArrowLeft /></TouchableOpacity>
-            <Text variant="headlineMedium" style={[MyStyles.headline, {margin: 30}]}>Bạn là...</Text>
+            <Text variant="headlineMedium" style={[MyStyles.headline, {margin: 30}]}>Bạn là ...</Text>
             <View style={[ MyStyles.row]}>
-                <TouchableOpacity onPress={() => setSelectedRole("teacher")}>
+                <TouchableWithoutFeedback onPress={() => setSelectedRole("teacher")}>
                     <Card style={{ justifyContent: 'center', alignItems: 'center', margin: 5, padding: 10, backgroundColor: selectedRole === "teacher" ? Colors.light.primaryContainer : 'white' }}>
                         <Card.Cover source={require("../assets/teacher.png")} style={{ width: 150, height: 150, backgroundColor: "transparent" }} />
                         <Card.Title title="Giảng viên" titleStyle={{ textAlign: 'center', fontWeight: "bold", fontSize: 20 }} />
                     </Card>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setSelectedRole("student")}>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={() => setSelectedRole("student")} >
                     <Card style={{ justifyContent: 'center', alignItems: 'center', margin: 5, padding: 10, backgroundColor: selectedRole === "student" ? Colors.light.primaryContainer : 'white' }}>
                         <Card.Cover source={require("../assets/student.png")} style={{ width: 150, height: 150, backgroundColor: "transparent" }} />
                         <Card.Title title="Sinh viên" titleStyle={{ textAlign: 'center', fontWeight: "bold", fontSize: 20 }} />
                     </Card>
-                    {console.log(selectedRole)}
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
             </View>
             <Button mode="contained" style={[MyStyles.button, MyStyles.buttonText]} onPress={() => {
                 nextStep(); 

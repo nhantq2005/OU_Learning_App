@@ -22,7 +22,7 @@ export default StyleSheet.create({
         color:Colors.light.onPrimary,
         margin: Spacing.sm,
         padding: Spacing.xs,
-        fontSize: 25,
+        fontSize: 30,
     },
     avartar:{
         borderRadius: 40,

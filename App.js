@@ -17,6 +17,7 @@ import ChooseRole from './screens/ChooseRole';
 import { RegisterProvider } from './utils/RegisterProvider';
 import RegisterInfo from './screens/RegisterInfo';
 import { Provider as PaperProvider } from 'react-native-paper';
+import SmallCourseItem from './components/SmallCourseItem';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,7 +35,6 @@ const StackNavigatior = () => {
 
 const RegisterNavigatior = () => {
     return (
-        <PaperProvider>
         <RegisterProvider>
             <NavigationContainer>
                 <Stack.Navigator  screenOptions={{headerShown: false}}>
@@ -45,7 +45,7 @@ const RegisterNavigatior = () => {
                 </Stack.Navigator>
             </NavigationContainer>
         </RegisterProvider>
-        </PaperProvider>
+       
     )
 }
 
@@ -76,6 +76,10 @@ export default function App() {
             {/*</NavigationContainer>*/}
             {/* <Register /> */}
             <RegisterNavigatior />
+
+            {/* <View style={{ flex: 1, alignItems: 'center' }} >
+                <Home />
+            </View> */}
         </SafeAreaView>
     );
 }
