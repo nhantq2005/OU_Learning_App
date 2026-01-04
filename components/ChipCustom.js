@@ -11,8 +11,8 @@ const ChipCustom = ({ title, isSelected, onPress }) => {
                 backgroundColor: chipColor,
                 color: textColor,
                 margin: Spacing.xs,
-                paddingHorizontal: 6,
-                paddingVertical: 2,
+                paddingHorizontal: 3,
+                
                 alignSelf: 'flex-start',
             }}
             textStyle={{ color: textColor }}

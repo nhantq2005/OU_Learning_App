@@ -14,7 +14,7 @@ const ChooseRole = () => {
 
     const nextStep = () => {
         if (selectedRole) {
-            updateRegisterData({ role: selectedRole, is_verified: selectedRole === "teacher" ? false : true });
+            updateRegisterData({ role: selectedRole, is_active: selectedRole === "teacher" ? false : true });
             nav.navigate("RegisterAccount");
         } else {
             alert("Vui lòng chọn vai trò trước khi tiếp tục.");

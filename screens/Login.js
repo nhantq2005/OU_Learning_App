@@ -1,21 +1,25 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import MyStyles from "../styles/MyStyles";
 import TextField from "../components/TextField";
-import React, { useState } from "react";
-import { TextInput, Button, HelperText } from 'react-native-paper';
+import React, { use, useContext, useState } from "react";
+import { TextInput, Button, HelperText, Divider } from 'react-native-paper';
 import Spacing from "../styles/Spacing";
 import axios from 'axios';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Eye, EyeOff, CircleUser, LockKeyhole, Lock } from 'lucide-react-native';
-import Apis, { endpoints } from "../utils/Apis";
+import Apis, { authApis, endpoints } from "../utils/Apis";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MyUserContext } from "../utils/MyContexts";
+import { useNavigation } from "@react-navigation/native";
 
 
-const Login = ({ navigation }) => {
+const Login = () => {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState();
     const [isSecure, setIsSecure] = useState(true);
     const [user, setUser] = useState({})
+    const [, dispatch] = useContext(MyUserContext);
+    const nav = useNavigation();
     const iconColor = "black";
     const iconSize = 20;
     const info = [
@@ -59,26 +63,23 @@ const Login = ({ navigation }) => {
                 console.info(res.data);
                 AsyncStorage.setItem('token', res.data.access_token);
 
-                setTimeout(async () => {
-
-                    let user = await authApis(res.data.access_token).get(endpoints['current_user']);
-                    console.info(user.data);
-
-                    // dispatch({
-                    //     "type": "login",
-                    //     "payload": user.data
-                    // });
-                }, 500);
+                let userRes = await authApis(res.data.access_token).get(endpoints['current_user']);
+                dispatch({
+                    "type": "login",
+                    "payload": userRes.data
+                });
                 setErrorMsg(null);
-                console.info(user)
+                console.info("TAI KHOAN", user)
+
             } catch (ex) {
                 if (ex.response && ex.response.status === 400) {
-                    // Nếu backend trả về thông báo lỗi rõ ràng
-                    const msg ="Tài khoản hoặc mật khẩu không đúng! Vui lòng thử lại.";
+                    const msg = "Tài khoản hoặc mật khẩu không đúng! Vui lòng thử lại.";
                     setErrorMsg(msg);
                 } else {
                     setErrorMsg("Đã có lỗi xảy ra. Vui lòng thử lại sau!");
+                    console.error("Login error:", ex);
                 }
+                setLoading(false);
             } finally {
                 setLoading(false);
             }
@@ -100,10 +101,7 @@ const Login = ({ navigation }) => {
                     <TextField key={i.field}
                         placeholder={i.label}
                         secureTextEntry={i.secureTextEntry}
-                        // Truyền icon bên trái vào
                         left={i.leadingIcon}
-
-                        // Xử lý icon ẩn/hiện mật khẩu bên phải
                         right={
                             i.field === 'password' || i.field === "confirm"
                                 ? (
@@ -116,7 +114,6 @@ const Login = ({ navigation }) => {
                                 )
                                 : null
                         }
-
                         value={user[i.field]}
                         onChangeText={t => setUser({ ...user, [i.field]: t })}
                     />
@@ -126,16 +123,19 @@ const Login = ({ navigation }) => {
                 </HelperText>
                 <Button
                     onPress={login}
+                    loading={loading}
+                    disabled={loading}
                     mode="contained"
                     style={[MyStyles.buttonText, MyStyles.button]}
                     labelStyle={{ fontSize: 18 }}>
                     Đăng nhập
                 </Button>
+                <Divider style={{ marginBottom: Spacing.md }} />
 
                 <View style={{ flexDirection: 'row', bottom: 5 }}>
                     <Text>Bạn đã có tài khoản? </Text>
                     <TouchableOpacity onPress={() => {
-                        // nav.navigate('Login');
+                        nav.navigate('ChooseRole');
                     }}>
                         <Text>Đăng nhập</Text>
                     </TouchableOpacity>

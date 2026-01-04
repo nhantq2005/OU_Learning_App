@@ -13,6 +13,7 @@ import {MaterialIcons} from '@expo/vector-icons';
 import MyStyles from "../styles/MyStyles";
 // import {Colors} from '../styles/Colors';
 import Spacing from "../styles/Spacing";
+import { useNavigation } from "@react-navigation/native";
 
 const {width} = Dimensions.get("window");
 
@@ -39,6 +40,7 @@ const slides = [
 const Onboarding = ({navigation}) => {
     const scrollX = useRef(new Animated.Value(0)).current;
     const flatListRef = useRef(null);
+    const nav = useNavigation();
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -52,7 +54,7 @@ const Onboarding = ({navigation}) => {
 
     const finishOnboarding = async () => {
         await AsyncStorage.setItem("hasSeenIntro", "true");
-        navigation.replace("Login");
+        nav.replace("Login");
     };
 
     return (

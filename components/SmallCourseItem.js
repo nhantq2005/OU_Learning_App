@@ -1,54 +1,53 @@
-import {Text, Searchbar, Avatar, Button, Card} from 'react-native-paper'
-import MyStyles from "../styles/MyStyles";
-import Colors from "../styles/Colors"
-import {TouchableOpacity, View, Image} from "react-native";
+import { Image, TouchableOpacity, View } from "react-native"
+import { Text } from "react-native-paper"
+import { formatCurrency } from "../utils/Utils"
+import { useNavigation } from "@react-navigation/native"
 
-const SmallCourseItem = () => {
+
+const SmallCourseItem = (course) => {
+    const nav = useNavigation();
     return (
         <TouchableOpacity
-            activeOpacity={0.85}
-            style={{
-                marginVertical: 10,
-                alignSelf: 'center',
-                width: '88%', // Giảm width xuống cho phù hợp
-                borderRadius: 18,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.12,
-                shadowRadius: 6,
-                elevation: 5,
-                backgroundColor: Colors.light.surface,
-            }}
-        >
-            <Card style={{
-                backgroundColor: Colors.light.surface,
-                borderRadius: 18,
-                overflow: 'hidden',
-                elevation: 0,
-            }}>
-                <Card.Cover
-                    source={{ uri: 'https://picsum.photos/700' }}
-                    style={{
-                        width: '100%',
-                        height: 120,
-                        borderTopLeftRadius: 18,
-                        borderTopRightRadius: 18,
-                        borderBottomLeftRadius: 0,
-                        borderBottomRightRadius: 0,
-                    }}
-                />
-                <Card.Content style={{ paddingVertical: 12, paddingHorizontal: 10 }}>
-                    <Text style={{ color: '#FF6B00', fontWeight: 'bold', fontSize: 13, marginBottom: 2 }}>Công nghệ thông tin</Text>
-                    <Text style={{ fontWeight: 'bold', fontSize: 17, color: '#222', marginBottom: 4 }} numberOfLines={1} ellipsizeMode="tail">
-                        Các công nghệ lập trình hiện đại
-                    </Text>
-                    <Text style={{ color: '#666', fontSize: 14, marginBottom: 8 }}>ThS. Dương Hữu Thành</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
-                        <Image source={require('../assets/star.png')} style={{ width: 16, height: 16, marginRight: 4 }} />
-                        <Text style={{ color: '#444', fontSize: 13 }}>4.5 (2000) | <Text style={{ color: '#1976D2' }}>20 giờ 45 phút</Text></Text>
+        onPress={() => nav.navigate('CourseDetail', { courseId: course.id })}
+         style={{
+            flexDirection: 'row',
+            width: '100%',
+            backgroundColor: '#fff',
+            padding: 10,
+            borderRadius: 14,
+            marginBottom: 10,
+            marginRight: 14,
+            elevation: 4,
+            shadowColor: '#1976D2',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.12,
+            shadowRadius: 6,
+        }}>
+            <Image
+                source={{ uri: course.image }}
+                style={{ width: 100, height: 80, borderRadius: 10, resizeMode: 'cover' }}
+        
+            />
+            <View style={{ flex: 1, marginLeft: 12, justifyContent: 'center' }}>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#1976D2', marginBottom: 2 }} numberOfLines={2} ellipsizeMode="tail">
+                    {course.title}
+                </Text>
+                <Text style={{ fontSize: 13, color: '#666', fontStyle: 'italic', marginBottom: 4 }} numberOfLines={1}>
+                    {course.instructor.last_name + " " + course.instructor.first_name}
+                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2, justifyContent: 'space-between' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f6fa', borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }}>
+                        <Text style={{ fontSize: 13, color: '#1976D2', fontWeight: '600', marginRight: 2 }}>4.8</Text>
+                        <Text style={{ fontSize: 13, color: '#FFD700' }}>★</Text>
+                        <Text style={{ fontSize: 12, color: '#888', marginLeft: 2 }}>(120)</Text>
+
+                        
                     </View>
-                </Card.Content>
-            </Card>
+                    <Text style={{ fontSize: 15, color: '#FF6B00', fontWeight: 'bold', marginRight: 10 }}>
+                        {formatCurrency(course.price)}
+                    </Text>
+                </View>
+            </View>
         </TouchableOpacity>
     )
 }

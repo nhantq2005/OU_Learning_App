@@ -1,13 +1,17 @@
 import axios from "axios";
 
-const BASE_URL = 'http://192.168.113.101:8000/';
+const BASE_URL = 'http://192.168.113.109:8000/';
 
 export const endpoints = {
     'categories': '/categories/',
     'register': '/users/',
-    // 'login': '/o/token/',
+    'tags': '/tags/',
     'login': '/api/login/',
-    'current_user': '/users/current-user/'
+    'current_user': '/users/current-user/',
+    'courses': '/courses/',
+    'course_detail': (courseId) => `/courses/${courseId}/`,
+    'lessons': (courseId) => `/courses/${courseId}/lessons/`,
+    'reviews': (courseId) => `/courses/${courseId}/reviews/`,
 };
 
 

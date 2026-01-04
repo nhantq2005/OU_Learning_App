@@ -1,85 +1,76 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
-import Splash from "./screens/Splash";
-import Onboarding from "./screens/Onboarding";
 import Login from "./screens/Login";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
-import axios from "axios";
-import { TextField } from './components/TextField';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Home from './screens/Home';
-import RegisterAccount from './screens/RegisterAccount';
-
-import Spacing from "./styles/Spacing";
-import { use, useEffect, useState } from 'react';
-import ChooseRole from './screens/ChooseRole';
 import { RegisterProvider } from './utils/RegisterProvider';
-import RegisterInfo from './screens/RegisterInfo';
-import { Provider as PaperProvider } from 'react-native-paper';
-import SmallCourseItem from './components/SmallCourseItem';
+import { MyUserProvider } from './utils/MyUserProvider';
+import AppNavigation from './navigation/AppNavigation';
+import EditCourse from './screens/EditCourse';
+import EditLesson from './screens/EditLesson';
+import Enroll from './screens/Enroll';
+import AuthNavigation from './navigation/AuthNavigation';
+import TabNavigation from './navigation/TabNavigation';
+import FillInfo from './screens/FillInfo';
+import CreateCourse from './screens/CreateCourse';
+import { Edit } from 'lucide-react-native';
+import CourseDetail from './screens/CourseDetail';
+import StackNavigation from './navigation/StackNavigation';
+// import TabNavigator from './components/TabNavigator';
 
-const Stack = createNativeStackNavigator();
 
-const StackNavigatior = () => {
-    return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Splash" component={Splash} />
-            <Stack.Screen name="Onboarding" component={Onboarding} />
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="RegisterInfo" component={RegisterInfo} />
+// const Stack = createNativeStackNavigator();
 
-        </Stack.Navigator>
-    )
-}
+// const StackNavigatior = () => {
+//     return (
+//         <MyUserProvider>
+//             <RegisterProvider>
+//                 <NavigationContainer>
+//                     <Stack.Navigator screenOptions={{ headerShown: false }}>
+//                         {/* <Stack.Screen name="ChooseRole" component={ChooseRole} />
+//                         <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
+//                         <Stack.Screen name="RegisterInfo" component={RegisterInfo} /> */}
+//                         <Stack.Screen name="Login" component={Login} />
+//                         <Stack.Screen name="Home" component={Home} />
+//                     </Stack.Navigator>
+//                 </NavigationContainer>
+//             </RegisterProvider>
+//         </MyUserProvider>
+//     )
+// }
 
-const RegisterNavigatior = () => {
-    return (
-        <RegisterProvider>
-            <NavigationContainer>
-                <Stack.Navigator  screenOptions={{headerShown: false}}>
-                    <Stack.Screen name="ChooseRole" component={ChooseRole} />
-                    <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
-                    <Stack.Screen name="RegisterInfo" component={RegisterInfo} />
-                    <Stack.Screen name="Login" component={Login} />
-                </Stack.Navigator>
-            </NavigationContainer>
-        </RegisterProvider>
-       
-    )
-}
+// export const RegisterNavigatior = () => {
+//     return (
+//         <MyUserProvider>
+//             <RegisterProvider>
+//                 <Stack.Navigator screenOptions={{ headerShown: false }}>
+//                     {/* <Stack.Screen name="ChooseRole" component={ChooseRole} />
+//                         <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
+//                         <Stack.Screen name="RegisterInfo" component={RegisterInfo} /> */}
+//                     <Stack.Screen name="Login" component={Login} />
+//                     <Stack.Screen name="Home" component={Home} />
+//                 </Stack.Navigator>
+//             </RegisterProvider>
+//         </MyUserProvider>
+
+//     )
+// }
 
 
 
 
 
 export default function App() {
-    // const [cate, setCate] = useState([])
-
-    // const [categories, setCategories] = useState([]);
-
-    // const loadCategories = async () => {
-    //     let res = await Apis.get(endpoints['categories']);
-    //     setCategories(res.data.results);
-    //     console.info(`Categories: ${res.data.results}`);
-    // }
-
-    // useEffect(() => {
-    //     loadCategories();;
-    // }, []);
 
 
     return (
         <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-            {/*<NavigationContainer>*/}
-            {/*    <StackNavigatior/>*/}
-            {/*</NavigationContainer>*/}
-            {/* <Register /> */}
-            <RegisterNavigatior />
+            <MyUserProvider>
+            {/* <CreateCourse/> */}
+                <AppNavigation />
+            </MyUserProvider>
 
-            {/* <View style={{ flex: 1, alignItems: 'center' }} >
-                <Home />
-            </View> */}
         </SafeAreaView>
     );
 }

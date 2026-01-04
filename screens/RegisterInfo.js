@@ -91,11 +91,8 @@ const RegisterInfo = () => {
         if (validate()) {
             try {
                 setLoading(true);
-
-                // Cập nhật thông tin vào RegisterContext trước khi gửi lên API
                 updateRegisterData({ ...registerData, ...user });
                 console.log(registerData);
-                // Sử dụng registerData mới nhất để gửi lên API
                 const dataToSend = { ...registerData, ...user };
                 let form = new FormData();
                 for (let key in dataToSend)
@@ -117,10 +114,12 @@ const RegisterInfo = () => {
                 });
 
                 if (res.status === 201) {
+                    console.info("Registration successful:", res.data);
                     nav.navigate("Login");
                 }
-            } catch (ex) {
+            } catch (ex) {  
                 console.error(ex);
+                setLoading(false);
             } finally {
                 setLoading(false);
             }
@@ -133,11 +132,8 @@ const RegisterInfo = () => {
             keyboardShouldPersistTaps="handled"
             extraScrollHeight={90}
             style={[{ flex: 1 }, MyStyles.background]}
-            scrollEnabled={false}
-        >
+            scrollEnabled={false}>
             <View style={[{ flex: 1, alignItems: 'center', height: screenHeight, justifyContent: 'center' }]}>
-                {/* <Image source={require('../assets/app_logo.png')} style={{ width: 200, height: 200 }} /> */}
-                {/* Ô chọn ảnh đại diện */}
                 <View style={{ position: 'relative', marginBottom: 20 }}>
                     <TouchableOpacity
                         onPress={picker}
@@ -178,7 +174,6 @@ const RegisterInfo = () => {
                             </View>
                         )}
                     </TouchableOpacity>
-                    {/* Icon bút xanh ở góc dưới phải */}
                     <TouchableOpacity
                         onPress={picker}
                         activeOpacity={0.7}
@@ -200,7 +195,6 @@ const RegisterInfo = () => {
                         <UserRoundPen color={'#1976D2'} size={24} />
                     </TouchableOpacity>
                 </View>
-                {/* ...existing code... */}
                 {info.map(i =>
                     i.field !== "gender" ? (
                         <TextField key={i.field}
@@ -263,6 +257,8 @@ const RegisterInfo = () => {
                 </HelperText>
                 <Button
                     mode="contained"
+                    loading={loading}
+                    disabled={loading}
                     onPress={register}
                     style={[MyStyles.buttonText, MyStyles.button]}
                     labelStyle={{ fontSize: 18 }}>
@@ -271,7 +267,7 @@ const RegisterInfo = () => {
                 <View style={{ flexDirection: 'row', marginTop: 30 }}>
                     <Text>Bạn đã có tài khoản? </Text>
                     <TouchableOpacity onPress={() => {
-                        nav.navigate('Login');
+                        nav.navigate(role === 'teacher' ? 'FillInfo' : 'Login');
                     }}>
                         <Text>Đăng nhập</Text>
                     </TouchableOpacity>

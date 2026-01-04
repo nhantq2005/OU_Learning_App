@@ -1,4 +1,0 @@
-//AVARTAR
-//TÊN
-//NĂM SINH
-//Ô CHAT VOI SV
