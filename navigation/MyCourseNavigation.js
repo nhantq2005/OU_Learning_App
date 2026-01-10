@@ -1,31 +1,30 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import CourseDetail from "../screens/CourseDetail";
-import Home from "../screens/Home";
-import Enroll from "../screens/Enroll";
-import MyCourse from "../screens/MyCourse";
-import LessonDetail from "../screens/LessonDetail";
-import EditLesson from "../screens/EditLesson";
-import { useContext } from "react";
-import { MyUserContext } from "../utils/MyContexts";
-import Statistic from "../screens/Statistic";
+// file: navigation/MyCourseNavigation.js (hoặc nơi bạn chứa file này)
 
-const StackNavigation = () => {
+import React from 'react';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+// 👇 ĐẢM BẢO BẠN ĐÃ IMPORT COMPONENT NÀY
+import CreateCourse from "../screens/CreateCourse"; 
+import MyCourse from "../screens/MyCourse";
+import CourseDetail from "../screens/CourseDetail";
+import Enroll from "../screens/Enroll";
+import LessonDetail from "../screens/LessonDetail";
+import EditLesson from '../screens/EditLesson';
+
+const MyCourseNavigation = () => {
     const Stack = createNativeStackNavigator();
-    const [user,]=useContext(MyUserContext);
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            {user.role === 'teacher' ? (
-                <Stack.Screen name="Home" component={Statistic} />
-            ) : (
-                <Stack.Screen name="Home" component={Home} />
-            )}
+            <Stack.Screen name="MyCourse" component={MyCourse} />
             <Stack.Screen name="CourseDetail" component={CourseDetail} />
             <Stack.Screen name="Enroll" component={Enroll} />
-            {/* <Stack.Screen name="MyCourse" component={MyCourse} /> */}
             <Stack.Screen name="LessonDetail" component={LessonDetail} />
+            
+            {/* 👇 ĐẢM BẢO DÒNG NÀY ĐÃ TỒN TẠI VÀ ĐÚNG TÊN "CreateCourse" */}
+            <Stack.Screen name="CreateCourse" component={CreateCourse} />
             <Stack.Screen name="EditLesson" component={EditLesson} />
         </Stack.Navigator>
     );
 }
 
-export default StackNavigation;
+export default MyCourseNavigation;

@@ -7,6 +7,7 @@ import MyCourses from '../screens/MyCourse';
 // import { RegisterNavigatior } from '../App';
 import Home from '../screens/Home';
 import StackNavigation from './StackNavigation';
+import MyCourseNavigation from './MyCourseNavigation';
 
 
 const TabNavigation = () => {
@@ -34,7 +35,7 @@ const TabNavigation = () => {
             <>
                 <Tab.Screen
                     name="MyCourses"
-                    component={MyCourses}
+                    component={MyCourseNavigation}
                     options={{
                         title: 'Khóa học của tôi',
                         tabBarIcon: ({ color, size }) => (

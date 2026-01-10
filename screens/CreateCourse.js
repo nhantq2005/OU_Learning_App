@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Text, Button, Switch, Card, Divider } from 'react-native-paper';
+import { Text, Button, Switch, Card, Divider, Modal, Portal } from 'react-native-paper';
 import TextField from '../components/TextField';
 import MyStyles from '../styles/MyStyles';
 import Colors from '../styles/Colors';
@@ -11,23 +11,30 @@ import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
 import { Dropdown, MultiSelect } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import Apis, { endpoints } from '../utils/Apis';
+import Apis, { authApis, endpoints } from '../utils/Apis';
 import { MyUserProvider } from '../utils/MyUserProvider';
 import { MyUserContext } from '../utils/MyContexts';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { CheckCircle } from 'lucide-react-native';
 
 const CreateCourse = () => {
-    // const navigation = useNavigation();
+    const navigation = useNavigation();
 
     const [course, setCourse] = useState({});
     const [video, setVideo] = useState(null);
     const [categories, setCategories] = useState([]);
     const [tags, setTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [value, setValue] = useState(null);
+    const [duration, setDuration] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
     const [loading, setLoading] = useState(false);
     const [user,] = useContext(MyUserContext);
 
+
+  
 
     const loadCategories = async () => {
         try {
@@ -76,17 +83,7 @@ const CreateCourse = () => {
             'label': 'Giá (VNĐ)',
             'field': 'price',
             'leadingIcon': <Coins />
-        },
-        // {
-        //     'label': 'Danh mục',
-        //     'field': 'category_id',
-        //     'icon': null
-        // },
-        // {
-        //     'label': 'Nhãn',
-        //     'field': 'tags_id',
-        //     'icon': null
-        // }
+        }
     ]
     const picker = async () => {
         const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -106,6 +103,7 @@ const CreateCourse = () => {
             if (!res.canceled)
                 setCourse({ ...course, "intro_video": res.assets[0] });
             console.info("Picked video:", res);
+            setDuration(res.assets[0].duration);
         } else {
             Alert.alert("Permission denied!");
         }
@@ -175,7 +173,8 @@ const CreateCourse = () => {
             try {
                 setLoading(true);
                 const formData = new FormData();
-                formData.append('instructor_id', 7);
+                formData.append('instructor_id', user.id);
+                formData.append('duration', duration || 0);
                 for (let key in course) {
                     if (key === 'tags_id') {
                         if (selectedTags && selectedTags.length > 0) {
@@ -203,15 +202,15 @@ const CreateCourse = () => {
 
                 console.info("Sending FormData...");
 
-                // 5. Send Request
-                let res = await Apis.post(endpoints['courses'], formData, {
+                const token = await AsyncStorage.getItem("token");
+                let res = await authApis(token).post(endpoints['courses'], formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     }
                 });
 
                 if (res.status === 201) {
-                    Alert.alert("Thành công", "Tạo khóa học thành công!");
+               Alert.alert("Thành công", `Khóa học "${course.title}" đã được tạo và đang chờ duyệt.`);
                     console.log("Course created:", res.data);
                     // navigation.goBack(); 
                 }
@@ -230,6 +229,12 @@ const CreateCourse = () => {
         }
     }
 
+    const handleSuccessClose = () => {
+        setShowSuccessModal(false);
+        navigation.goBack(); // Quay lại màn hình trước
+    }
+
+
     const submitCourse = async () => {
         console.info("Submitting course:", course);
     }
@@ -246,7 +251,7 @@ const CreateCourse = () => {
         console.log("SELECTED TAGS", selectedTags);
     }, [value, selectedTags]);
 
-    return (
+    return (<>
         <ScrollView style={{ flex: 1, backgroundColor: Colors.light.background, paddingTop: 15 }}>
             <View style={{ alignItems: 'center', paddingHorizontal: 18 }}>
                 <TouchableOpacity
@@ -457,6 +462,8 @@ const CreateCourse = () => {
                 </Button>
             </View>
         </ScrollView >
+        
+        </>
     );
 };
 

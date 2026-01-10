@@ -17,6 +17,8 @@ import CreateCourse from './screens/CreateCourse';
 import { Edit } from 'lucide-react-native';
 import CourseDetail from './screens/CourseDetail';
 import StackNavigation from './navigation/StackNavigation';
+import LessonDetail from './screens/LessonDetail';
+import Message from './screens/Message';
 // import TabNavigator from './components/TabNavigator';
 
 
@@ -68,7 +70,14 @@ export default function App() {
         <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
             <MyUserProvider>
             {/* <CreateCourse/> */}
-                <AppNavigation />
+                {/* <LessonDetail /> */}
+              {/* <NavigationContainer>  */}
+                    <AppNavigation />
+                    {/* <CreateCourse />
+                </NavigationContainer> */}
+
+{/* <EditLesson /> */}
+                {/* <Message /> */}
             </MyUserProvider>
 
         </SafeAreaView>

@@ -50,5 +50,14 @@ export default StyleSheet.create({
         marginBottom:Spacing.md,
         fontWeight: 'bold',
         fontSize: 30,
-    }
+    },
+fab: {
+        position: 'absolute',
+        margin: 20,
+        right: 0,
+        bottom: 10,
+        backgroundColor: '#2563EB',
+        borderRadius: 50,
+        elevation: 6,
+    },
 });

@@ -1,146 +1,351 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import MyStyles from '../styles/MyStyles';
-import Colors from '../styles/Colors';
-import Spacing from '../styles/Spacing';
-import TextField from '../components/TextField';
-import { Button, Card, Modal, PaperProvider, Portal } from 'react-native-paper';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { User, Coins, ArrowLeftCircle, CheckCircle } from 'lucide-react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, StatusBar, SafeAreaView } from 'react-native';
+import { Button, Modal, Portal, PaperProvider, Surface, Divider } from 'react-native-paper';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ArrowLeft, User, ShieldCheck, CheckCircle2, CreditCard } from 'lucide-react-native';
 
-const Enroll = ({ route, navigation }) => {
+import { authApis, endpoints } from '../utils/Apis';
 
-   const [visible, setVisible] = React.useState(false);
+// Giả sử bạn có file Colors và Spacing
+// Nếu chưa có, bạn có thể thay thế bằng mã màu cứng
+const Colors = {
+    primary: '#1976D2',
+    background: '#F5F7FA',
+    text: '#1E293B',
+    success: '#4CAF50',
+    white: '#FFFFFF',
+    gray: '#64748B',
+    lightGray: '#E2E8F0'
+};
 
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
-  const containerStyle = {backgroundColor: 'white', padding: 20};
+const Enroll = () => {
+    const nav = useNavigation();
+    const route = useRoute();
+    const { course } = route.params;
 
+    const [visible, setVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-  // Giả sử nhận thông tin khóa học qua route.params
-  const course = route?.params?.course || {
-    title: 'Tên khóa học mẫu',
-    description: 'Mô tả ngắn về khóa học này. Học viên sẽ được học những gì?',
-    image: 'https://res.cloudinary.com/duk4u0tsp/image/upload/v1762911226/cld-sample-4.jpg',
-    teacher: 'Nguyễn Văn A',
-    price: 'Miễn phí',
-  };
-  const [note, setNote] = useState('');
-  const [enrolled, setEnrolled] = useState(false);
+    // Xử lý Modal
+    const showModal = () => setVisible(true);
+    const hideModal = () => {
+        setVisible(false);
+        // Sau khi đóng modal thành công, có thể quay về trang chủ hoặc trang khóa học của tôi
+        nav.navigate("MyCourses"); // Hoặc nav.goBack();
+    };
 
-  const handleEnroll = () => {
-    // TODO: Gọi API đăng ký khóa học ở đây
-    setEnrolled(true);
-    showModal();
-  };
+    const handleEnroll = async () => {
+        try {
+            setLoading(true);
+            const token = await AsyncStorage.getItem("token");
+            
+            // Gọi API đăng ký
+            let res = await authApis(token).post(endpoints['enroll'], {
+                course: course.id
+            });
+            
+            console.info("Enroll success:", res.data);
+            showModal(); // Hiện modal thành công
+        } catch (error) {
+            console.error("Failed to enroll:", error);
+            // Có thể thêm Alert báo lỗi ở đây
+            alert("Đăng ký thất bại. Vui lòng thử lại!");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-      <View style={[MyStyles.background, { flex: 1 }]}>  
-    <PaperProvider>
-      <Portal>
-        <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
-         {enrolled && (
-          <View style={{ alignItems: 'center', marginTop: Spacing.md }}>
-            <CheckCircle size={32} color={Colors.light.primary} style={{ marginBottom: 6 }} />
-            <Text style={{ color: Colors.light.primary, fontWeight: 'bold', fontSize: 16 }}>
-              Bạn đã đăng ký thành công!
-            </Text>
-          </View>
-        )}
-        </Modal>
-      </Portal>
-      {/* Header với nút back */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: Spacing.md, paddingHorizontal: Spacing.md }}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 4, marginRight: 8 }}>
-          <ArrowLeftCircle size={28} color={Colors.light.primary} />
-        </TouchableOpacity>
-        <Text style={{ fontSize: 22, fontWeight: 'bold', color: Colors.light.primary }}>Đăng ký khoá học</Text>
-      </View>
+    const saveTransaction = async () => {
+        // Hàm lưu thông tin giao dịch nếu cần
+        try {
+            const token = await AsyncStorage.getItem("token");
+            let res = await authApis(token).post(endpoints['transactions'], {
+                course: course.id,
+                amount: course.price,
+                status: 'success'
+            });
+            // Gọi API lưu giao dịch ở đây nếu có
+        } catch (error) {
+            console.error("Failed to save transaction:", error);
+        }
+    };
 
-        <Image source={{ uri: course.image }} style={styles.image} />
-        <Text style={styles.title}>{course.title}</Text>
-        <View style={styles.rowInfo}>
-          <User color={Colors.light.secondary} size={20} style={{ marginRight: 6 }} />
-          <Text style={styles.teacher}>{course.teacher}</Text>
-        </View>
-        <View style={styles.rowInfo}>
-          <Coins color={Colors.light.tertiary} size={20} style={{ marginRight: 6 }} />
-          <Text style={styles.price}>{course.price}</Text>
-        </View>
-        <Text style={styles.description}>{course.description}</Text>
-        <Button
-          mode="contained"
-          onPress={handleEnroll}
-          style={styles.button}
-          disabled={enrolled}
-          labelStyle={{ fontWeight: 'bold', fontSize: 16 }}
-          contentStyle={{ paddingVertical: 8 }}
-        >
-          {enrolled ? 'Đã đăng ký' : 'Đăng ký khoá học'}
-        </Button>
-        
+    const enrollCourse = async () => {
+        await handleEnroll();
+        await saveTransaction();
+    };
 
+    // Định dạng tiền tệ
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    };
 
+    return (
+        <PaperProvider>
+            <View style={styles.container}>
+                <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
 
+                {/* --- HEADER --- */}
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => nav.goBack()} style={styles.backButton}>
+                        <ArrowLeft size={24} color={Colors.text} />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Xác nhận đăng ký</Text>
+                    <View style={{ width: 40 }} /> 
+                </View>
 
+                {/* --- CONTENT --- */}
+                <View style={styles.content}>
+                    
+                    {/* Course Summary Card */}
+                    <Surface style={styles.card} elevation={2}>
+                        <Image source={{ uri: course.image }} style={styles.courseImage} />
+                        
+                        <View style={styles.cardContent}>
+                            <Text style={styles.courseTitle}>{course.title}</Text>
+                            
+                            <View style={styles.instructorRow}>
+                                <User size={16} color={Colors.gray} />
+                                <Text style={styles.instructorName}>
+                                    {course.instructor.last_name} {course.instructor.first_name}
+                                </Text>
+                            </View>
 
-    </PaperProvider>
-    </View>
+                            <Divider style={styles.divider} />
 
-    
-  );
+                            <View style={styles.priceRow}>
+                                <Text style={styles.priceLabel}>Học phí:</Text>
+                                <Text style={styles.priceValue}>{formatPrice(course.price)}</Text>
+                            </View>
+                        </View>
+                    </Surface>
+
+                    {/* Payment Info / Trust Badges */}
+                    <View style={styles.trustSection}>
+                        <View style={styles.trustItem}>
+                            <ShieldCheck size={20} color={Colors.primary} />
+                            <Text style={styles.trustText}>Thanh toán an toàn</Text>
+                        </View>
+                        <View style={styles.trustItem}>
+                            <CreditCard size={20} color={Colors.primary} />
+                            <Text style={styles.trustText}>Truy cập trọn đời</Text>
+                        </View>
+                    </View>
+
+                </View>
+
+                {/* --- BOTTOM ACTION BAR --- */}
+                <View style={styles.bottomBar} elevation={4}>
+                    <View style={styles.totalRow}>
+                        <Text style={styles.totalLabel}>Tổng thanh toán:</Text>
+                        <Text style={styles.totalPrice}>{formatPrice(course.price)}</Text>
+                    </View>
+                    
+                    <Button
+                        mode="contained"
+                        loading={loading}
+                        disabled={loading}
+                        onPress={enrollCourse}
+                        style={styles.enrollButton}
+                        labelStyle={styles.buttonLabel}
+                        contentStyle={{ height: 50 }}
+                    >
+                        Thanh toán & Vào học
+                    </Button>
+                </View>
+
+                {/* --- SUCCESS MODAL --- */}
+                <Portal>
+                    <Modal 
+                        visible={visible} 
+                        onDismiss={hideModal} 
+                        contentContainerStyle={styles.modalContainer}
+                        dismissable={false} // Bắt buộc người dùng bấm nút đóng
+                    >
+                        <View style={styles.modalContent}>
+                            <CheckCircle2 size={64} color={Colors.success} style={{ marginBottom: 16 }} />
+                            <Text style={styles.modalTitle}>Đăng ký thành công!</Text>
+                            <Text style={styles.modalSubTitle}>
+                                Chúc mừng bạn đã tham gia khóa học. Hãy bắt đầu học ngay nhé!
+                            </Text>
+                            <Button 
+                                mode="contained" 
+                                onPress={hideModal} 
+                                style={styles.modalButton}
+                            >
+                                Bắt đầu học ngay
+                            </Button>
+                        </View>
+                    </Modal>
+                </Portal>
+            </View>
+        </PaperProvider>
+    );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    margin: Spacing.lg,
-    borderRadius: 18,
-    padding: Spacing.lg,
-    backgroundColor: Colors.light.surface,
-    elevation: 4,
-    shadowColor: Colors.light.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-  },
-  image: {
-    width: '100%',
-    height: 180,
-    borderRadius: 16,
-    marginBottom: Spacing.md,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: Colors.light.primary,
-    marginBottom: Spacing.sm,
-    textAlign: 'center',
-  },
-  rowInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Spacing.xs,
-    justifyContent: 'center',
-  },
-  teacher: {
-    fontSize: 16,
-    color: Colors.light.secondary,
-  },
-  price: {
-    fontSize: 16,
-    color: Colors.light.tertiary,
-  },
-  description: {
-    fontSize: 15,
-    color: Colors.light.onBackground,
-    marginBottom: Spacing.md,
-    textAlign: 'center',
-  },
-  button: {
-    borderRadius: 16,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.sm,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: Colors.background,
+    },
+    // Header
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 10,
+    },
+    backButton: {
+        padding: 8,
+        borderRadius: 20,
+        backgroundColor: Colors.white,
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: Colors.text,
+    },
+    // Content
+    content: {
+        flex: 1,
+        padding: 20,
+    },
+    card: {
+        backgroundColor: Colors.white,
+        borderRadius: 16,
+        overflow: 'hidden',
+        marginBottom: 24,
+    },
+    courseImage: {
+        width: '100%',
+        height: 180,
+        resizeMode: 'cover',
+    },
+    cardContent: {
+        padding: 16,
+    },
+    courseTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: Colors.text,
+        marginBottom: 8,
+        lineHeight: 28,
+    },
+    instructorRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginBottom: 16,
+    },
+    instructorName: {
+        fontSize: 14,
+        color: Colors.gray,
+        fontWeight: '500',
+    },
+    divider: {
+        backgroundColor: Colors.lightGray,
+        height: 1,
+        marginBottom: 16,
+    },
+    priceRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    priceLabel: {
+        fontSize: 16,
+        color: Colors.gray,
+    },
+    priceValue: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: Colors.primary,
+    },
+    // Trust Section
+    trustSection: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        backgroundColor: '#E3F2FD', // Nền xanh rất nhạt
+        padding: 16,
+        borderRadius: 12,
+    },
+    trustItem: {
+        alignItems: 'center',
+        gap: 8,
+    },
+    trustText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: Colors.primary,
+    },
+    // Bottom Bar
+    bottomBar: {
+        padding: 20,
+        paddingBottom: 30, // Cho iPhone dòng mới
+        backgroundColor: Colors.white,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+    },
+    totalRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+        marginBottom: 16,
+    },
+    totalLabel: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: Colors.text,
+    },
+    totalPrice: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#E53935', // Màu đỏ cho giá tổng
+    },
+    enrollButton: {
+        backgroundColor: Colors.primary,
+        borderRadius: 12,
+    },
+    buttonLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: Colors.white,
+    },
+    // Modal
+    modalContainer: {
+        backgroundColor: 'white',
+        margin: 30,
+        padding: 30,
+        borderRadius: 24,
+        alignItems: 'center',
+    },
+    modalContent: {
+        alignItems: 'center',
+        width: '100%',
+    },
+    modalTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: Colors.text,
+        marginTop: 10,
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    modalSubTitle: {
+        fontSize: 14,
+        color: Colors.gray,
+        textAlign: 'center',
+        marginBottom: 24,
+        lineHeight: 20,
+    },
+    modalButton: {
+        backgroundColor: Colors.primary,
+        borderRadius: 12,
+        width: '100%',
+    },
 });
 
 export default Enroll;

@@ -3,54 +3,76 @@ import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet } from 'reac
 import * as ImagePicker from 'expo-image-picker';
 import MyStyles from '../styles/MyStyles';
 import TextField from '../components/TextField';
-import { BriefcaseBusiness, CreditCard, Landmark } from 'lucide-react-native';
+import { BriefcaseBusiness, CreditCard, Landmark, Route } from 'lucide-react-native';
+import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import Apis, { endpoints } from '../utils/Apis';
 
 const FillInfo = () => {
   const [document, setDocument] = useState(null);
   const [bankAccount, setBankAccount] = useState('');
   const [expertise, setExpertise] = useState('');
+  const route = useRoute();
+  const nav = useNavigation();
+  const { id, courseId } = route.params || {};
 
   const pickDocument = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      quality: 1,
-    });
-    if (!result.canceled) {
-      setDocument(result.uri);
+    const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (granted) {
+      const res = await ImagePicker.launchImageLibraryAsync();
+      if (!res.canceled)
+        setDocument(res.assets[0].uri);
+    } else {
+      Alert.alert("Permission denied!");
     }
   };
 
   const validate = () => {
     if (!document || !bankAccount || !expertise) {
-        alert('Vui lòng điền đầy đủ thông tin!');
-        return false;
+      alert('Vui lòng điền đầy đủ thông tin!');
+      return false;
     }
     return true;
   }
 
-    const onSubmit = (data) => {
+  const onSubmit = async () => {
+    try {
       if (validate()) {
         // Handle the submission logic here
-         let form = new FormData();
-         form.append('document', {
-           uri: document,
-           name: 'document.jpg',
-           type: 'image/jpeg'
-         });
-         form.append('bank_account', bankAccount);
-         form.append('expertise', expertise);
-            console.log(form);
+        let form = new FormData();
+        form.append('document', {
+          uri: document,
+          name: 'document.jpg',
+          type: 'image/jpeg'
+        });
+        form.append('bank_account', bankAccount);
+        form.append('expertise', expertise);
+        form.append('user', id);
+        console.log(form);
+
+        let res = await Apis.post(endpoints['instructors'], form, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        if (res.status === 201) {
+          console.info("Registration successful:", res.data);
+          nav.navigate("Login", { id: res.data.id });
+        }
       }
-    };
+    } catch (ex) {
+      console.error("Submission failed:", ex);
+    }
+  }
 
   return (
-    <View style={[MyStyles.background,{ flex: 1}]}>
+    <View style={[MyStyles.background, { flex: 1 }]}>
       <Text style={styles.title}>Đăng ký hồ sơ Giảng viên</Text>
 
       <Text style={styles.label}>Minh chứng xác thực <Text style={styles.required}>*</Text></Text>
       <Text style={styles.desc}>Vui lòng cung cấp minh chứng bạn là giảng viên hoặc có chuyên môn.</Text>
-      <TouchableOpacity style={[styles.uploadBox,{width:'100%'}]} onPress={pickDocument}>
+      <TouchableOpacity style={[styles.uploadBox, { width: '100%' }]} onPress={pickDocument}>
         {document ? (
           <Image source={{ uri: document }} style={styles.imagePreview} />
         ) : (
@@ -62,7 +84,7 @@ const FillInfo = () => {
       <TextField
         style={styles.input}
         value={bankAccount}
-                left={<CreditCard />}
+        left={<CreditCard />}
         onChangeText={setBankAccount}
         placeholder="Nhập số tài khoản ngân hàng"
         keyboardType="number-pad"
@@ -72,14 +94,14 @@ const FillInfo = () => {
       <TextField
         style={styles.input}
         value={expertise}
-left={<BriefcaseBusiness />}
+        left={<BriefcaseBusiness />}
         onChangeText={setExpertise}
         placeholder="Ví dụ: Toán học, Lập trình, Tiếng Anh..."
       />
 
       <TouchableOpacity
         style={styles.submitBtn}
-        onPress={() => onSubmit({ document, bank_account: bankAccount, expertise })}
+        onPress={onSubmit}
       >
         <Text style={styles.submitText}>Gửi thông tin</Text>
       </TouchableOpacity>

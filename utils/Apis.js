@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = 'http://192.168.113.109:8000/';
+const BASE_URL = 'http://192.168.113.101:8000/';
 
 export const endpoints = {
     'categories': '/categories/',
@@ -11,7 +11,18 @@ export const endpoints = {
     'courses': '/courses/',
     'course_detail': (courseId) => `/courses/${courseId}/`,
     'lessons': (courseId) => `/courses/${courseId}/lessons/`,
+    'lesson_detail': (lessonId) => `/lessons/${lessonId}/`,
     'reviews': (courseId) => `/courses/${courseId}/reviews/`,
+    'instructors': '/instructors/',
+    'enroll': '/enrollments/',
+    'my_courses': `/users/enrolled-courses/`,
+    'teacher_courses': (teacherId) => `/users/${teacherId}/courses/`,
+    'hide_lesson': (lessonId) => `/lessons/${lessonId}/hide/`,
+    'unhide_lesson': (lessonId) => `/lessons/${lessonId}/unhide/`,
+    'hide_course': (courseId) => `/courses/${courseId}/hide/`,
+    'unhide_course': (courseId) => `/courses/${courseId}/unhide/`,
+    'stats':'/stats/dashboard/',
+    'transactions':'/transactions/',
 };
 
 

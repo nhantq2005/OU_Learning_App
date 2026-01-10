@@ -40,6 +40,7 @@ const TextField = ({ left, right, ...props }) => {
                 backgroundColor: 'white',
                 elevation: 8,
                 margin: Spacing.sm,
+                // ...(props.width ? {width: props.width} : {}),
                 width: '100%',
             }}
         >
