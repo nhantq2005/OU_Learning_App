@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { 
     ScrollView, View, TouchableOpacity, Image, 
     StyleSheet, Dimensions, Platform 
@@ -10,7 +10,7 @@ import TextField from '../components/TextField';
 import MyStyles from '../styles/MyStyles';
 import Colors from '../styles/Colors';
 import Spacing from '../styles/Spacing';
-import { ArrowLeftCircle, ImagePlusIcon, Video, ChevronLeft, Leaf, LetterText } from 'lucide-react-native';
+import { ArrowLeftCircle, ImagePlusIcon, Video, ChevronLeft, Leaf, LetterText, ImagePlus } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
 import { Dropdown, MultiSelect } from 'react-native-element-dropdown';
@@ -20,13 +20,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
     const { width } = Dimensions.get('window');
 
 const EditLesson = () => {
-    // const navigation = useNavigation();
+    const navigation = useNavigation();
 
     const [lesson, setLesson] = useState({});
     const [video, setVideo] = useState(null);
     const [loading, setLoading] = useState(false);
-
-    const courseId = 8;
+const route = useRoute();
+    const courseId = route.params?.courseId;
 
 
     const info = [
@@ -41,6 +41,8 @@ const EditLesson = () => {
             'leadingIcon': <LetterText />
         }
     ]
+
+
 
     const picker = async () => {
         const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -103,6 +105,7 @@ const EditLesson = () => {
                             name: lesson.video.fileName || 'video.mp4',
                             type: lesson.video.mimeType || 'video/mp4'
                         });
+                        formData.append('duration', lesson.video.duration);
                     } else {
                         formData.append(key, lesson[key]);
                     }
@@ -124,7 +127,7 @@ const EditLesson = () => {
                 if (res.status === 201) {
                     Alert.alert("Thành công", "Tạo bài học thành công!");
                     console.log("Lesson created:", res.data);
-                    // navigation.goBack(); 
+                    navigation.goBack(); 
                 }
             } catch (ex) {
                 if (ex.response) {
@@ -142,6 +145,9 @@ const EditLesson = () => {
     }
 
 
+    useEffect(() => {
+        console.log("Current lesson data:", courseId);
+    },[]);
 
 
    return (
@@ -196,7 +202,7 @@ const EditLesson = () => {
                             />
                         ) : (
                             <View style={styles.uploadPlaceholder}>
-                                <ImagePlusIcon color={Colors.light.primary} size={28} />
+                                <ImagePlus color={Colors.light.primary} size={28} />
                                 <Text style={styles.uploadText}>Ảnh bìa</Text>
                             </View>
                         )}

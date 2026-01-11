@@ -7,44 +7,44 @@ import { MyUserContext } from "../utils/MyContexts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authApis, endpoints } from "../utils/Apis";
 
-const LessonItem = ({ lesson, onPressLesson, currentLessonId }) => {
+const LessonItem = ({ lesson, onPressLesson, currentLessonId, deleteLesson, hideLesson, unhideLesson }) => {
 
     const [user,] = useContext(MyUserContext);
 
-    const deleteLesson = async () => {
-        try {
-            const token = await AsyncStorage.getItem("token");
-            Alert.alert(
-                "Xác nhận", // Tiêu đề
-                "Bạn có chắc chắn muốn xóa mục này không?", // Nội dung
-                [
-                    { text: "Hủy", style: "cancel" },
-                    { text: "Đồng ý", onPress: async () => await authApis(token).delete(endpoints['lesson_detail'](lesson.id)) }
-                ]
-            );
+    // const deleteLesson = async () => {
+    //     try {
+    //         const token = await AsyncStorage.getItem("token");
+    //         Alert.alert(
+    //             "Xác nhận", // Tiêu đề
+    //             "Bạn có chắc chắn muốn xóa mục này không?", // Nội dung
+    //             [
+    //                 { text: "Hủy", style: "cancel" },
+    //                 { text: "Đồng ý", onPress: async () => await authApis(token).delete(endpoints['lesson_detail'](lesson.id)) }
+    //             ]
+    //         );
 
-        } catch (error) {
-            console.error("Failed to delete lesson:", error);
-        }
-    }
+    //     } catch (error) {
+    //         console.error("Failed to delete lesson:", error);
+    //     }
+    // }
 
-    const hideLesson = async () => {
-        try {
-            const token = await AsyncStorage.getItem("token");
-            await authApis(token).post(endpoints['hide_lesson'](lesson.id));
-        } catch (error) {
-            console.error("Failed to hide lesson:", error);
-        }
-    }
+    // const hideLesson = async () => {
+    //     try {
+    //         const token = await AsyncStorage.getItem("token");
+    //         await authApis(token).post(endpoints['hide_lesson'](lesson.id));
+    //     } catch (error) {
+    //         console.error("Failed to hide lesson:", error);
+    //     }
+    // }
 
-    const unhideLesson = async () => {
-        try {
-            const token = await AsyncStorage.getItem("token");
-            await authApis(token).post(endpoints['unhide_lesson'](lesson.id));
-        } catch (error) {
-            console.error("Failed to unhide lesson:", error);
-        }
-    }
+    // const unhideLesson = async () => {
+    //     try {
+    //         const token = await AsyncStorage.getItem("token");
+    //         await authApis(token).post(endpoints['unhide_lesson'](lesson.id));
+    //     } catch (error) {
+    //         console.error("Failed to unhide lesson:", error);
+    //     }
+    // }
 
     useEffect(() => {
         console.log("Lesson item rendered:", lesson);
@@ -151,12 +151,14 @@ const LessonItem = ({ lesson, onPressLesson, currentLessonId }) => {
 
                     {/* Demo logic ẩn hiện mắt */}
                     {lesson.active ? (
-                        <TouchableOpacity onPress={hideLesson} style={{ padding: 4, marginLeft: 8 }}>
-                            <EyeOff size={20} color="#4B5563" />
+                        // Nếu đang hiện (Active) -> Bấm vào gọi HIDE
+                        <TouchableOpacity onPress={() => hideLesson(lesson.id)} style={{ padding: 4, marginLeft: 8 }}>
+                            <Eye size={20} color="#4B5563" />
                         </TouchableOpacity>
                     ) : (
-                        <TouchableOpacity onPress={unhideLesson} style={{ padding: 4, marginLeft: 8 }}>
-                            <Eye size={20} color="#4B5563" />
+                        // Nếu đang ẩn (Inactive) -> Bấm vào gọi UNHIDE
+                        <TouchableOpacity onPress={() => unhideLesson(lesson.id)} style={{ padding: 4, marginLeft: 8 }}>
+                            <EyeOff size={20} color="#9CA3AF" />
                         </TouchableOpacity>
                     )}
                 </View>

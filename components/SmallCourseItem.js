@@ -7,7 +7,7 @@ import { MyUserContext } from "../utils/MyContexts"
 import { Trash, Edit, Eye, EyeOff } from 'lucide-react-native';
 
 
-const SmallCourseItem = (item) => {
+const SmallCourseItem = (course) => {
     const nav = useNavigation();
     const [user,] = useContext(MyUserContext);
 
@@ -21,116 +21,116 @@ const SmallCourseItem = (item) => {
         console.log("Unhide course with ID:", course.id);
     }
     return (
-        // <TouchableOpacity
-        // onPress={() => nav.navigate('CourseDetail', { courseId: course.id })}
-        //  style={{
-        //     flexDirection: 'row',
-        //     width: '100%',
-        //     backgroundColor: '#fff',
-        //     padding: 10,
-        //     borderRadius: 14,
-        //     marginBottom: 10,
-        //     marginRight: 14,
-        //     elevation: 4,
-        //     shadowColor: '#1976D2',
-        //     shadowOffset: { width: 0, height: 2 },
-        //     shadowOpacity: 0.12,
-        //     shadowRadius: 6,
-        // }}>
-        //     <Image
-        //         source={{ uri: course.image }}
-        //         style={{ width: 100, height: 80, borderRadius: 10, resizeMode: 'cover' }}
+        <TouchableOpacity
+        onPress={() => nav.navigate('CourseDetail', { courseId: course.id })}
+         style={{
+            flexDirection: 'row',
+            width: '100%',
+            backgroundColor: '#fff',
+            padding: 10,
+            borderRadius: 14,
+            marginBottom: 10,
+            marginRight: 14,
+            elevation: 4,
+            shadowColor: '#1976D2',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.12,
+            shadowRadius: 6,
+        }}>
+            <Image
+                source={{ uri: course.image }}
+                style={{ width: 100, height: 80, borderRadius: 10, resizeMode: 'cover' }}
         
-        //     />
-        //     <View style={{ flex: 1, marginLeft: 12, justifyContent: 'center' }}>
-        //         <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#1976D2', marginBottom: 2 }} numberOfLines={2} ellipsizeMode="tail">
-        //             {course.title}
-        //         </Text>
-        //         <Text style={{ fontSize: 13, color: '#666', fontStyle: 'italic', marginBottom: 4 }} numberOfLines={1}>
-        //             {course.instructor.last_name + " " + course.instructor.first_name}
-        //         </Text>
-        //         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2, justifyContent: 'space-between' }}>
-        //             <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f6fa', borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }}>
-        //                 <Text style={{ fontSize: 13, color: '#1976D2', fontWeight: '600', marginRight: 2 }}>{course.avg_rating}</Text>
-        //                 <Text style={{ fontSize: 13, color: '#FFD700' }}>★</Text>
-        //                 <Text style={{ fontSize: 12, color: '#888', marginLeft: 2 }}>(120)</Text>
+            />
+            <View style={{ flex: 1, marginLeft: 12, justifyContent: 'center' }}>
+                <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#1976D2', marginBottom: 2 }} numberOfLines={2} ellipsizeMode="tail">
+                    {course.title}
+                </Text>
+                <Text style={{ fontSize: 13, color: '#666', fontStyle: 'italic', marginBottom: 4 }} numberOfLines={1}>
+                    {course.instructor.last_name + " " + course.instructor.first_name}
+                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2, justifyContent: 'space-between' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f6fa', borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }}>
+                        <Text style={{ fontSize: 13, color: '#1976D2', fontWeight: '600', marginRight: 2 }}>{course.avg_rating}</Text>
+                        <Text style={{ fontSize: 13, color: '#FFD700' }}>★</Text>
+                        <Text style={{ fontSize: 12, color: '#888', marginLeft: 2 }}>(120)</Text>
 
                         
-        //             </View>
-        //             <Text style={{ fontSize: 15, color: '#FF6B00', fontWeight: 'bold', marginRight: 10 }}>
-        //                 {formatCurrency(course.price)}
-        //             </Text>
-        //         </View>
-        //     </View>
-        //     {user.role === 'teacher' && (
-        //         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        //             {/* Dùng TouchableOpacity bọc icon để bấm được */}
-        //             <TouchableOpacity onPress={() => deleteLesson(course.id)} style={{ padding: 4 }}>
-        //                 <Trash size={20} color="#EF4444" />
-        //             </TouchableOpacity>
-
-        //             <TouchableOpacity onPress={() => console.log('Edit')} style={{ padding: 4, marginLeft: 8 }}>
-        //                 <Edit size={20} color="#1976D2" />
-        //             </TouchableOpacity>
-
-        //             {/* Demo logic ẩn hiện mắt */}
-        //             {course.active ? (
-        //                 <TouchableOpacity onPress={hideCourse} style={{ padding: 4, marginLeft: 8 }}>
-        //                     <EyeOff size={20} color="#4B5563" />
-        //                 </TouchableOpacity>
-        //             ) : (
-        //                 <TouchableOpacity onPress={unhideCourse} style={{ padding: 4, marginLeft: 8 }}>
-        //                     <Eye size={20} color="#4B5563" />
-        //                 </TouchableOpacity>
-        //             )}
-        //         </View>
-        //     )}
-        // </TouchableOpacity>
-
-        <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={() => // Navigate trực tiếp trong Stack hiện tại
-                    nav.navigate('CourseDetail', { courseId: item.id })}
-            >
-                <Surface style={styles.card} elevation={2}>
-                    {/* Hình ảnh bên trái */}
-                    <Image source={{ uri: item.image }} style={styles.cardImage} />
-
-                    {/* Nội dung bên phải */}
-                    <View style={styles.cardContent}>
-                        {/* Badge trạng thái */}
-                        <View style={[styles.statusBadge, { backgroundColor: statusColors.bg }]}>
-                            <Text style={[styles.statusText, { color: statusColors.text }]}>
-                                {item.status || "Đang học"}
-                            </Text>
-                        </View>
-
-                        <Text numberOfLines={2} style={styles.courseTitle}>
-                            {item.title}
-                        </Text>
-
-                        <View style={styles.instructorContainer}>
-                            <Image
-                                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} // Icon giảng viên
-                                style={styles.instructorIcon}
-                            />
-                            <Text numberOfLines={1} style={styles.instructorName}>
-                                {item.instructor.first_name || item.instructor}
-                            </Text>
-                        </View>
-
-                        <Button
-                            mode="contained"
-                            style={styles.actionButton}
-                            labelStyle={styles.actionButtonLabel}
-                            contentStyle={{ height: 36 }}
-                            onPress={() => nav.navigate('LessonDetail', { courseId: item.id })}
-                        >
-                            Tiếp tục học
-                        </Button>
                     </View>
-                </Surface>
-            </TouchableOpacity>
+                    <Text style={{ fontSize: 15, color: '#FF6B00', fontWeight: 'bold', marginRight: 10 }}>
+                        {formatCurrency(course.price)}
+                    </Text>
+                </View>
+            </View>
+            {user.role === 'teacher' && (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {/* Dùng TouchableOpacity bọc icon để bấm được */}
+                    <TouchableOpacity onPress={() => deleteLesson(course.id)} style={{ padding: 4 }}>
+                        <Trash size={20} color="#EF4444" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => console.log('Edit')} style={{ padding: 4, marginLeft: 8 }}>
+                        <Edit size={20} color="#1976D2" />
+                    </TouchableOpacity>
+
+                    {/* Demo logic ẩn hiện mắt */}
+                    {course.active ? (
+                        <TouchableOpacity onPress={hideCourse} style={{ padding: 4, marginLeft: 8 }}>
+                            <EyeOff size={20} color="#4B5563" />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity onPress={unhideCourse} style={{ padding: 4, marginLeft: 8 }}>
+                            <Eye size={20} color="#4B5563" />
+                        </TouchableOpacity>
+                    )}
+                </View>
+            )}
+        </TouchableOpacity>
+
+        // <TouchableOpacity
+        //         activeOpacity={0.9}
+        //         onPress={() => // Navigate trực tiếp trong Stack hiện tại
+        //             nav.navigate('CourseDetail', { courseId: item.id })}
+        //     >
+        //         <Surface style={styles.card} elevation={2}>
+        //             {/* Hình ảnh bên trái */}
+        //             <Image source={{ uri: item.image }} style={styles.cardImage} />
+
+        //             {/* Nội dung bên phải */}
+        //             <View style={styles.cardContent}>
+        //                 {/* Badge trạng thái */}
+        //                 <View style={[styles.statusBadge, { backgroundColor: statusColors.bg }]}>
+        //                     <Text style={[styles.statusText, { color: statusColors.text }]}>
+        //                         {item.status || "Đang học"}
+        //                     </Text>
+        //                 </View>
+
+        //                 <Text numberOfLines={2} style={styles.courseTitle}>
+        //                     {item.title}
+        //                 </Text>
+
+        //                 <View style={styles.instructorContainer}>
+        //                     <Image
+        //                         source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} // Icon giảng viên
+        //                         style={styles.instructorIcon}
+        //                     />
+        //                     <Text numberOfLines={1} style={styles.instructorName}>
+        //                         {item.instructor.first_name || item.instructor}
+        //                     </Text>
+        //                 </View>
+
+        //                 <Button
+        //                     mode="contained"
+        //                     style={styles.actionButton}
+        //                     labelStyle={styles.actionButtonLabel}
+        //                     contentStyle={{ height: 36 }}
+        //                     onPress={() => nav.navigate('LessonDetail', { courseId: item.id })}
+        //                 >
+        //                     Tiếp tục học
+        //                 </Button>
+        //             </View>
+        //         </Surface>
+        //     </TouchableOpacity>
     )
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
 import { View, Image, FlatList, TouchableOpacity, ScrollView, StyleSheet, Dimensions, StatusBar } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { Text, Searchbar, ActivityIndicator } from 'react-native-paper';
@@ -21,7 +21,8 @@ const Home = () => {
     const [courses, setCourses] = useState([]);
     const [user] = useContext(MyUserContext);
     const [loading, setLoading] = useState(false);
-    
+    const [refreshing, setRefreshing] = useState(false);
+
     // State gộp chung cho filter
     const [filter, setFilter] = useState({
         q: "",
@@ -85,10 +86,15 @@ const Home = () => {
         </View>
     );
 
+      const onRefresh = useCallback(() => {
+            setRefreshing(true);
+            loadCourses().then(() => setRefreshing(false));
+        }, []);
+
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#F5F7FA" />
-            
+
             {/* --- HEADER SECTION --- */}
             <View style={styles.headerContainer}>
                 <View>
@@ -112,21 +118,21 @@ const Home = () => {
                     iconColor="#94A3B8"
                     placeholderTextColor="#94A3B8"
                 />
-                <TouchableOpacity 
-                    style={styles.filterButton} 
+                <TouchableOpacity
+                    style={styles.filterButton}
                     onPress={() => refRBSheet.current.open()}
                     activeOpacity={0.7}
                 >
                     {/* Nếu có filter active thì đổi màu icon */}
-                    <FilterIcon 
-                        size={22} 
-                        color={filter.min_price || filter.max_price ? "#1976D2" : "#64748B"} 
+                    <FilterIcon
+                        size={22}
+                        color={filter.min_price || filter.max_price ? "#1976D2" : "#64748B"}
                     />
                 </TouchableOpacity>
             </View>
 
             {/* --- MAIN CONTENT --- */}
-            {loading ? (
+            {loading && !refreshing ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator color="#1976D2" size="large" />
                 </View>
@@ -139,14 +145,16 @@ const Home = () => {
                             keyExtractor={item => item.id?.toString()}
                             renderItem={({ item }) => <SmallCourseItem {...item} />}
                             contentContainerStyle={styles.listContent}
+                            refreshControl={
+                                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />
+                            }
                             ListEmptyComponent={
                                 <Text style={styles.emptyText}>Không tìm thấy khóa học nào.</Text>
                             }
                         />
                     ) : (
-                        /* Hiển thị Home Dashboard mặc định */
+                        // Hiển thị Home Dashboard mặc định
                         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-                            
                             {/* Categories */}
                             {renderSectionHeader("Danh mục", () => console.log("All Cats"))}
                             <FlatList
@@ -165,7 +173,7 @@ const Home = () => {
                             />
 
                             {/* Popular Courses */}
-                            {renderSectionHeader("Khóa phổ biến", () => {})}
+                            {renderSectionHeader("Khóa phổ biến", () => { })}
                             <FlatList
                                 data={courses}
                                 keyExtractor={item => item.id?.toString()}
@@ -176,7 +184,7 @@ const Home = () => {
                             />
 
                             {/* New Courses */}
-                            {renderSectionHeader("Khóa học mới", () => {})}
+                            {renderSectionHeader("Khóa học mới", () => { })}
                             <FlatList
                                 data={courses}
                                 keyExtractor={item => item.id?.toString()}
@@ -256,7 +264,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 6,
     },
-    
+
     // Search Styles
     searchContainer: {
         flexDirection: 'row',
@@ -329,7 +337,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 10,
     },
-    
+
     // Helpers
     loadingContainer: {
         flex: 1,

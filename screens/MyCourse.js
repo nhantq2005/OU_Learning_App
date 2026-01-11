@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { View, FlatList, Image, StyleSheet, TouchableOpacity, RefreshControl, Dimensions } from 'react-native';
+import { View, FlatList, Image, StyleSheet, TouchableOpacity, RefreshControl, Dimensions, Alert } from 'react-native';
 import { Text, Button, FAB, ActivityIndicator, Surface } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { authApis, endpoints } from '../utils/Apis';
 import { MyUserContext } from '../utils/MyContexts';
 import SmallCourseItem from '../components/SmallCourseItem';
+import { Edit, Eye, EyeOff, Trash } from 'lucide-react-native';
+import CourseItem from '../components/CourseItem';
 
 // Lấy chiều rộng màn hình để tính toán tỷ lệ
 const { width } = Dimensions.get('window');
@@ -66,58 +68,55 @@ const MyCourse = () => {
         return { bg: '#E3F2FD', text: '#1565C0' }; // Xanh dương nhạt
     };
 
-    const renderCourseItem = ({ item }) => {
-        const statusColors = getStatusColor(item.status);
+    const deleteCourse = async (courseId) => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            Alert.alert(
+                "Xác nhận", // Tiêu đề
+                "Bạn có chắc chắn muốn xóa khóa học này không?", // Nội dung
+                [
+                    { text: "Hủy", style: "cancel" },
+                    {
+                        text: "Đồng ý", onPress: async () => {
+                            try {
+                                await authApis(token).delete(endpoints['course_detail'](courseId));
+                                // Cập nhật lại danh sách sau khi xóa
+                                setCourses((prevCourses) => prevCourses.filter(c => c.id !== courseId));
+                            } catch (err) {
+                                console.error(err);
+                                Alert.alert("Lỗi", "Không thể xóa bài học.");
+                            }
+                        }
+                    }
+                ]
+            );
 
-        return (
-            <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={() => // Navigate trực tiếp trong Stack hiện tại
-                    nav.navigate('CourseDetail', { courseId: item.id })}
-            >
-                <Surface style={styles.card} elevation={2}>
-                    {/* Hình ảnh bên trái */}
-                    <Image source={{ uri: item.image }} style={styles.cardImage} />
+        } catch (error) {
+            console.error("Failed to delete course:", error);
+        }
+    }
 
-                    {/* Nội dung bên phải */}
-                    <View style={styles.cardContent}>
-                        {/* Badge trạng thái */}
-                        <View style={[styles.statusBadge, { backgroundColor: statusColors.bg }]}>
-                            <Text style={[styles.statusText, { color: statusColors.text }]}>
-                                {item.status || "Đang học"}
-                            </Text>
-                        </View>
+    const hideCourse = async (courseId) => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            await authApis(token).post(endpoints['hide_course'](courseId));
+            setCourses(prev => prev.map(c => c.id === courseId ? { ...c, active: false } : c));
+        } catch (error) {
+            console.error("Failed to hide course:", error);
+        }
+    }
 
-                        <Text numberOfLines={2} style={styles.courseTitle}>
-                            {item.title}
-                        </Text>
+    const unhideCourse = async (courseId) => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            await authApis(token).post(endpoints['unhide_course'](courseId));
+            setCourses(prev => prev.map(c => c.id === courseId ? { ...c, active: true } : c));
+        } catch (error) {
+            console.error("Failed to unhide course:", error);
+        }
+    }
 
-                        <View style={styles.instructorContainer}>
-                            <Image
-                                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} // Icon giảng viên
-                                style={styles.instructorIcon}
-                            />
-                            <Text numberOfLines={1} style={styles.instructorName}>
-                                {item.instructor.first_name || item.instructor}
-                            </Text>
-                        </View>
-
-                        <Button
-                            mode="contained"
-                            style={styles.actionButton}
-                            labelStyle={styles.actionButtonLabel}
-                            contentStyle={{ height: 36 }}
-                            onPress={() => nav.navigate('LessonDetail', { courseId: item.id })}
-                        >
-                            Tiếp tục học
-                        </Button>
-                    </View>
-                </Surface>
-            </TouchableOpacity>
-        );
-    };
-
-    return (
+    return (    
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Khóa học của tôi</Text>
@@ -132,7 +131,7 @@ const MyCourse = () => {
                 <FlatList
                     data={courses}
                     keyExtractor={item => item.id.toString()}
-                    renderItem={renderCourseItem}
+                    renderItem={({ item }) => <CourseItem course={item} deleteCourse={deleteCourse} hideCourse={hideCourse} unhideCourse={unhideCourse} />}
                     contentContainerStyle={styles.listContainer}
                     showsVerticalScrollIndicator={false}
                     refreshControl={
@@ -282,3 +281,87 @@ const styles = StyleSheet.create({
         marginTop: 50,
     }
 });
+
+
+
+
+// const renderCourseItem = ({ item }) => {
+    //     const statusColors = getStatusColor(item.status);
+
+    //     return (
+    //         <TouchableOpacity
+    //             activeOpacity={0.9}
+    //             onPress={() => // Navigate trực tiếp trong Stack hiện tại
+    //                 nav.navigate('CourseDetail', { courseId: item.id })}
+    //         >
+    //             <Surface style={styles.card} elevation={2}>
+    //                 {/* Hình ảnh bên trái */}
+    //                 <Image source={{ uri: item.image }} style={styles.cardImage} />
+
+    //                 {/* Nội dung bên phải */}
+    //                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
+    //                     <View style={styles.cardContent}>
+    //                         {/* Badge trạng thái */}
+    //                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
+    //                             <View style={[styles.statusBadge, { backgroundColor: statusColors.bg }]}>
+    //                                 <Text style={[styles.statusText, { color: statusColors.text }]}>
+    //                                     {item.status || "Đang học"}
+    //                                 </Text>
+    //                             </View>
+
+    //                             {user.role === 'teacher' && (
+    //                                 <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+    //                                     {/* Dùng TouchableOpacity bọc icon để bấm được */}
+    //                                     <TouchableOpacity onPress={() => deleteLesson(item.id)} style={{ padding: 4 }}>
+    //                                         <Trash size={20} color="#EF4444" />
+    //                                     </TouchableOpacity>
+
+    //                                     <TouchableOpacity onPress={() => console.log('Edit')} style={{ padding: 4, marginLeft: 8 }}>
+    //                                         <Edit size={20} color="#1976D2" />
+    //                                     </TouchableOpacity>
+
+    //                                     {/* Demo logic ẩn hiện mắt */}
+    //                                     {item.active ? (
+    //                                         <TouchableOpacity onPress={() => console.log('Hide')} style={{ padding: 4, marginLeft: 8 }}>
+    //                                             <EyeOff size={20} color="#4B5563" />
+    //                                         </TouchableOpacity>
+    //                                     ) : (
+    //                                         <TouchableOpacity onPress={() => console.log('Unhide')} style={{ padding: 4, marginLeft: 8 }}>
+    //                                             <Eye size={20} color="#4B5563" />
+    //                                         </TouchableOpacity>
+    //                                     )}
+    //                                 </View>
+    //                             )}
+    //                         </View>
+
+    //                         <Text numberOfLines={2} style={styles.courseTitle}>
+    //                             {item.title}
+    //                         </Text>
+
+    //                         <View style={styles.instructorContainer}>
+    //                             <Image
+    //                                 source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} // Icon giảng viên
+    //                                 style={styles.instructorIcon}
+    //                             />
+    //                             <Text numberOfLines={1} style={styles.instructorName}>
+    //                                 {item.instructor.first_name || item.instructor}
+    //                             </Text>
+    //                         </View>
+
+    //                         <Button
+    //                             mode="contained"
+    //                             style={styles.actionButton}
+    //                             labelStyle={styles.actionButtonLabel}
+    //                             contentStyle={{ height: 36 }}
+    //                             onPress={() => nav.navigate('LessonDetail', { courseId: item.id })}
+    //                         >
+    //                             Tiếp tục học
+    //                         </Button>
+    //                     </View>
+
+
+    //                 </View>
+    //             </Surface>
+    //         </TouchableOpacity>
+    //     );
+    // };

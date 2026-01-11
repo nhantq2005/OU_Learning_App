@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, use } from "react";
-import { View, Text, StyleSheet, StatusBar, ScrollView } from "react-native";
+import { View, Text, StyleSheet, StatusBar, ScrollView, Alert } from "react-native";
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { ActivityIndicator, SegmentedButtons, Divider, FAB } from "react-native-paper";
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -29,8 +29,8 @@ const LessonDetail = () => {
     const loadLessons = async () => {
         try {
             setLoading(true);
-                        const token = await AsyncStorage.getItem("token");
-            
+            const token = await AsyncStorage.getItem("token");
+
             // Gọi API đăng ký
             let res = await authApis(token).get(endpoints['lessons'](courseId));
             // let res = await Apis.get(endpoints['lessons'](courseId));
@@ -51,6 +51,61 @@ const LessonDetail = () => {
             setCurrentLesson(res.data);
         } catch (error) {
             console.error("Failed to load lesson details:", error);
+        }
+    }
+
+
+    const deleteLesson = async (lessonId) => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            Alert.alert(
+                "Xác nhận", // Tiêu đề
+                "Bạn có chắc chắn muốn xóa mục này không?", // Nội dung
+                [
+                    { text: "Hủy", style: "cancel" },
+                    {
+                        text: "Đồng ý", onPress: async () => {
+                            try {
+                                await authApis(token).delete(endpoints['lesson_detail'](lessonId));
+                                // Cập nhật lại danh sách sau khi xóa
+                                setLessons((prevLessons) => prevLessons.filter(c => c.id !== lessonId));
+                                
+                                // Nếu xóa bài đang xem, reset currentLesson hoặc chọn bài khác
+                                if (lessonId === lessonId) {
+                                    setLessonId(null);
+                                    setCurrentLesson(lessons.length > 0 ? lessons[0] : null);
+                                }
+                            } catch (err) {
+                                console.error(err);
+                                Alert.alert("Lỗi", "Không thể xóa bài học.");
+                            }
+                        }
+                    }
+                ]
+            );
+
+        } catch (error) {
+            console.error("Failed to delete lesson:", error);
+        }
+    }
+
+    const hideLesson = async (lessonId) => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            await authApis(token).post(endpoints['hide_lesson'](lessonId));
+            setLessons(prev => prev.map(l => l.id === lessonId ? { ...l, active: false } : l));
+        } catch (error) {
+            console.error("Failed to hide lesson:", error);
+        }
+    }
+
+    const unhideLesson = async (lessonId) => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            await authApis(token).post(endpoints['unhide_lesson'](lessonId));
+            setLessons(prev => prev.map(l => l.id === lessonId ? { ...l, active: true } : l));
+        } catch (error) {
+            console.error("Failed to unhide lesson:", error);
         }
     }
 
@@ -96,15 +151,15 @@ const LessonDetail = () => {
 
     // --- TABS ---
     const buttons = [
-        { 
-            value: 'list', 
+        {
+            value: 'list',
             label: 'Danh sách bài',
-            icon: ({color}) => <ListVideo size={18} color={color}/>
+            icon: ({ color }) => <ListVideo size={18} color={color} />
         },
-        { 
-            value: 'details', 
+        {
+            value: 'details',
             label: 'Mô tả',
-            icon: ({color}) => <FileText size={18} color={color}/>
+            icon: ({ color }) => <FileText size={18} color={color} />
         },
     ];
 
@@ -120,13 +175,13 @@ const LessonDetail = () => {
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#000" />
-            
+
             {/* VIDEO SECTION */}
             <View style={styles.videoContainer}>
-                <VideoView 
-                    style={styles.video} 
-                    player={player} 
-                    allowsFullscreen 
+                <VideoView
+                    style={styles.video}
+                    player={player}
+                    allowsFullscreen
                     allowsPictureInPicture
                     contentFit="contain"
                 />
@@ -156,10 +211,13 @@ const LessonDetail = () => {
                 {/* Dynamic Content */}
                 <View style={styles.tabContent}>
                     {view === 'list' ? (
-                        <LessonsView 
-                            lessons={lessons} 
-                            currentLessonId={lessonId} 
+                        <LessonsView
+                            lessons={lessons}
+                            currentLessonId={lessonId}
                             onPressLesson={(id) => setLessonId(id)}
+                            deleteLesson={deleteLesson}
+                            hideLesson={hideLesson}
+                            unhideLesson={unhideLesson}
                         />
                     ) : (
                         <ScrollView showsVerticalScrollIndicator={false}>

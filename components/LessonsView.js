@@ -5,7 +5,7 @@ import { FlatList, TouchableOpacity, Text, View, Image } from 'react-native';
 import LessonItem from './LessonItem';
 import { Snackbar } from 'react-native-paper';
 
-const LessonsView = ({ lessons, onPressLesson, currentLessonId }) => {
+const LessonsView = ({ lessons, onPressLesson, currentLessonId, deleteLesson, hideLesson, unhideLesson }) => {
     // Kiểm tra an toàn: nếu lessons không phải mảng thì trả về null hoặc mảng rỗng
     const safeLessons = Array.isArray(lessons) ? lessons : [];
     const [visibleSnackbar, setVisibleSnackbar] = React.useState(false);
@@ -17,7 +17,7 @@ const LessonsView = ({ lessons, onPressLesson, currentLessonId }) => {
             data={safeLessons}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-                <LessonItem lesson={item} onPressLesson={onPressLesson} currentLessonId={currentLessonId} />
+                <LessonItem lesson={item} onPressLesson={onPressLesson} currentLessonId={currentLessonId} deleteLesson={deleteLesson} hideLesson={hideLesson} unhideLesson={unhideLesson} />
             //     <TouchableOpacity 
             //         onPress={() => onPressLesson(item.id)} 
             //         style={{ 

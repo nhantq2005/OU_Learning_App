@@ -24,7 +24,7 @@ const TabNavigation = () => {
                 name="HomeMain"
                 component={StackNavigation}
                 options={{
-                    title: 'Khóa học',
+                    title: 'Trang chủ',
                     tabBarIcon: ({ color, size }) => (
                         <HomeIcon color={color} size={size} />
                     ),
@@ -52,6 +52,7 @@ const TabNavigation = () => {
                         tabBarIcon: ({ color, size }) => (
                             <MessageCircleMore color={color} size={size} />
                         ),
+                        tabBarBadge: 2,
                     }}
                 />
             </>
