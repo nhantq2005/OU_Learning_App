@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext, useRef, useCallback } from "react";
-import { View, Image, FlatList, TouchableOpacity, ScrollView, StyleSheet, Dimensions, StatusBar } from 'react-native';
+import React, { useState, useEffect, useContext, useRef, useCallback, use } from "react";
+import { View, Image, FlatList, TouchableOpacity, ScrollView, StyleSheet, Dimensions, StatusBar, RefreshControl } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { Text, Searchbar, ActivityIndicator } from 'react-native-paper';
 import { FilterIcon, SlidersHorizontal } from 'lucide-react-native'; // Dùng icon đẹp hơn nếu có
@@ -22,6 +22,14 @@ const Home = () => {
     const [user] = useContext(MyUserContext);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [offset, setOffset] = useState(0);
+    const [hasNext, setHasNext] = useState(true);
+
+
+    const handleFilterChange = (key, value) => {
+        setFilter(prev => ({ ...prev, [key]: value }));
+        setOffset(0); // <--- QUAN TRỌNG NHẤT: Reset về trang 1
+    }
 
     // State gộp chung cho filter
     const [filter, setFilter] = useState({
@@ -47,8 +55,16 @@ const Home = () => {
     const loadCourses = async () => {
         try {
             setLoading(true);
-            let res = await Apis.get(endpoints['courses'], { params: filter });
-            setCourses(res.data.results);
+            let url = `${endpoints['courses']}?limit=5&offset=${offset}`;
+            let res = await Apis.get(url, { params: filter });
+            console.log("Courses loaded:", url);
+            setHasNext(res.data.next !== null);
+
+            if (offset === 0) {
+                setCourses(res.data.results);
+            } else {
+                setCourses([...courses, ...res.data.results]);
+            }
         } catch (ex) {
             console.error("Failed to load courses:", ex);
         } finally {
@@ -56,13 +72,30 @@ const Home = () => {
         }
     }
 
+
+
+
     // Debounce search
     useEffect(() => {
-        const timer = setTimeout(() => loadCourses(), 500);
-        return () => clearTimeout(timer);
-    }, [filter]);
+        const timer = setTimeout(() => {
+            // Khi search/filter, ta LUÔN muốn load trang 0.
+            // Truyền số 0 trực tiếp vào đây để tránh Stale Closure
+            setOffset(0);
+            loadCourses();
+        }, 500);
 
-    // Initial Load
+        return () => clearTimeout(timer);
+    }, [filter]); // Chỉ phụ thuộc filter
+
+    // 2. Load more (Chỉ chạy khi offset > 0)
+    useEffect(() => {
+        if (offset > 0) {
+            // Truyền offset hiện tại vào
+            loadCourses(offset);
+        }
+    }, [offset]);
+
+    // // Initial Load
     useEffect(() => {
         loadCategories();
         // console.info("USER INFO:", user);
@@ -73,7 +106,7 @@ const Home = () => {
         if (categories.length > 0 && !selectedCategory) {
             setSelectedCategory(categories[0]);
         }
-    }, [categories]);
+    }, [categories, filter]);
 
 
     // --- RENDER HELPERS ---
@@ -86,10 +119,16 @@ const Home = () => {
         </View>
     );
 
-      const onRefresh = useCallback(() => {
-            setRefreshing(true);
-            loadCourses().then(() => setRefreshing(false));
-        }, []);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        loadCourses().then(() => setRefreshing(false));
+    }, []);
+
+    const loadMore = () => {
+        if (hasNext && !loading ) {
+            setOffset(offset + 5);
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -111,7 +150,8 @@ const Home = () => {
             <View style={styles.searchContainer}>
                 <Searchbar
                     placeholder="Tìm kiếm khóa học..."
-                    onChangeText={(t) => setFilter({ ...filter, q: t })}
+                    // onChangeText={(t) => setFilter({ ...filter, q: t })}
+                    onChangeText={(t) => handleFilterChange('q', t)}
                     value={filter.q}
                     style={styles.searchBar}
                     inputStyle={styles.searchInput}
@@ -154,7 +194,7 @@ const Home = () => {
                         />
                     ) : (
                         // Hiển thị Home Dashboard mặc định
-                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+                        <ScrollView showsVerticalScrollIndicator={false} >
                             {/* Categories */}
                             {renderSectionHeader("Danh mục", () => console.log("All Cats"))}
                             <FlatList
@@ -176,7 +216,9 @@ const Home = () => {
                             {renderSectionHeader("Khóa phổ biến", () => { })}
                             <FlatList
                                 data={courses}
-                                keyExtractor={item => item.id?.toString()}
+                                keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+                                onEndReached={loadMore}
+                                onEndReachedThreshold={0.1}
                                 renderItem={({ item }) => <LargeCourseItem course={item} />}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
@@ -187,7 +229,7 @@ const Home = () => {
                             {renderSectionHeader("Khóa học mới", () => { })}
                             <FlatList
                                 data={courses}
-                                keyExtractor={item => item.id?.toString()}
+                                keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
                                 renderItem={({ item }) => <LargeCourseItem course={item} />}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}

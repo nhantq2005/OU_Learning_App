@@ -8,6 +8,7 @@ import MyCourses from '../screens/MyCourse';
 import Home from '../screens/Home';
 import StackNavigation from './StackNavigation';
 import MyCourseNavigation from './MyCourseNavigation';
+import MessageNavigation from './MessageNavigation';
 
 
 const TabNavigation = () => {
@@ -32,7 +33,7 @@ const TabNavigation = () => {
             />
 
 
-            <>
+            
                 <Tab.Screen
                     name="MyCourses"
                     component={MyCourseNavigation}
@@ -46,7 +47,7 @@ const TabNavigation = () => {
 
                 <Tab.Screen
                     name="Messages"
-                    component={Message}
+                    component={MessageNavigation}
                     options={{
                         title: 'Tin nhắn',
                         tabBarIcon: ({ color, size }) => (
@@ -55,7 +56,7 @@ const TabNavigation = () => {
                         tabBarBadge: 2,
                     }}
                 />
-            </>
+  
 
             <Tab.Screen
                 name="Profile"

@@ -231,3 +231,4 @@ const styles = StyleSheet.create({
         marginLeft: 92, // Thụt vào thẳng hàng với text (Avatar width 56 + Margin 16 + Padding 20)
     },
 });
+

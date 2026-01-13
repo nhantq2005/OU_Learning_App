@@ -19,47 +19,6 @@ import CourseDetail from './screens/CourseDetail';
 import StackNavigation from './navigation/StackNavigation';
 import LessonDetail from './screens/LessonDetail';
 import Message from './screens/Message';
-// import TabNavigator from './components/TabNavigator';
-
-
-// const Stack = createNativeStackNavigator();
-
-// const StackNavigatior = () => {
-//     return (
-//         <MyUserProvider>
-//             <RegisterProvider>
-//                 <NavigationContainer>
-//                     <Stack.Navigator screenOptions={{ headerShown: false }}>
-//                         {/* <Stack.Screen name="ChooseRole" component={ChooseRole} />
-//                         <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
-//                         <Stack.Screen name="RegisterInfo" component={RegisterInfo} /> */}
-//                         <Stack.Screen name="Login" component={Login} />
-//                         <Stack.Screen name="Home" component={Home} />
-//                     </Stack.Navigator>
-//                 </NavigationContainer>
-//             </RegisterProvider>
-//         </MyUserProvider>
-//     )
-// }
-
-// export const RegisterNavigatior = () => {
-//     return (
-//         <MyUserProvider>
-//             <RegisterProvider>
-//                 <Stack.Navigator screenOptions={{ headerShown: false }}>
-//                     {/* <Stack.Screen name="ChooseRole" component={ChooseRole} />
-//                         <Stack.Screen name="RegisterAccount" component={RegisterAccount} />
-//                         <Stack.Screen name="RegisterInfo" component={RegisterInfo} /> */}
-//                     <Stack.Screen name="Login" component={Login} />
-//                     <Stack.Screen name="Home" component={Home} />
-//                 </Stack.Navigator>
-//             </RegisterProvider>
-//         </MyUserProvider>
-
-//     )
-// }
-
-
 
 
 

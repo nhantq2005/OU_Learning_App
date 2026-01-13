@@ -37,7 +37,7 @@ const slides = [
         subtitle: "",
     },
 ];
-const Onboarding = ({navigation}) => {
+const Onboarding = () => {
     const scrollX = useRef(new Animated.Value(0)).current;
     const flatListRef = useRef(null);
     const nav = useNavigation();

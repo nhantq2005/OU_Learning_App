@@ -10,16 +10,6 @@ import { Trash, Edit, Eye, EyeOff } from 'lucide-react-native';
 const SmallCourseItem = (course) => {
     const nav = useNavigation();
     const [user,] = useContext(MyUserContext);
-
-    const deleteLesson = (courseId) => {
-        console.log("Delete course with ID:", courseId);
-    }
-    const hideCourse = () => {
-        console.log("Hide course with ID:", course.id);
-    }
-    const unhideCourse = () => {
-        console.log("Unhide course with ID:", course.id);
-    }
     return (
         <TouchableOpacity
         onPress={() => nav.navigate('CourseDetail', { courseId: course.id })}
@@ -51,7 +41,7 @@ const SmallCourseItem = (course) => {
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2, justifyContent: 'space-between' }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f6fa', borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }}>
-                        <Text style={{ fontSize: 13, color: '#1976D2', fontWeight: '600', marginRight: 2 }}>{course.avg_rating}</Text>
+                        <Text style={{ fontSize: 13, color: '#1976D2', fontWeight: '600', marginRight: 2 }}>{course.avg_rating.toFixed(1)}</Text>
                         <Text style={{ fontSize: 13, color: '#FFD700' }}>★</Text>
                         <Text style={{ fontSize: 12, color: '#888', marginLeft: 2 }}>(120)</Text>
 
@@ -62,29 +52,7 @@ const SmallCourseItem = (course) => {
                     </Text>
                 </View>
             </View>
-            {user.role === 'teacher' && (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {/* Dùng TouchableOpacity bọc icon để bấm được */}
-                    <TouchableOpacity onPress={() => deleteLesson(course.id)} style={{ padding: 4 }}>
-                        <Trash size={20} color="#EF4444" />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => console.log('Edit')} style={{ padding: 4, marginLeft: 8 }}>
-                        <Edit size={20} color="#1976D2" />
-                    </TouchableOpacity>
-
-                    {/* Demo logic ẩn hiện mắt */}
-                    {course.active ? (
-                        <TouchableOpacity onPress={hideCourse} style={{ padding: 4, marginLeft: 8 }}>
-                            <EyeOff size={20} color="#4B5563" />
-                        </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity onPress={unhideCourse} style={{ padding: 4, marginLeft: 8 }}>
-                            <Eye size={20} color="#4B5563" />
-                        </TouchableOpacity>
-                    )}
-                </View>
-            )}
+            
         </TouchableOpacity>
 
         // <TouchableOpacity

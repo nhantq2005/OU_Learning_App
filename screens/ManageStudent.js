@@ -1,0 +1,3 @@
+const ManageStudent = () => {
+  return null;
+}

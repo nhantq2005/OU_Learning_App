@@ -6,10 +6,12 @@ import { Text } from "react-native-paper";
 import { MyUserContext } from "../utils/MyContexts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authApis, endpoints } from "../utils/Apis";
+import { useNavigation } from "@react-navigation/native";
 
 const LessonItem = ({ lesson, onPressLesson, currentLessonId, deleteLesson, hideLesson, unhideLesson }) => {
 
     const [user,] = useContext(MyUserContext);
+    const nav = useNavigation();
 
     // const deleteLesson = async () => {
     //     try {
@@ -145,7 +147,7 @@ const LessonItem = ({ lesson, onPressLesson, currentLessonId, deleteLesson, hide
                         <Trash size={20} color="#EF4444" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => console.log('Edit')} style={{ padding: 4, marginLeft: 8 }}>
+                    <TouchableOpacity onPress={() => nav.navigate('EditLesson', { lessonId: lesson.id })} style={{ padding: 4, marginLeft: 8 }}>
                         <Edit size={20} color="#1976D2" />
                     </TouchableOpacity>
 

@@ -28,10 +28,10 @@ const Account = () => {
             "type": "logout",
             "payload": null
         });
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }],
-        });
+        // navigation.reset({
+        //     index: 0,
+        //     routes: [{ name: 'Login' }],
+        // });
     }
 
     // --- HELPER COMPONENT: MENU ITEM ---

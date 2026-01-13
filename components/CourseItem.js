@@ -48,7 +48,7 @@ const CourseItem = ({ course, deleteCourse, hideCourse, unhideCourse }) => {
                                         <Trash size={20} color="#EF4444" />
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity onPress={() => nav.navigate('EditCourse', { course: course })} style={{ padding: 4, marginLeft: 8 }}>
+                                    <TouchableOpacity onPress={() => nav.navigate('CreateCourse', { courseId: course.id })} style={{ padding: 4, marginLeft: 8 }}>
                                         <Edit size={20} color="#1976D2" />
                                     </TouchableOpacity>
 

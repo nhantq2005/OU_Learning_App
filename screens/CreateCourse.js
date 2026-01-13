@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text, Button, Switch, Card, Divider, Modal, Portal } from 'react-native-paper';
 import TextField from '../components/TextField';
@@ -20,7 +20,8 @@ import { CheckCircle } from 'lucide-react-native';
 
 const CreateCourse = () => {
     const navigation = useNavigation();
-
+    const route = useRoute();
+    const courseId = route.params?.courseId || null;
     const [course, setCourse] = useState({});
     const [video, setVideo] = useState(null);
     const [categories, setCategories] = useState([]);
@@ -34,7 +35,42 @@ const CreateCourse = () => {
     const [user,] = useContext(MyUserContext);
 
 
-  
+    const loadCourseDetails = async (id) => {
+        try {
+            setLoading(true);
+            const token = await AsyncStorage.getItem("token");
+            let res = await authApis(token).get(endpoints['course_detail'](id));
+            console.info("Course details:", res.data);
+            setCourse(res.data);
+           if (res.data.tags && Array.isArray(res.data.tags)) {
+            const tagIds = res.data.tags.map(tag => tag.id);
+            setSelectedTags(tagIds); 
+        } else {
+            // Trường hợp API trả về sẵn array ID (hiếm gặp ở detail)
+            setSelectedTags(res.data.tags_id || []);
+        }
+
+        // --- SỬA LỖI CATEGORY ---
+        // Tương tự, nếu category là object {id: 5, name: 'IT'} -> Lấy id
+        const catValue = res.data.category?.id || res.data.category_id || res.data.category;
+        setValue(catValue);
+            setLoading(false);
+        } catch (ex) {
+            console.error("Failed to load course details:", ex);
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        if (courseId) {
+            loadCourseDetails(courseId);
+            console.log("Editing course ID:", courseId);
+        }
+    }, [courseId]);
+
+
 
     const loadCategories = async () => {
         try {
@@ -123,50 +159,6 @@ const CreateCourse = () => {
         return true;
     }
 
-    // const createCourse = async () => {
-    //         if (validate()) {
-    //             try {
-    //                 // setCourse({ ...course, "instructor_id ": 7 });
-    //                 setLoading(true);
-    //                 let form = new FormData();
-    //                 form.append('instructor_id', 7);
-    //                 for (let key in course)
-    //                     if (key === 'image') {
-    //                         form.append(key, {
-    //                         uri: course.image.uri,
-    //                         name: course.image.fileName,
-    //                         type: course.image.type
-    //                     });
-    //                     }else if (key === 'intro_video') {
-    //                         form.append(key, {
-    //                             uri: course.intro_video.uri,
-    //                             name: course.intro_video.fileName,
-    //                             type: course.intro_video.type
-    //                         });
-    //                     }
-
-    //                     else
-    //                         form.append(key, course[key]);
-
-    //                 console.info(course);
-
-    //                 let res = await Apis.post(endpoints['courses'], form, {
-    //                     headers: {
-    //                         'Content-Type': 'multipart/form-data'
-    //                     }
-    //                 });
-
-    //                 if (res.status === 201) {
-    //                     // nav.navigate("Login");
-    //                     console.log("Course created successfully:", res.data);
-    //                 }
-    //             } catch (ex) {
-    //                 console.error(ex);
-    //             } finally {
-    //                 setLoading(false);
-    //             }
-    //         }
-    //     }
 
     const createCourse = async () => {
         if (validate()) {
@@ -210,7 +202,7 @@ const CreateCourse = () => {
                 });
 
                 if (res.status === 201) {
-               Alert.alert("Thành công", `Khóa học "${course.title}" đã được tạo và đang chờ duyệt.`);
+                    Alert.alert("Thành công", `Khóa học "${course.title}" đã được tạo và đang chờ duyệt.`);
                     console.log("Course created:", res.data);
                     // navigation.goBack(); 
                 }
@@ -228,6 +220,123 @@ const CreateCourse = () => {
             }
         }
     }
+
+    const updateCourse = async () => {
+        if (validate()) {
+            try {
+                // setLoading(true);
+                const formData = new FormData();
+                // formData.append('instructor_id', user.id);
+                // formData.append('duration', duration || course.duration || 0);
+                // for (let key in course) {
+                //     if (key === 'tags_id') {
+                //         if (selectedTags && selectedTags.length > 0) {
+                //             selectedTags.forEach(tagId => {
+                //                 formData.append('tags_id', tagId);
+                //             });
+                //         }
+                //     } else if (key === 'image') {
+                //         if (course.image.uri && !course.image.uri.startsWith('http')) {
+                //             formData.append('image', {
+                //                 uri: course.image.uri,
+                //                 name: course.image.fileName || 'image.jpg',
+                //                 type: course.image.mimeType || 'image/jpeg'
+                //             });
+                //         }
+                //     } else if (key === 'intro_video') {
+                //         if (course.intro_video.uri && !course.intro_video.uri.startsWith('http')) {
+                //             formData.append('intro_video', {
+                //                 uri: course.intro_video.uri,
+                //                 name: course.intro_video.fileName || 'video.mp4',
+                //                 type: course.intro_video.mimeType || 'video/mp4'
+                //             });
+                //         }
+                //     } else {
+                //         formData.append(key, course[key]);
+                //     }
+                // }
+
+                // 1. Chỉ append những trường cần thiết (Tránh gửi rác)
+        formData.append('title', course.title);
+        formData.append('description', course.description);
+        formData.append('price', course.price);
+        formData.append('category_id', value); // Lấy từ state value
+        formData.append('duration', duration || course.duration || 0);
+        
+        // Backend thường không cho sửa instructor qua API này, nhưng nếu cần thì gửi ID
+        // formData.append('instructor_id', user.id); 
+
+        // 2. Xử lý Tags
+        if (selectedTags && selectedTags.length > 0) {
+            selectedTags.forEach(tagId => {
+                formData.append('tags_id', tagId);
+            });
+        }
+
+        // 3. Xử lý Ảnh (Quan trọng: Chỉ gửi nếu là file mới)
+        if (course.image && typeof course.image === 'object' && course.image.uri) {
+            // Hack nhỏ cho Android: Đôi khi uri từ thư viện thiếu extension
+            let localUri = course.image.uri;
+            let filename = localUri.split('/').pop();
+            
+            // Tự đoán type nếu thư viện không trả về (tránh lỗi Network Error)
+            let match = /\.(\w+)$/.exec(filename);
+            let type = match ? `image/${match[1]}` : `image/jpeg`;
+
+            formData.append('image', {
+                uri: localUri, 
+                name: filename,
+                type: course.image.mimeType || type 
+            });
+        }
+
+        // 4. Xử lý Video
+        if (course.intro_video && typeof course.intro_video === 'object' && course.intro_video.uri) {
+            let localUri = course.intro_video.uri;
+            let filename = localUri.split('/').pop();
+            let match = /\.(\w+)$/.exec(filename);
+            let type = match ? `video/${match[1]}` : `video/mp4`;
+
+            formData.append('intro_video', {
+                uri: localUri,
+                name: filename,
+                type: course.intro_video.mimeType || type
+            });
+        }
+
+        console.info("Updating Course ID:", courseId);
+
+
+                console.info("Sending FormData...");
+
+                const token = await AsyncStorage.getItem("token");
+                let res = await authApis(token).patch(endpoints['course_detail'](course.id), formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                });
+
+                if (res.status === 200) {
+                    Alert.alert("Thành công", `Khóa học "${course.title}" đã được tạo và đang chờ duyệt.`);
+                    console.log("Course created:", res.data);
+                    // navigation.goBack(); 
+                }
+            } catch (ex) {
+                if (ex.response) {
+                    console.error("Lỗi chi tiết từ Server:", ex.response.data);
+                    Alert.alert("Lỗi", JSON.stringify(ex.response.data)); // Hiện lên màn hình để dễ đọc
+                } else {
+                    console.error("Lỗi khác:", ex);
+                }
+                console.error(ex);
+                Alert.alert("Lỗi", "Không thể tạo khóa học. Vui lòng thử lại.");
+            } finally {
+                setLoading(false);
+            }
+        }
+    }
+
+
 
     const handleSuccessClose = () => {
         setShowSuccessModal(false);
@@ -455,15 +564,15 @@ const CreateCourse = () => {
                     mode="contained"
                     style={{ borderRadius: 12, marginTop: Spacing.md, backgroundColor: Colors.light.primary, elevation: 2, width: '100%', marginBottom: 50 }}
                     labelStyle={{ color: Colors.light.onPrimary, fontWeight: 'bold', fontSize: 18, letterSpacing: 0.5 }}
-                    onPress={createCourse}
+                    onPress={courseId ? updateCourse : createCourse}
                     contentStyle={{ paddingVertical: 8 }}
                 >
                     Lưu thay đổi
                 </Button>
             </View>
         </ScrollView >
-        
-        </>
+
+    </>
     );
 };
 
@@ -573,3 +682,49 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
+
+
+// const createCourse = async () => {
+//         if (validate()) {
+//             try {
+//                 // setCourse({ ...course, "instructor_id ": 7 });
+//                 setLoading(true);
+//                 let form = new FormData();
+//                 form.append('instructor_id', 7);
+//                 for (let key in course)
+//                     if (key === 'image') {
+//                         form.append(key, {
+//                         uri: course.image.uri,
+//                         name: course.image.fileName,
+//                         type: course.image.type
+//                     });
+//                     }else if (key === 'intro_video') {
+//                         form.append(key, {
+//                             uri: course.intro_video.uri,
+//                             name: course.intro_video.fileName,
+//                             type: course.intro_video.type
+//                         });
+//                     }
+
+//                     else
+//                         form.append(key, course[key]);
+
+//                 console.info(course);
+
+//                 let res = await Apis.post(endpoints['courses'], form, {
+//                     headers: {
+//                         'Content-Type': 'multipart/form-data'
+//                     }
+//                 });
+
+//                 if (res.status === 201) {
+//                     // nav.navigate("Login");
+//                     console.log("Course created successfully:", res.data);
+//                 }
+//             } catch (ex) {
+//                 console.error(ex);
+//             } finally {
+//                 setLoading(false);
+//             }
+//         }
+//     }

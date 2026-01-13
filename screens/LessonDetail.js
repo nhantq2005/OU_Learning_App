@@ -7,7 +7,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { ListVideo, FileText } from "lucide-react-native";
 
 import Apis, { authApis, endpoints } from "../utils/Apis";
-import LessonsView from "../components/LessonsView"; // Đảm bảo component này đã được style đẹp
+import LessonsView from "../components/LessonsView";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MyUserContext } from "../utils/MyContexts";
 import MyStyles from "../styles/MyStyles";
@@ -24,6 +24,7 @@ const LessonDetail = () => {
     const [loading, setLoading] = useState(false);
     const [view, setView] = useState('list');
     const [user,] = useContext(MyUserContext);
+    const [isCompleted, setIsCompleted] = useState(false);
 
     // --- API HANDLERS ---
     const loadLessons = async () => {
@@ -51,6 +52,15 @@ const LessonDetail = () => {
             setCurrentLesson(res.data);
         } catch (error) {
             console.error("Failed to load lesson details:", error);
+        }
+    }
+
+    const completeLesson = async (id) => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            await authApis(token).post(endpoints['complete_lesson'](id));
+        } catch (error) {
+            console.error("Failed to mark lesson as complete:", error);
         }
     }
 
@@ -124,6 +134,7 @@ const LessonDetail = () => {
     // Load chi tiết khi đổi bài
     useEffect(() => {
         if (lessonId) {
+            setIsCompleted(false);
             loadLessonDetails(lessonId);
         }
     }, [lessonId]);
@@ -148,6 +159,28 @@ const LessonDetail = () => {
             ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
         };
     }, [player]);
+
+
+    useEffect(() => {
+        const subscription = player.addListener('timeUpdate', () => {
+            const current = player.currentTime;
+            const duration = player.duration;
+
+            // Kiểm tra: Duration > 0, chưa hoàn thành, và tỷ lệ >= 70%
+            if (duration > 0 && !isCompleted && (current / duration) >= 0.7) {
+                console.log("XONG"); 
+                setIsCompleted(true); // Chặn không cho log tiếp
+                completeLesson(lessonId);
+
+                // Gọi API cập nhật tiến độ (nếu cần)
+                // handleLessonComplete(); 
+            }
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, [player, isCompleted]);
 
     // --- TABS ---
     const buttons = [

@@ -12,13 +12,14 @@ import { formatCurrency } from "../utils/Utils";
 import { Star, User, Clock } from "lucide-react-native"; // Cài: npm install lucide-react-native
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MyUserContext } from "../utils/MyContexts";
+import StudentView from "../components/StudentView";
 
 const { width } = Dimensions.get('window');
 
 const CourseDetail = () => {
     const route = useRoute();
     const { courseId } = route.params || {};
-    const [user,]=useContext(MyUserContext);
+    const [user,] = useContext(MyUserContext);
     const [currentCourse, setCurrentCourse] = useState(null);
     const [loading, setLoading] = useState(true);
     const [view, setView] = useState('details');
@@ -39,8 +40,21 @@ const CourseDetail = () => {
         }
     }
 
+    const loadStudents = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            let res = await authApis(token).get(endpoints['course_students'](courseId));
+            console.log("Course Students:", res.data);
+        } catch (error) {
+            console.error("Failed to load course students:", error);
+        }
+    }
+
     useEffect(() => {
-        if (courseId) loadCourseDetails();
+        if (courseId) {
+            loadCourseDetails();
+            loadStudents();
+        }
         console.log("Course ID:", currentCourse);
     }, [courseId]);
 
@@ -82,65 +96,65 @@ const CourseDetail = () => {
             <StatusBar barStyle="light-content" backgroundColor="#000" />
 
             {/* ScrollView bao trùm toàn bộ để cuộn nội dung */}
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-                {/* Video Section */}
-                <View style={styles.videoContainer}>
-                    <VideoView
-                        style={styles.video}
-                        player={player}
-                        allowsFullscreen
-                        allowsPictureInPicture
-                    />
+            {/* <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}> */}
+            {/* Video Section */}
+            <View style={styles.videoContainer}>
+                <VideoView
+                    style={styles.video}
+                    player={player}
+                    allowsFullscreen
+                    allowsPictureInPicture
+                />
+            </View>
+
+            {/* Content Section */}
+            <Surface style={styles.contentSurface} elevation={0}>
+                <View style={styles.headerInfo}>
+                    <Text style={styles.title}>{currentCourse.title}</Text>
+
+                    {/* Instructor & Rating */}
+                    <View style={styles.metaRow}>
+                        <View style={styles.instructorInfo}>
+                            <User size={16} color="#666" />
+                            <Text style={styles.instructorName}>
+                                {currentCourse.instructor.last_name} {currentCourse.instructor.first_name}
+                            </Text>
+                        </View>
+                        <View style={styles.ratingBadge}>
+                            <Text style={styles.ratingText}>{(currentCourse.avg_rating || 0).toFixed(1)}</Text>
+                            <Star size={14} color="#FFD700" fill="#FFD700" />
+                        </View>
+                    </View>
+
+                    {/* Price */}
+                    <Text style={styles.price}>{formatCurrency(currentCourse.price)}</Text>
                 </View>
 
-                {/* Content Section */}
-                <Surface style={styles.contentSurface} elevation={0}>
-                    <View style={styles.headerInfo}>
-                        <Text style={styles.title}>{currentCourse.title}</Text>
+                <Divider style={{ marginVertical: 16 }} />
 
-                        {/* Instructor & Rating */}
-                        <View style={styles.metaRow}>
-                            <View style={styles.instructorInfo}>
-                                <User size={16} color="#666" />
-                                <Text style={styles.instructorName}>
-                                    {currentCourse.instructor.last_name} {currentCourse.instructor.first_name}
-                                </Text>
-                            </View>
-                            <View style={styles.ratingBadge}>
-                                <Text style={styles.ratingText}>{currentCourse.avg_rating || 5.0}</Text>
-                                <Star size={14} color="#FFD700" fill="#FFD700" />
-                            </View>
-                        </View>
+                {/* Tab Switcher */}
+                <SegmentedButtons
+                    value={view}
+                    onValueChange={setView}
+                    buttons={buttons}
+                    density="medium"
+                    style={styles.tabs}
+                    theme={{ colors: { secondaryContainer: '#E3F2FD', onSecondaryContainer: '#1976D2' } }}
+                />
 
-                        {/* Price */}
-                        <Text style={styles.price}>{formatCurrency(currentCourse.price)}</Text>
-                    </View>
+                {/* Dynamic View */}
+                <View style={styles.viewContainer}>
+                    {view === 'students' && user.role === 'teacher' ? (
+                        <StudentView courseId={courseId} />
+                    ) : view === 'details' ? (
+                        <DetailView currentCourse={currentCourse} />
+                    ) : (
+                        <ReviewView courseId={courseId} />
+                    )}
 
-                    <Divider style={{ marginVertical: 16 }} />
-
-                    {/* Tab Switcher */}
-                    <SegmentedButtons
-                        value={view}
-                        onValueChange={setView}
-                        buttons={buttons}
-                        density="medium"
-                        style={styles.tabs}
-                        theme={{ colors: { secondaryContainer: '#E3F2FD', onSecondaryContainer: '#1976D2' } }}
-                    />
-
-                    {/* Dynamic View */}
-                    <View style={styles.viewContainer}>
-                        {view === 'details' ? (
-                            <DetailView currentCourse={currentCourse} />
-                        ) : (
-                            <ReviewView courseId={courseId} />
-                        )}
-                        {view === 'students' && user.role === 'teacher' &&  (
-                            <Text>Danh sách sinh viên đã đăng ký sẽ hiển thị ở đây.</Text>
-                        )}
-                    </View>
-                </Surface>
-            </ScrollView>
+                </View>
+            </Surface>
+            {/* </ScrollView> */}
         </View>
     );
 }
@@ -167,6 +181,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     contentSurface: {
+        flex: 1,
         backgroundColor: '#fff',
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
@@ -222,7 +237,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     viewContainer: {
-        minHeight: 200,
-        paddingBottom: 20,
+        flex: 1,
+        // minHeight: 200,
+        // paddingBottom: 20,
     }
 });

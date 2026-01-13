@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { Button, Text, Chip } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { Tag } from "lucide-react-native"; // npm install lucide-react-native
@@ -10,7 +10,7 @@ const DetailView = ({ currentCourse }) => {
     const [user,]= useContext(MyUserContext);
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             {/* Tags Section */}
             {currentCourse.tags && currentCourse.tags.length > 0 && (
                 <View style={styles.section}>
@@ -55,9 +55,8 @@ const DetailView = ({ currentCourse }) => {
                 >
                     {currentCourse.is_enrolled || user.role === 'teacher' ? 'Vào học ngay' : 'Đăng ký học ngay'}
                 </Button>
-                <Text style={styles.note}>Truy cập trọn đời • Cấp chứng chỉ</Text>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
@@ -66,6 +65,7 @@ export default DetailView;
 const styles = StyleSheet.create({
     container: {
         paddingVertical: 4,
+        paddingBottom: 20,
     },
     section: {
         marginBottom: 24,

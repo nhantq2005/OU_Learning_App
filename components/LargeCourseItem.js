@@ -66,7 +66,7 @@ const LargeCourseItem = ({ course }) => {
                 <View style={styles.metaContainer}>
                     <View style={styles.metaItem}>
                         <Star size={14} color="#FFD700" fill="#FFD700" style={{ marginRight: 4 }} />
-                        <Text style={styles.metaText}>{course.avg_rating}</Text>
+                        <Text style={styles.metaText}>{course.avg_rating.toFixed(1)}</Text>
                     </View>
                     
                     <View style={styles.separator} />

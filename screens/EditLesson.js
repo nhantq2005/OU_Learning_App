@@ -1,9 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { 
-    ScrollView, View, TouchableOpacity, Image, 
-    StyleSheet, Dimensions, Platform 
+import {
+    ScrollView, View, TouchableOpacity, Image,
+    StyleSheet, Dimensions, Platform
 } from 'react-native';
 import { Text, Button, Switch, Card, Divider } from 'react-native-paper';
 import TextField from '../components/TextField';
@@ -17,7 +17,7 @@ import { Dropdown, MultiSelect } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Apis, { authApis, endpoints } from '../utils/Apis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-    const { width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const EditLesson = () => {
     const navigation = useNavigation();
@@ -25,8 +25,9 @@ const EditLesson = () => {
     const [lesson, setLesson] = useState({});
     const [video, setVideo] = useState(null);
     const [loading, setLoading] = useState(false);
-const route = useRoute();
+    const route = useRoute();
     const courseId = route.params?.courseId;
+    const lessonId = route.params?.lessonId;
 
 
     const info = [
@@ -127,7 +128,7 @@ const route = useRoute();
                 if (res.status === 201) {
                     Alert.alert("Thành công", "Tạo bài học thành công!");
                     console.log("Lesson created:", res.data);
-                    navigation.goBack(); 
+                    navigation.goBack();
                 }
             } catch (ex) {
                 if (ex.response) {
@@ -144,22 +145,96 @@ const route = useRoute();
         }
     }
 
+    const updateLesson = async () => {
+        if (validate()) {
+            try {
+                setLoading(true);
+                const formData = new FormData();
+                for (let key in lesson) {
+                    if (key === 'thumbnail' && lesson.thumbnail?.uri?.startsWith('file://')) {
+                        formData.append('thumbnail', {
+                            uri: lesson.thumbnail.uri,
+                            name: lesson.thumbnail.fileName || 'image.jpg',
+                            type: lesson.thumbnail.mimeType || 'image/jpeg'
+                        });
+                    } else if (key === 'video' && lesson.video?.uri?.startsWith('file://')) {
+                        formData.append('video', {
+                            uri: lesson.video.uri,
+                            name: lesson.video.fileName || 'video.mp4',
+                            type: lesson.video.mimeType || 'video/mp4'
+                        });
+                        formData.append('duration', lesson.video.duration);
+                    } else {
+                        formData.append(key, lesson[key]);
+                    }
+                }
+
+                console.info("Sending FormData...");
+                const token = await AsyncStorage.getItem("token");
+                let res = await authApis(token).patch(
+                    endpoints['lesson_detail'](lessonId),
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                );
+                if (res.status === 200) {
+                    Alert.alert("Thành công", "Cập nhật bài học thành công!");
+                    console.log("Lesson updated:", res.data);
+                    navigation.goBack();
+                }
+            } catch (ex) {
+                if (ex.response) {
+                    console.error("Lỗi chi tiết từ Server:", ex.response.data);
+                    Alert.alert("Lỗi", JSON.stringify(ex.response.data));
+                } else {
+                    console.error("Lỗi khác:", ex.message);
+                }
+                console.error(ex);
+                Alert.alert("Lỗi", "Không thể cập nhật bài học. Vui lòng thử lại.");
+            } finally {
+                setLoading(false);
+            }
+        }
+    }
+
+
+    const loadLessonDetails = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            let res = await authApis(token).get(endpoints['lesson_detail'](lessonId));
+            if (res.status === 200) {
+                setLesson(res.data);
+            }
+        } catch (ex) {
+            console.error("Failed to load lesson details:", ex);
+        }
+    };
+
+    useEffect(() => {
+        if (lessonId) {
+            loadLessonDetails();
+        }
+    }, [lessonId]);
+
 
     useEffect(() => {
         console.log("Current lesson data:", courseId);
-    },[]);
+    }, []);
 
 
-   return (
-        <ScrollView 
-            style={styles.container} 
+    return (
+        <ScrollView
+            style={styles.container}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 40 }}
         >
             {/* Header Section */}
             <View style={styles.header}>
-                <TouchableOpacity 
-                    onPress={() => navigation?.goBack()} 
+                <TouchableOpacity
+                    onPress={() => navigation?.goBack()}
                     style={styles.backButton}
                 >
                     <ChevronLeft color={Colors.light.primary} size={28} />
@@ -197,7 +272,7 @@ const route = useRoute();
                     >
                         {lesson.thumbnail ? (
                             <Image
-                                source={{ uri: lesson.thumbnail.uri }}
+                                source={{ uri: lesson.thumbnail.uri || lesson.thumbnail }}
                                 style={styles.previewImage}
                             />
                         ) : (
@@ -237,7 +312,7 @@ const route = useRoute();
                     disabled={loading}
                     style={styles.submitButton}
                     labelStyle={styles.submitButtonLabel}
-                    onPress={createLesson}
+                    onPress={lessonId ? updateLesson : createLesson}
                     contentStyle={{ height: 56 }}
                 >
                     Lưu thay đổi
