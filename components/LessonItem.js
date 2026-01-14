@@ -13,109 +13,11 @@ const LessonItem = ({ lesson, onPressLesson, currentLessonId, deleteLesson, hide
     const [user,] = useContext(MyUserContext);
     const nav = useNavigation();
 
-    // const deleteLesson = async () => {
-    //     try {
-    //         const token = await AsyncStorage.getItem("token");
-    //         Alert.alert(
-    //             "Xác nhận", // Tiêu đề
-    //             "Bạn có chắc chắn muốn xóa mục này không?", // Nội dung
-    //             [
-    //                 { text: "Hủy", style: "cancel" },
-    //                 { text: "Đồng ý", onPress: async () => await authApis(token).delete(endpoints['lesson_detail'](lesson.id)) }
-    //             ]
-    //         );
-
-    //     } catch (error) {
-    //         console.error("Failed to delete lesson:", error);
-    //     }
-    // }
-
-    // const hideLesson = async () => {
-    //     try {
-    //         const token = await AsyncStorage.getItem("token");
-    //         await authApis(token).post(endpoints['hide_lesson'](lesson.id));
-    //     } catch (error) {
-    //         console.error("Failed to hide lesson:", error);
-    //     }
-    // }
-
-    // const unhideLesson = async () => {
-    //     try {
-    //         const token = await AsyncStorage.getItem("token");
-    //         await authApis(token).post(endpoints['unhide_lesson'](lesson.id));
-    //     } catch (error) {
-    //         console.error("Failed to unhide lesson:", error);
-    //     }
-    // }
-
     useEffect(() => {
         console.log("Lesson item rendered:", lesson);
     }, [lesson]);
 
     return (
-        // <TouchableOpacity
-        //     onPress={() => nav.navigate('CourseDetail', { courseId: lesson.id })} // Sửa course.id thành lesson.id nếu cần
-        //     style={{
-        //         flexDirection: 'row', // Xếp ngang
-        //         width: '100%',
-        //         backgroundColor: '#fff',
-        //         padding: 10,
-        //         borderRadius: 14,
-        //         marginBottom: 10,
-        //         // Shadow
-        //         elevation: 4,
-        //         shadowColor: '#1976D2',
-        //         shadowOffset: { width: 0, height: 2 },
-        //         shadowOpacity: 0.12,
-        //         shadowRadius: 6,
-        //         alignItems: 'center', // Canh giữa theo trục dọc
-        //     }}>
-
-        //     {/* PHẦN 1: ẢNH (Kích thước cố định, không dùng flex) */}
-        //     <Image
-        //         source={{ uri: lesson.thumbnail || 'https://via.placeholder.com/100' }} // Thêm fallback ảnh nếu lỗi
-        //         style={{ 
-        //             width: 80, // Giảm size chút cho cân đối
-        //             height: 60, 
-        //             borderRadius: 10, 
-        //             resizeMode: 'cover' 
-        //         }}
-        //     />
-
-        //     {/* PHẦN 2: CHỮ (Dùng Flex: 1 để chiếm hết khoảng trống ở giữa) */}
-        //     <View style={{ flex: 1, marginHorizontal: 12, justifyContent: 'center' }}>
-        //         <Text 
-        //             style={{ fontSize: 15, fontWeight: 'bold', color: '#1976D2' }} 
-        //             numberOfLines={2} 
-        //             ellipsizeMode="tail"
-        //         >
-        //             {lesson.name}
-        //         </Text>
-        //     </View>
-
-        //     {/* PHẦN 3: ICONS (Không dùng flex, width tự động theo nội dung) */}
-        //     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        //         {/* Dùng TouchableOpacity bọc icon để bấm được */}
-        //         <TouchableOpacity onPress={() => console.log('Delete')} style={{ padding: 4 }}>
-        //             <Trash size={20} color="#EF4444" />
-        //         </TouchableOpacity>
-
-        //         <TouchableOpacity onPress={() => console.log('Edit')} style={{ padding: 4, marginLeft: 8 }}>
-        //             <Edit size={20} color="#1976D2" />
-        //         </TouchableOpacity>
-
-        //         {/* Demo logic ẩn hiện mắt */}
-        //         <TouchableOpacity style={{ padding: 4, marginLeft: 8 }}>
-        //              <Eye size={20} color="#4B5563" />
-        //         </TouchableOpacity>
-        //     </View>
-
-        // </TouchableOpacity>
-
-
-
-
-
         <TouchableOpacity
             onPress={() => onPressLesson(lesson.id)}
             style={{
@@ -142,7 +44,6 @@ const LessonItem = ({ lesson, onPressLesson, currentLessonId, deleteLesson, hide
             </View>
             {user.role === 'teacher' && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {/* Dùng TouchableOpacity bọc icon để bấm được */}
                     <TouchableOpacity onPress={() => deleteLesson(lesson.id)} style={{ padding: 4 }}>
                         <Trash size={20} color="#EF4444" />
                     </TouchableOpacity>
@@ -151,14 +52,11 @@ const LessonItem = ({ lesson, onPressLesson, currentLessonId, deleteLesson, hide
                         <Edit size={20} color="#1976D2" />
                     </TouchableOpacity>
 
-                    {/* Demo logic ẩn hiện mắt */}
                     {lesson.active ? (
-                        // Nếu đang hiện (Active) -> Bấm vào gọi HIDE
                         <TouchableOpacity onPress={() => hideLesson(lesson.id)} style={{ padding: 4, marginLeft: 8 }}>
                             <Eye size={20} color="#4B5563" />
                         </TouchableOpacity>
                     ) : (
-                        // Nếu đang ẩn (Inactive) -> Bấm vào gọi UNHIDE
                         <TouchableOpacity onPress={() => unhideLesson(lesson.id)} style={{ padding: 4, marginLeft: 8 }}>
                             <EyeOff size={20} color="#9CA3AF" />
                         </TouchableOpacity>

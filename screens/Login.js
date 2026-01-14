@@ -1,17 +1,17 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, StatusBar } from "react-native";
 import { Button, HelperText, ActivityIndicator } from 'react-native-paper';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Eye, EyeOff, User, Lock } from 'lucide-react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-
 import Apis, { authApis, endpoints } from "../utils/Apis";
 import { MyUserContext } from "../utils/MyContexts";
-import TextField from "../components/TextField"; // Đảm bảo component này hỗ trợ style prop
-import MyStyles from "../styles/MyStyles";
-
+import TextField from "../components/TextField"; 
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
 const { width } = Dimensions.get('window');
+WebBrowser.maybeCompleteAuthSession();
 
 const Login = () => {
     const [loading, setLoading] = useState(false);
@@ -21,7 +21,54 @@ const Login = () => {
     const [, dispatch] = useContext(MyUserContext);
     const nav = useNavigation();
 
-    // Màu chủ đạo
+    const [request, response, promptAsync] = Google.useAuthRequest({
+        androidClientId: "931618240110-1kmq5icbk3bjeu5bu13timkbsl1p97vk.apps.googleusercontent.com",
+        webClientId: "931618240110-54ch8bgphqs3j1kitopslqfsmef533rb.apps.googleusercontent.com",
+    });
+
+    useEffect(() => {
+        if (response) {
+            if (response.type === 'success') {
+                const { authentication } = response;
+                const accessToken = authentication?.accessToken || null;
+                const idToken = authentication?.idToken || null;
+               if (accessToken || idToken) {
+                    handleGoogleLogin(authentication);
+                } else {
+                    setErrorMsg("Không tìm thấy Token từ Google.");
+                }
+            } else if (response.type === 'error') {
+                setErrorMsg("Đăng nhập Google thất bại.");
+            }
+        }
+    }, [response]);
+
+    const handleGoogleLogin = async (authentication) => {
+        try {
+            setLoading(true);
+            const access_token = authentication?.accessToken || null;
+            const id_token = authentication?.idToken || null;
+            console.log("🚀 Gửi lên server:", { access_token: access_token ? (access_token.substring(0, 10) + "...") : null, id_token: id_token ? (id_token.substring(0, 10) + "...") : null });
+
+            let res = await Apis.post(endpoints['google_signin'], {
+                access_token: access_token,
+                id_token: id_token,
+            });
+
+            console.log("✅ Server phản hồi OK:", res.status);
+
+            const djangoToken = res.data.access_token;
+            await AsyncStorage.setItem('token', djangoToken);
+
+            let userRes = await authApis(djangoToken).get(endpoints['current_user']);
+            dispatch({ "type": "login", "payload": userRes.data });
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    };
     const PRIMARY_COLOR = "#1976D2";
 
     const info = [
@@ -74,16 +121,11 @@ const Login = () => {
                 } else {
                     setErrorMsg("Đã có lỗi xảy ra. Vui lòng thử lại sau!");
                 }
+                console.log("Lỗi Login:", ex.message);
             } finally {
                 setLoading(false);
             }
         }
-    }
-
-    const handleGoogleLogin = () => {
-        // Xử lý logic đăng nhập Google ở đây (Firebase, Expo AuthSession, etc.)
-        console.log("Login with Google pressed");
-        alert("Tính năng đang phát triển!");
     }
 
     return (
@@ -96,19 +138,16 @@ const Login = () => {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-                {/* --- HEADER --- */}
                 <View style={styles.header}>
-                    {/* Thay bằng logo của bạn */}
-                    <Image 
-                        source={require('../assets/app_logo.png')} 
-                        style={styles.logo} 
-                        resizeMode="contain" 
+                    <Image
+                        source={require('../assets/app_logo.png')}
+                        style={styles.logo}
+                        resizeMode="contain"
                     />
                     <Text style={styles.title}>Chào mừng trở lại!</Text>
                     <Text style={styles.subtitle}>Đăng nhập để tiếp tục hành trình học tập</Text>
                 </View>
 
-                {/* --- FORM --- */}
                 <View style={styles.formContainer}>
                     {info.map(i => (
                         <View key={i.field} style={styles.inputWrapper}>
@@ -119,13 +158,13 @@ const Login = () => {
                                 value={user[i.field]}
                                 onChangeText={t => {
                                     setUser({ ...user, [i.field]: t });
-                                    setErrorMsg(null); // Xóa lỗi khi người dùng gõ
+                                    setErrorMsg(null);
                                 }}
                                 right={
                                     i.field === 'password' ? (
                                         <TouchableOpacity onPress={() => setIsSecure(!isSecure)}>
-                                            {isSecure 
-                                                ? <EyeOff color="#64748B" size={20} /> 
+                                            {isSecure
+                                                ? <EyeOff color="#64748B" size={20} />
                                                 : <Eye color="#1976D2" size={20} />
                                             }
                                         </TouchableOpacity>
@@ -145,7 +184,6 @@ const Login = () => {
                             {errorMsg}
                         </HelperText>
                     )}
-
                     <Button
                         onPress={login}
                         loading={loading}
@@ -159,23 +197,20 @@ const Login = () => {
                     </Button>
                 </View>
 
-                {/* --- SOCIAL LOGIN DIVIDER --- */}
                 <View style={styles.dividerContainer}>
                     <View style={styles.line} />
                     <Text style={styles.dividerText}>Hoặc đăng nhập với</Text>
                     <View style={styles.line} />
                 </View>
 
-                {/* --- GOOGLE BUTTON --- */}
-                <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin} activeOpacity={0.8}>
-                    <Image 
-                        source={{ uri: 'https://img.icons8.com/color/48/000000/google-logo.png' }} 
-                        style={styles.googleIcon} 
+                <TouchableOpacity style={styles.googleButton} onPress={() => promptAsync()} activeOpacity={0.8}>
+                    <Image
+                        source={{ uri: 'https://img.icons8.com/color/48/000000/google-logo.png' }}
+                        style={styles.googleIcon}
                     />
                     <Text style={styles.googleText}>Tiếp tục bằng Google</Text>
                 </TouchableOpacity>
 
-                {/* --- FOOTER --- */}
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>Bạn chưa có tài khoản? </Text>
                     <TouchableOpacity onPress={() => nav.navigate('ChooseRole')}>
@@ -188,6 +223,7 @@ const Login = () => {
     );
 }
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -199,7 +235,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingBottom: 30,
     },
-    // Header
     header: {
         alignItems: 'center',
         marginBottom: 30,
@@ -221,7 +256,6 @@ const styles = StyleSheet.create({
         color: '#64748B',
         textAlign: 'center',
     },
-    // Form
     formContainer: {
         marginBottom: 20,
     },
@@ -229,7 +263,6 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     textField: {
-        // Thêm style tùy chỉnh cho TextField của bạn nếu cần
         backgroundColor: '#F8FAFC',
         borderRadius: 12,
     },
@@ -261,7 +294,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#fff',
     },
-    // Divider
     dividerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -278,7 +310,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
     },
-    // Google Button
     googleButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -289,7 +320,6 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         paddingVertical: 12,
         marginBottom: 30,
-        // Shadow nhẹ
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -306,7 +336,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: '#1E293B',
     },
-    // Footer
     footer: {
         flexDirection: 'row',
         justifyContent: 'center',

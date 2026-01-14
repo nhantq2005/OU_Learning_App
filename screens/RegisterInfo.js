@@ -20,7 +20,6 @@ const RegisterInfo = () => {
     const [user, setUser] = useState({});
     const nav = useNavigation();
 
-    // Dropdown State
     const [genderOpen, setGenderOpen] = useState(false);
     const [genderValue, setGenderValue] = useState(registerData.gender || null);
     const [genderItems, setGenderItems] = useState([
@@ -29,7 +28,6 @@ const RegisterInfo = () => {
         { label: "Khác", value: "other" },
     ]);
 
-    // Màu chủ đạo
     const PRIMARY_COLOR = "#1976D2";
 
     const info = [
@@ -75,7 +73,6 @@ const RegisterInfo = () => {
     const validate = () => {
         setErrorMsg(null);
         
-        // Kiểm tra Avatar
         if (!user.avatar) {
              setErrorMsg("Vui lòng chọn ảnh đại diện.");
              return false;
@@ -111,9 +108,7 @@ const RegisterInfo = () => {
             try {
                 setLoading(true);
                 
-                // Merge data từ context và form hiện tại
                 const finalData = { ...registerData, ...user, gender: genderValue };
-                // updateRegisterData(finalData); // Optional: cập nhật lại context nếu cần dùng sau này
 
                 let form = new FormData();
                 for (let key in finalData) {
@@ -142,7 +137,6 @@ const RegisterInfo = () => {
                             { 
                                 text: "OK", 
                                 onPress: () => {
-                                    // Điều hướng dựa trên role
                                     const nextScreen = registerData.role === 'teacher' ? 'FillInfo' : 'Login';
                                     nav.reset({
                                         index: 0,
@@ -170,7 +164,6 @@ const RegisterInfo = () => {
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-            {/* --- HEADER --- */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => nav.goBack()} style={styles.backButton}>
                     <CircleArrowLeft size={28} color="#333" />
@@ -191,7 +184,6 @@ const RegisterInfo = () => {
                     <Text style={styles.title}>Hoàn tất hồ sơ</Text>
                     <Text style={styles.subtitle}>Cập nhật thông tin cá nhân để mọi người có thể nhận ra bạn.</Text>
 
-                    {/* --- AVATAR UPLOADER --- */}
                     <View style={styles.avatarContainer}>
                         <TouchableOpacity onPress={picker} activeOpacity={0.8} style={styles.avatarWrapper}>
                             {user.avatar ? (
@@ -202,14 +194,12 @@ const RegisterInfo = () => {
                                     <Text style={styles.avatarText}>Thêm ảnh</Text>
                                 </View>
                             )}
-                            {/* Camera Icon Badge */}
                             <View style={styles.cameraBadge}>
                                 <Camera color="#fff" size={16} />
                             </View>
                         </TouchableOpacity>
                     </View>
 
-                    {/* --- FORM --- */}
                     <View style={styles.formContainer}>
                         {info.map((i) => (
                             <View key={i.field} style={styles.inputWrapper}>
@@ -226,7 +216,6 @@ const RegisterInfo = () => {
                                         keyboardType={i.field === 'email' ? 'email-address' : 'default'}
                                     />
                                 ) : (
-                                    // CUSTOM DROPDOWN
                                     <View style={[styles.dropdownWrapper, { zIndex: 1000 }]}>
                                         <View style={styles.dropdownIcon}>
                                             <Shield color="#64748B" size={20} />
@@ -273,8 +262,7 @@ const RegisterInfo = () => {
                     </Button>
                 </View>
                 
-                {/* Space bottom for scrolling when dropdown opens */}
-                <View style={{height: 100}} /> 
+              <View style={{height: 100}} /> 
 
             </KeyboardAwareScrollView>
         </SafeAreaView>
@@ -286,7 +274,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
-    // Header
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -312,7 +299,6 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         backgroundColor: '#E2E8F0',
     },
-    // Content
     scrollContent: {
         flexGrow: 1,
     },
@@ -331,7 +317,6 @@ const styles = StyleSheet.create({
         marginBottom: 30,
         lineHeight: 22,
     },
-    // Avatar
     avatarContainer: {
         alignItems: 'center',
         marginBottom: 30,
@@ -376,7 +361,6 @@ const styles = StyleSheet.create({
         borderWidth: 3,
         borderColor: '#fff',
     },
-    // Form
     formContainer: {
         marginBottom: 20,
     },
@@ -389,7 +373,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E2E8F0',
     },
-    // Dropdown Custom Styles
     dropdownWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -397,7 +380,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: 1,
         borderColor: '#E2E8F0',
-        height: 58, // Chiều cao khớp với TextField của bạn (thường là 56-60)
+        height: 58, 
     },
     dropdownIcon: {
         paddingHorizontal: 16,
@@ -408,7 +391,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         borderWidth: 0,
         height: 56,
-        paddingLeft: 0, // Bỏ padding trái vì đã có icon bên ngoài
+        paddingLeft: 0, 
     },
     dropdownContainer: {
         backgroundColor: '#fff',
@@ -421,7 +404,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#1E293B',
     },
-    // Error & Button
     errorContainer: {
         backgroundColor: '#FEF2F2',
         borderRadius: 8,

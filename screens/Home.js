@@ -2,9 +2,7 @@ import React, { useState, useEffect, useContext, useRef, useCallback, use } from
 import { View, Image, FlatList, TouchableOpacity, ScrollView, StyleSheet, Dimensions, StatusBar, RefreshControl } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { Text, Searchbar, ActivityIndicator } from 'react-native-paper';
-import { FilterIcon, SlidersHorizontal } from 'lucide-react-native'; // Dùng icon đẹp hơn nếu có
-
-import MyStyles from "../styles/MyStyles";
+import { FilterIcon, SlidersHorizontal } from 'lucide-react-native';
 import ChipCustom from "../components/ChipCustom";
 import Apis, { endpoints } from '../utils/Apis';
 import LargeCourseItem from '../components/LargeCourseItem';
@@ -12,10 +10,7 @@ import { MyUserContext } from '../utils/MyContexts';
 import SmallCourseItem from '../components/SmallCourseItem';
 import BottomSheet from '../components/BottomSheet';
 
-const { width } = Dimensions.get('window');
-
 const Home = () => {
-    const [search, setSearch] = useState('');
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState();
     const [courses, setCourses] = useState([]);
@@ -24,14 +19,16 @@ const Home = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [offset, setOffset] = useState(0);
     const [hasNext, setHasNext] = useState(true);
-
+    const [cateOffset, setCateOffset] = useState(0);
+    const [cateHasNext, setCateHasNext] = useState(true);
+const [cateLoading, setCateLoading] = useState(false);
+    const refRBSheet = useRef();
 
     const handleFilterChange = (key, value) => {
         setFilter(prev => ({ ...prev, [key]: value }));
-        setOffset(0); // <--- QUAN TRỌNG NHẤT: Reset về trang 1
+        setOffset(0);
     }
 
-    // State gộp chung cho filter
     const [filter, setFilter] = useState({
         q: "",
         min_price: "",
@@ -40,15 +37,23 @@ const Home = () => {
         ordering: "-created_date",
     });
 
-    const refRBSheet = useRef();
-
-    // --- API HANDLERS ---
     const loadCategories = async () => {
         try {
-            let res = await Apis.get(endpoints['categories']);
-            setCategories(res.data.results);
+            setCateLoading(true);
+            let url = `${endpoints['categories']}?limit=5&offset=${cateOffset}`;
+            let res = await Apis.get(url);
+            console.log("Categories loaded:", url);
+            setCateHasNext(res.data.next !== null);
+            if (cateOffset === 0)
+                setCategories(res.data.results);
+            else
+                setCategories([...categories, ...res.data.results]);
+
         } catch (ex) {
+            setCateLoading(false);
             console.error("Failed to load categories:", ex);
+        } finally {
+            setCateLoading(false);
         }
     }
 
@@ -66,50 +71,38 @@ const Home = () => {
                 setCourses([...courses, ...res.data.results]);
             }
         } catch (ex) {
+            setLoading(false);
             console.error("Failed to load courses:", ex);
         } finally {
             setLoading(false);
         }
     }
 
-
-
-
-    // Debounce search
     useEffect(() => {
         const timer = setTimeout(() => {
-            // Khi search/filter, ta LUÔN muốn load trang 0.
-            // Truyền số 0 trực tiếp vào đây để tránh Stale Closure
             setOffset(0);
             loadCourses();
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [filter]); // Chỉ phụ thuộc filter
+    }, [filter]);
 
-    // 2. Load more (Chỉ chạy khi offset > 0)
     useEffect(() => {
         if (offset > 0) {
-            // Truyền offset hiện tại vào
             loadCourses(offset);
         }
     }, [offset]);
 
-    // // Initial Load
+    useEffect(() => {
+        if(cateOffset > 0) {
+            loadCategories();
+        }
+    }, [cateOffset]);
+
     useEffect(() => {
         loadCategories();
-        // console.info("USER INFO:", user);
     }, []);
 
-    // Select default category
-    useEffect(() => {
-        if (categories.length > 0 && !selectedCategory) {
-            setSelectedCategory(categories[0]);
-        }
-    }, [categories, filter]);
-
-
-    // --- RENDER HELPERS ---
     const renderSectionHeader = (title, onPress) => (
         <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{title}</Text>
@@ -125,8 +118,14 @@ const Home = () => {
     }, []);
 
     const loadMore = () => {
-        if (hasNext && !loading ) {
+        if (hasNext && !loading) {
             setOffset(offset + 5);
+        }
+    }
+
+    const loadMoreCategories = () => {
+        if (cateHasNext && !cateLoading) {
+            setCateOffset(cateOffset + 5);
         }
     }
 
@@ -134,7 +133,6 @@ const Home = () => {
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#F5F7FA" />
 
-            {/* --- HEADER SECTION --- */}
             <View style={styles.headerContainer}>
                 <View>
                     <Text style={styles.greetingText}>Xin chào, {user?.last_name || 'Bạn'} 👋</Text>
@@ -146,11 +144,9 @@ const Home = () => {
                 />
             </View>
 
-            {/* --- SEARCH & FILTER BAR --- */}
             <View style={styles.searchContainer}>
                 <Searchbar
                     placeholder="Tìm kiếm khóa học..."
-                    // onChangeText={(t) => setFilter({ ...filter, q: t })}
                     onChangeText={(t) => handleFilterChange('q', t)}
                     value={filter.q}
                     style={styles.searchBar}
@@ -163,22 +159,46 @@ const Home = () => {
                     onPress={() => refRBSheet.current.open()}
                     activeOpacity={0.7}
                 >
-                    {/* Nếu có filter active thì đổi màu icon */}
                     <FilterIcon
                         size={22}
                         color={filter.min_price || filter.max_price ? "#1976D2" : "#64748B"}
                     />
                 </TouchableOpacity>
             </View>
-
-            {/* --- MAIN CONTENT --- */}
+            <View>
+                <FlatList
+                    data={categories}
+                    keyExtractor={item => item.id?.toString()}
+                    onEndReached={loadMoreCategories}
+                    onEndReachedThreshold={0.2}
+                    renderItem={({ item }) => (
+                        <ChipCustom
+                            title={item.name}
+                            isSelected={selectedCategory && selectedCategory.id === item.id}
+                            onPress={() => {
+                                const isSelected = selectedCategory?.id === item.id;
+                                if (isSelected) {
+                                    setSelectedCategory(null);
+                                    handleFilterChange('category_id', '');
+                                } else {
+                                    setSelectedCategory(item);
+                                    handleFilterChange('category_id', item.id);
+                                }
+                            }}
+                            
+                        />
+                    )}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.categoriesList}
+                />
+            </View>
             {loading && !refreshing ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator color="#1976D2" size="large" />
                 </View>
             ) : (
                 <>
-                    {/* Hiển thị kết quả tìm kiếm nếu có từ khóa */}
                     {filter.q ? (
                         <FlatList
                             data={courses}
@@ -193,26 +213,7 @@ const Home = () => {
                             }
                         />
                     ) : (
-                        // Hiển thị Home Dashboard mặc định
                         <ScrollView showsVerticalScrollIndicator={false} >
-                            {/* Categories */}
-                            {renderSectionHeader("Danh mục", () => console.log("All Cats"))}
-                            <FlatList
-                                data={categories}
-                                keyExtractor={item => item.id?.toString()}
-                                renderItem={({ item }) => (
-                                    <ChipCustom
-                                        title={item.name}
-                                        isSelected={selectedCategory && selectedCategory.id === item.id}
-                                        onPress={() => setSelectedCategory(item)}
-                                    />
-                                )}
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={styles.categoriesList}
-                            />
-
-                            {/* Popular Courses */}
                             {renderSectionHeader("Khóa phổ biến", () => { })}
                             <FlatList
                                 data={courses}
@@ -225,7 +226,6 @@ const Home = () => {
                                 contentContainerStyle={styles.horizontalList}
                             />
 
-                            {/* New Courses */}
                             {renderSectionHeader("Khóa học mới", () => { })}
                             <FlatList
                                 data={courses}
@@ -240,11 +240,10 @@ const Home = () => {
                 </>
             )}
 
-            {/* --- BOTTOM SHEET --- */}
             <RBSheet
                 ref={refRBSheet}
                 useNativeDriver={true}
-                height={420} // Tăng chiều cao để thoải mái
+                height={420}
                 customStyles={{
                     wrapper: { backgroundColor: 'rgba(0,0,0,0.3)' },
                     draggableIcon: { backgroundColor: '#CBD5E1', width: 50 },
@@ -268,11 +267,10 @@ const Home = () => {
 
 export default Home;
 
-// --- STYLES ---
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F7FA', // Màu nền xám xanh nhạt hiện đại
+        backgroundColor: '#F5F7FA',
         paddingTop: 10,
     },
     headerContainer: {
@@ -285,7 +283,7 @@ const styles = StyleSheet.create({
     },
     greetingText: {
         fontSize: 22,
-        fontWeight: '800', // Extra bold
+        fontWeight: '800',
         color: '#1E293B',
         letterSpacing: 0.5,
     },
@@ -300,34 +298,31 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         borderWidth: 2,
         borderColor: '#fff',
-        // Shadow cho avatar
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 6,
     },
-
-    // Search Styles
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
         marginBottom: 10,
-        gap: 12, // Khoảng cách giữa search bar và nút filter
+        gap: 12,
     },
     searchBar: {
         flex: 1,
         backgroundColor: '#fff',
         borderRadius: 14,
-        elevation: 0, // Tắt shadow mặc định của Paper
+        elevation: 0,
         borderWidth: 1,
-        borderColor: '#E2E8F0', // Viền xám nhạt
+        borderColor: '#E2E8F0',
         height: 50,
     },
     searchInput: {
         fontSize: 15,
-        alignSelf: 'center', // Căn giữa text trong input
-        top: -2, // Hack nhỏ để text input của Paper căn giữa theo chiều dọc đẹp hơn
+        alignSelf: 'center',
+        top: -2,
     },
     filterButton: {
         width: 50,
@@ -338,15 +333,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderWidth: 1,
         borderColor: '#E2E8F0',
-        // Shadow nhẹ
         shadowColor: '#64748B',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 4,
         elevation: 2,
     },
-
-    // Sections
     sectionHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -365,14 +357,12 @@ const styles = StyleSheet.create({
         color: '#1976D2',
         fontWeight: '600',
     },
-
-    // Lists
     categoriesList: {
         paddingHorizontal: 20,
         paddingBottom: 8,
     },
     horizontalList: {
-        paddingHorizontal: 14, // Để item đầu tiên thụt vào một chút
+        paddingHorizontal: 14,
         paddingBottom: 10,
     },
     listContent: {
@@ -380,7 +370,6 @@ const styles = StyleSheet.create({
         paddingTop: 10,
     },
 
-    // Helpers
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',

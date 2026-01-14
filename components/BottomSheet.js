@@ -7,17 +7,14 @@ const { width } = Dimensions.get('window');
 
 const BottomSheet = ({ filter, setFilter }) => {
 
-    // Check an toàn
     if (!filter) return null;
 
     const updateFilter = (key, value) => {
         setFilter(current => ({ ...current, [key]: value }));
     }
 
-    // Helper kiểm tra số
     const isValidNumber = (val) => val === '' || /^[0-9]+$/.test(val);
 
-    // Component con hiển thị từng ô chọn Sắp xếp
     const SortItem = ({ label, value, icon: Icon, currentValue }) => {
         const isSelected = currentValue === value;
         return (
@@ -43,7 +40,6 @@ const BottomSheet = ({ filter, setFilter }) => {
                     </Text>
                 </View>
                 
-                {/* Dấu chấm tròn (Radio indicator giả lập) */}
                 <View style={[
                     styles.radioCircle,
                     isSelected && styles.radioCircleActive
@@ -56,12 +52,10 @@ const BottomSheet = ({ filter, setFilter }) => {
 
     return (
         <View style={styles.container}>
-            {/* Handle Bar - Thanh nắm kéo */}
             <View style={styles.handleBarContainer}>
                 <View style={styles.handleBar} />
             </View>
 
-            {/* Header */}
             <View style={styles.headerRow}>
                 <Text style={styles.title}>Bộ lọc & Sắp xếp</Text>
                 <TouchableOpacity onPress={() => setFilter({ ...filter, min_price: '', max_price: '', ordering: '-created_date' })}>
@@ -74,7 +68,6 @@ const BottomSheet = ({ filter, setFilter }) => {
             
             <Divider style={{marginBottom: 20, backgroundColor: '#E2E8F0'}} />
 
-            {/* --- Phần 1: Khoảng giá --- */}
             <Text style={styles.sectionTitle}>Khoảng giá (VNĐ)</Text>
             <View style={styles.priceRow}>
                 <TextInput
@@ -106,7 +99,6 @@ const BottomSheet = ({ filter, setFilter }) => {
                 />
             </View>
 
-            {/* --- Phần 2: Sắp xếp --- */}
             <Text style={styles.sectionTitle}>Sắp xếp theo</Text>
             <View style={styles.sortGrid}>
                 <SortItem 
@@ -150,7 +142,6 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 24,
         height: '100%',
     },
-    // Handle Bar
     handleBarContainer: {
         alignItems: 'center',
         paddingVertical: 12,
@@ -161,7 +152,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#E2E8F0',
         borderRadius: 2,
     },
-    // Header
     headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -176,11 +166,10 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#334155', // Slate 700
+        color: '#334155', 
         marginBottom: 12,
         marginTop: 4,
     },
-    // Inputs
     priceRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -203,14 +192,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#94A3B8',
         marginHorizontal: 12,
     },
-    // Sort Grid
     sortGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 12, // Khoảng cách giữa các ô (React Native 0.71+)
+        gap: 12,
     },
     sortItem: {
-        width: (width - 48 - 12) / 2, // Tính toán để chia đều 2 cột (trừ padding và gap)
+        width: (width - 48 - 12) / 2, 
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -223,7 +211,7 @@ const styles = StyleSheet.create({
     },
     sortItemActive: {
         borderColor: '#1976D2',
-        backgroundColor: '#F0F7FF', // Màu xanh rất nhạt
+        backgroundColor: '#F0F7FF', 
     },
     sortLabel: {
         fontSize: 14,
@@ -234,7 +222,6 @@ const styles = StyleSheet.create({
         color: '#1976D2',
         fontWeight: '700',
     },
-    // Custom Radio Circle
     radioCircle: {
         width: 18,
         height: 18,

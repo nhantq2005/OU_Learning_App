@@ -11,7 +11,6 @@ const MessageNavigation = () => {
     const [user,]=useContext(MyUserContext);
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-           
             <Stack.Screen name="Message" component={Message} />
             <Stack.Screen name="Chat" component={Chat} />
         </Stack.Navigator>

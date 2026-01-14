@@ -1,57 +1,12 @@
 import { StyleSheet } from "react-native";
-import Colors from "./Colors";
-import Spacing from "./Spacing";
+
 
 export default StyleSheet.create({
-    center: {
+    container: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        backgroundColor: '#F5F7FA',
     },
-    row: {
-        flexDirection: "row",
-        // flexWrap: "wrap",
-    },
-    button: {
-        alignItems: "center",
-        backgroundColor: Colors.light.primary,
-        width: '100%',
-        marginTop: Spacing.md,
-    },
-    buttonText: {
-        color:Colors.light.onPrimary,
-        margin: Spacing.sm,
-        padding: Spacing.xs,
-        fontSize: 30,
-    },
-    avartar:{
-        borderRadius: 40,
-        width: 50,
-        height: 50,
-    },
-    background: {
-        backgroundColor: Colors.light.background,
-        padding: Spacing.md
-    },
-    text:{
-        margin: Spacing.md
-    },
-    categoryTitle: {
-
-    },
-    card:{
-        margin: Spacing.sm
-    },
-    title: {
-        marginTop:Spacing.sm,
-        // marginBottom:Spacing.sm
-    },
-    headline:{
-        marginBottom:Spacing.md,
-        fontWeight: 'bold',
-        fontSize: 30,
-    },
-fab: {
+    fab: {
         position: 'absolute',
         margin: 20,
         right: 0,
@@ -60,4 +15,15 @@ fab: {
         borderRadius: 50,
         elevation: 6,
     },
+        header: {
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        height: 60,
+        justifyContent: 'center',
+    },
+    textFieldIcon: {
+        color:"#64748B",
+         size:20
+    }
+
 });

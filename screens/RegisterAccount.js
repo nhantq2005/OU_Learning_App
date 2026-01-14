@@ -5,9 +5,9 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Eye, EyeOff, User, LockKeyhole, CircleArrowLeft } from 'lucide-react-native';
 import { useNavigation } from "@react-navigation/native";
 
-import TextField from "../components/TextField"; // Đảm bảo component này hỗ trợ style prop
+import TextField from "../components/TextField"; 
 import { RegisterContext } from "../utils/MyContexts";
-import Colors from "../styles/Colors"; // Hoặc dùng cứng mã màu
+import MyStyles from "../styles/MyStyles";
 
 const { width } = Dimensions.get('window');
 
@@ -18,31 +18,30 @@ const RegisterAccount = () => {
     const nav = useNavigation();
     const { updateRegisterData } = useContext(RegisterContext);
 
-    // Màu chủ đạo
     const PRIMARY_COLOR = "#1976D2";
 
     const info = [
         {
             label: 'Tên đăng nhập',
             field: 'username',
-            leadingIcon: <User color="#64748B" size={20} />
+            leadingIcon: <User style={MyStyles.textFieldIcon} />
         },
         {
             label: 'Mật khẩu',
             field: 'password',
-            leadingIcon: <LockKeyhole color="#64748B" size={20} />,
+            leadingIcon: <LockKeyhole style={MyStyles.textFieldIcon} />,
             secureTextEntry: isSecure
         },
         {
             label: 'Xác nhận mật khẩu',
             field: 'confirm',
-            leadingIcon: <LockKeyhole color="#64748B" size={20} />,
+            leadingIcon: <LockKeyhole style={MyStyles.textFieldIcon} />,
             secureTextEntry: isSecure
         }
     ];
 
     const validate = () => {
-        setErrorMsg(null); // Reset lỗi trước khi check
+        setErrorMsg(null); 
 
         if (!user.username || !user.password || !user.confirm) {
             setErrorMsg("Vui lòng điền đầy đủ thông tin!");
@@ -69,7 +68,6 @@ const RegisterAccount = () => {
 
     const handleNext = () => {
         if (validate()) {
-            // Loại bỏ trường confirm trước khi lưu vào context
             const { confirm, ...userData } = user;
             updateRegisterData(userData);
             nav.navigate('RegisterInfo');
@@ -80,7 +78,6 @@ const RegisterAccount = () => {
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#fff" />
             
-            {/* --- HEADER --- */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => nav.goBack()} style={styles.backButton}>
                     <CircleArrowLeft size={28} color="#333" />
@@ -101,7 +98,6 @@ const RegisterAccount = () => {
                     <Text style={styles.title}>Thiết lập tài khoản</Text>
                     <Text style={styles.subtitle}>Tạo tên đăng nhập và mật khẩu để bảo vệ tài khoản của bạn.</Text>
 
-                    {/* --- FORM --- */}
                     <View style={styles.formContainer}>
                         {info.map((i, index) => (
                             <View key={i.field} style={styles.inputWrapper}>
@@ -128,7 +124,6 @@ const RegisterAccount = () => {
                                     style={styles.textField}
                                 />
                                 
-                                {/* Hiển thị gợi ý mật khẩu dưới ô password đầu tiên */}
                                 {i.field === 'password' && (
                                     <Text style={styles.passwordHint}>Mật khẩu phải có ít nhất 8 ký tự.</Text>
                                 )}
@@ -155,7 +150,6 @@ const RegisterAccount = () => {
                     </Button>
                 </View>
 
-                {/* --- FOOTER --- */}
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>Bạn đã có tài khoản? </Text>
                     <TouchableOpacity onPress={() => nav.navigate('Login')}>
@@ -173,7 +167,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
-    // Header
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -199,7 +192,6 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         backgroundColor: '#E2E8F0',
     },
-    // Content
     scrollContent: {
         flexGrow: 1,
     },
@@ -220,7 +212,6 @@ const styles = StyleSheet.create({
         lineHeight: 22,
         marginBottom: 30,
     },
-    // Form
     formContainer: {
         marginBottom: 20,
     },
@@ -265,7 +256,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#fff',
     },
-    // Footer
     footer: {
         flexDirection: 'row',
         justifyContent: 'center',

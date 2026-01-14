@@ -11,7 +11,6 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {MaterialIcons} from '@expo/vector-icons';
 import MyStyles from "../styles/MyStyles";
-// import {Colors} from '../styles/Colors';
 import Spacing from "../styles/Spacing";
 import { useNavigation } from "@react-navigation/native";
 
@@ -58,16 +57,14 @@ const Onboarding = () => {
     };
 
     return (
-        <View style={[{flex: 1, backgroundColor: "#F7F9FC"}, MyStyles.background]}>
-            {/* Skip */}
+        <View style={[{flex: 1, backgroundColor: "#F7F9FC",padding: Spacing.sm}, ]}>
             <TouchableOpacity
                 onPress={finishOnboarding}
                 style={{position: "absolute", top: 30, right: 20, zIndex: 10}}
             >
-                <Text style={{color: "#A0A3B1", fontSize: 17}}>Skip</Text>
+                <Text style={{color: "#A0A3B1", fontSize: 17}}>Bỏ qua</Text>
             </TouchableOpacity>
             <View style={{flex: 8}}>
-                {/* FlatList slides */}
                 <Animated.FlatList
                     ref={flatListRef}
                     data={slides}
@@ -112,7 +109,6 @@ const Onboarding = () => {
             </View>
 
             <View style={{flexDirection: "row",justifyContent:"space-between",  alignItems: "center",  flex: 1}}>
-                {/* Dots indicator */}
                 <View
                     style={{
                         flexDirection: "row",
@@ -150,7 +146,6 @@ const Onboarding = () => {
                     })}
                 </View>
 
-                {/* Button Next / Get Started */}
                 <TouchableOpacity
                     onPress={handleNext}
                     style={{

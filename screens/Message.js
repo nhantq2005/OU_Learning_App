@@ -1,176 +1,246 @@
-import React, { useState } from 'react';
-import { View, FlatList, TouchableOpacity, Image, StyleSheet, StatusBar } from 'react-native';
-import { Text, Searchbar, Badge, TouchableRipple, Avatar } from 'react-native-paper';
+import React, { useState, useEffect, useContext } from 'react';
+import { 
+    View, Text, FlatList, TouchableOpacity, Image, StyleSheet, 
+    ActivityIndicator, TextInput, StatusBar, SafeAreaView 
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-// Dữ liệu mẫu mở rộng
-const users = [
-    {
-        id: 1,
-        name: 'Nguyễn Văn A',
-        avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-        lastMessage: 'Chào bạn, mình muốn hỏi về khóa học React Native nâng cao thì lộ trình thế nào?',
-        time: '10:30',
-        unread: 2,
-        isOnline: true,
-    },
-    {
-        id: 2,
-        name: 'Trần Thị B',
-        avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-        lastMessage: 'Cảm ơn bạn đã hỗ trợ!',
-        time: '09:15',
-        unread: 0,
-        isOnline: false,
-    },
-    {
-        id: 3,
-        name: 'Phạm Văn C',
-        avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-        lastMessage: 'Khi nào có lớp mới vậy?',
-        time: 'Hôm qua',
-        unread: 1,
-        isOnline: true,
-    },
-    {
-        id: 4,
-        name: 'Lê Thị D',
-        avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
-        lastMessage: 'Đã gửi file bài tập ạ.',
-        time: 'Thứ 2',
-        unread: 0,
-        isOnline: false,
-    },
-];
+import { ref, onValue } from 'firebase/database';
+import { db } from '../utils/FireBaseConfig';
+import { MyUserContext } from '../utils/MyContexts';
+import moment from 'moment';
+import 'moment/locale/vi';
+moment.locale('vi');
 
 const Message = () => {
-    const navigation = useNavigation();
-    const [searchQuery, setSearchQuery] = useState('');
+    const [conversations, setConversations] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [user, ] = useContext(MyUserContext);
+    const nav = useNavigation();
+    const [searchText, setSearchText] = useState('');
 
-    const renderItem = ({ item }) => (
-        <TouchableRipple
-            onPress={() => console.log('Chat with', item.name)}
-            rippleColor="rgba(25, 118, 210, 0.1)"
-            style={styles.chatItem}
-        >
-            <View style={styles.row}>
-                {/* Avatar & Online Status */}
+useEffect(() => {
+        const chatsRef = ref(db, 'chats');
+        const unsubscribe = onValue(chatsRef, (snapshot) => {
+            const data = snapshot.val();
+            
+            if (data) {
+                const loadedConversations = Object.keys(data)
+                    .map(key => {
+                        const chatData = data[key];
+                        
+                        // --- 👇 PHẦN MỚI: TÍNH TOÁN SỐ TIN NHẮN CHƯA ĐỌC ---
+                        let unreadCount = 0;
+                        if (chatData.messages) {
+                            Object.values(chatData.messages).forEach(msg => {
+                                // Lấy ID người gửi (kiểm tra cả user._id và senderId để an toàn)
+                                const senderId = msg.user?._id || msg.senderId;
+                                
+                                // Nếu tin nhắn KHÔNG phải mình gửi VÀ chưa đọc (read === false)
+                                if (senderId !== user.id && msg.read === false) {
+                                    unreadCount++;
+                                }
+                            });
+                        }
+                        // ----------------------------------------------------
+
+                        return {
+                            id: key,
+                            ...chatData.metadata,
+                            unreadCount: unreadCount // ✅ Lưu số lượng vào object để hiển thị Badge
+                        };
+                    })
+                    // Chỉ lấy cuộc trò chuyện mà mình (user.id) có tham gia
+                    .filter(chat => chat.participants && chat.participants.hasOwnProperty(user.id));
+
+                // Sắp xếp: Tin mới nhất lên đầu
+                loadedConversations.sort((a, b) => b.updatedAt - a.updatedAt);
+                setConversations(loadedConversations);
+            } else {
+                setConversations([]);
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [user.id]);
+
+    const renderItem = ({ item }) => {
+        const partnerId = Object.keys(item.participants).find(uid => uid !== String(user.id));
+        const partnerData = item.participants[partnerId];
+
+        if (!partnerData) return null;
+
+        return (
+            <TouchableOpacity 
+                activeOpacity={0.7}
+                style={styles.itemContainer}
+                onPress={() => nav.navigate('Chat', {
+                    partnerId: parseInt(partnerId),
+                    partnerName: partnerData.name,
+                    partnerAvatar: partnerData.avatar
+                })}
+            >
                 <View style={styles.avatarContainer}>
-                    <Avatar.Image size={56} source={{ uri: item.avatar }} />
-                    {item.isOnline && <View style={styles.onlineIndicator} />}
+                    <Image 
+                        source={{ uri: partnerData.avatar || 'https://via.placeholder.com/150' }} 
+                        style={styles.avatar} 
+                    />
+                    <View style={styles.onlineDot} /> 
                 </View>
-
-                {/* Content */}
+                
                 <View style={styles.contentContainer}>
-                    <View style={styles.headerRow}>
-                        <Text style={styles.userName} numberOfLines={1}>{item.name}</Text>
-                        <Text style={[styles.timeText, item.unread > 0 && styles.timeTextActive]}>
-                            {item.time}
+                    <View style={styles.topRow}>
+                        <Text style={styles.name} numberOfLines={1}>{partnerData.name}</Text>
+                        <Text style={styles.time}>
+                            {item.updatedAt ? moment(item.updatedAt).fromNow(true) : ''}
                         </Text>
                     </View>
                     
-                    <View style={styles.messageRow}>
-                        <Text 
-                            style={[styles.lastMessage, item.unread > 0 && styles.lastMessageBold]} 
-                            numberOfLines={1}
-                        >
-                            {item.lastMessage}
+                    <View style={styles.bottomRow}>
+                        <Text numberOfLines={1} style={styles.lastMessage}>
+                            {item.lastMessage || "Đã gửi một hình ảnh"}
                         </Text>
-                        
-                        {item.unread > 0 && (
-                            <Badge size={20} style={styles.badge}>{item.unread}</Badge>
-                        )}
+                        {item.unreadCount > 0 && (
+                        <View style={styles.badge}>
+                            <Text style={styles.badgeText}>
+                                {item.unreadCount > 99 ? '99+' : item.unreadCount}
+                            </Text>
+                        </View>
+                    )}
                     </View>
                 </View>
+            </TouchableOpacity>
+        );
+    };
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#4A90E2" />
+                <Text style={styles.loadingText}>Đang tải tin nhắn...</Text>
             </View>
-        </TouchableRipple>
-    );
+        );
+    }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="dark-content" backgroundColor="#fff" />
             
-            {/* Header Title */}
-            <View style={styles.header}>
+            <View style={styles.headerContainer}>
                 <Text style={styles.headerTitle}>Tin nhắn</Text>
-                {/* <IconButton icon="square-edit-outline" iconColor="#1976D2" size={24} onPress={() => {}} /> */}
+                
+                <View style={styles.searchBar}>
+                    <Text style={styles.searchIcon}>🔍</Text>
+                    <TextInput 
+                        placeholder="Tìm kiếm cuộc trò chuyện..."
+                        placeholderTextColor="#999"
+                        style={styles.searchInput}
+                        value={searchText}
+                        onChangeText={setSearchText}
+                    />
+                </View>
             </View>
 
-            {/* Search Bar */}
-            <View style={styles.searchContainer}>
-                <Searchbar
-                    placeholder="Tìm kiếm tin nhắn..."
-                    onChangeText={setSearchQuery}
-                    value={searchQuery}
-                    style={styles.searchBar}
-                    inputStyle={styles.searchInput}
-                    iconColor="#94A3B8"
-                />
+            <View style={styles.container}>
+                {conversations.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <Image 
+                            source={{uri: 'https://cdn-icons-png.flaticon.com/512/2040/2040520.png'}} 
+                            style={styles.emptyIcon}
+                        />
+                        <Text style={styles.emptyText}>Chưa có cuộc trò chuyện nào</Text>
+                        <Text style={styles.emptySubText}>Hãy bắt đầu kết nối với mọi người ngay!</Text>
+                    </View>
+                ) : (
+                    <FlatList
+                        data={conversations}
+                        keyExtractor={item => item.id}
+                        renderItem={renderItem}
+                        contentContainerStyle={styles.listContent}
+                        showsVerticalScrollIndicator={false}
+                    />
+                )}
             </View>
-
-            {/* Chat List */}
-            <FlatList
-                data={users}
-                keyExtractor={item => item.id.toString()}
-                renderItem={renderItem}
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={() => <View style={styles.separator} />}
-            />
-        </View>
+        </SafeAreaView>
     );
 };
 
 export default Message;
 
 const styles = StyleSheet.create({
-    container: {
+    safeArea: {
         flex: 1,
         backgroundColor: '#fff',
     },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+    headerContainer: {
         paddingHorizontal: 20,
         paddingTop: 10,
-        paddingBottom: 10,
+        paddingBottom: 15,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
     },
     headerTitle: {
         fontSize: 28,
         fontWeight: '800',
-        color: '#1E293B',
-    },
-    searchContainer: {
-        paddingHorizontal: 20,
-        paddingBottom: 10,
+        color: '#1a1a1a',
+        marginBottom: 15,
     },
     searchBar: {
-        backgroundColor: '#F1F5F9',
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F5F7FA',
         borderRadius: 12,
-        height: 46,
-        elevation: 0,
+        paddingHorizontal: 15,
+        height: 45,
+    },
+    searchIcon: {
+        marginRight: 10,
+        fontSize: 16,
     },
     searchInput: {
-        fontSize: 15,
-        minHeight: 0, // Fix lỗi chiều cao input trên Android
+        flex: 1,
+        fontSize: 16,
+        color: '#333',
+    },
+    container: { 
+        flex: 1, 
+        backgroundColor: '#fff' 
     },
     listContent: {
-        paddingBottom: 20,
+        paddingVertical: 10,
     },
-    chatItem: {
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    loadingText: {
+        marginTop: 10,
+        color: '#888',
+        fontSize: 14,
+    },
+    
+    itemContainer: {
+        flexDirection: 'row',
         paddingVertical: 12,
         paddingHorizontal: 20,
-    },
-    row: {
-        flexDirection: 'row',
         alignItems: 'center',
     },
     avatarContainer: {
         position: 'relative',
-        marginRight: 16,
+        marginRight: 15,
     },
-    onlineIndicator: {
+    avatar: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: '#E1E4E8',
+        borderWidth: 1,
+        borderColor: '#F0F0F0',
+    },
+    onlineDot: {
         position: 'absolute',
         bottom: 2,
         right: 2,
@@ -185,50 +255,69 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
     },
-    headerRow: {
+    topRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 4,
     },
-    userName: {
-        fontSize: 17,
+    name: {
         fontWeight: '700',
-        color: '#1E293B',
+        fontSize: 17,
+        color: '#1a1a1a',
         flex: 1,
-        marginRight: 8,
+        marginRight: 10,
     },
-    timeText: {
+    time: {
         fontSize: 12,
-        color: '#94A3B8',
+        color: '#999',
+        fontWeight: '500',
     },
-    timeTextActive: {
-        color: '#1976D2',
-        fontWeight: '600',
-    },
-    messageRow: {
+    bottomRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
     },
     lastMessage: {
         fontSize: 15,
-        color: '#64748B',
+        color: '#666',
         flex: 1,
-        marginRight: 16,
     },
-    lastMessageBold: {
-        color: '#1E293B',
-        fontWeight: '600',
+
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: -50, 
+    },
+    emptyIcon: {
+        width: 100,
+        height: 100,
+        opacity: 0.5,
+        marginBottom: 20,
+    },
+    emptyText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 8,
+    },
+    emptySubText: {
+        fontSize: 14,
+        color: '#999',
     },
     badge: {
-        backgroundColor: '#1976D2',
+        backgroundColor: '#FF3B30', // Màu đỏ
+        borderRadius: 10,
+        minWidth: 20,
+        height: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 10,
+        paddingHorizontal: 5,
+    },
+    badgeText: {
         color: '#fff',
+        fontSize: 11,
         fontWeight: 'bold',
     },
-    separator: {
-        height: 1,
-        backgroundColor: '#F1F5F9',
-        marginLeft: 92, // Thụt vào thẳng hàng với text (Avatar width 56 + Margin 16 + Padding 20)
-    },
 });
-

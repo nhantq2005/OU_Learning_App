@@ -1,7 +1,7 @@
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Button, Text, Chip } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import { Tag } from "lucide-react-native"; // npm install lucide-react-native
+import { Tag } from "lucide-react-native";
 import { useContext } from "react";
 import { MyUserContext } from "../utils/MyContexts";
 
@@ -11,7 +11,6 @@ const DetailView = ({ currentCourse }) => {
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            {/* Tags Section */}
             {currentCourse.tags && currentCourse.tags.length > 0 && (
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
@@ -32,14 +31,11 @@ const DetailView = ({ currentCourse }) => {
                     </View>
                 </View>
             )}
-
-            {/* Description Section (Uncomment if needed) */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Mô tả khóa học</Text>
                 <Text style={styles.description}>{currentCourse.description}</Text>
             </View>
 
-            {/* Enroll Button */}
             <View style={styles.actionContainer}>
                 <Button
                     mode="contained"
@@ -87,7 +83,7 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     chip: {
-        backgroundColor: '#E3F2FD', // Xanh rất nhạt
+        backgroundColor: '#E3F2FD',
         borderRadius: 20,
     },
     description: {

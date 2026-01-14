@@ -38,7 +38,6 @@ const FillInfo = () => {
   const onSubmit = async () => {
     try {
       if (validate()) {
-        // Handle the submission logic here
         let form = new FormData();
         form.append('document', {
           uri: document,
@@ -67,7 +66,7 @@ const FillInfo = () => {
   }
 
   return (
-    <View style={[MyStyles.background, { flex: 1 }]}>
+    <View style={{padding: 24, flex: 1 }}>
       <Text style={styles.title}>Đăng ký hồ sơ Giảng viên</Text>
 
       <Text style={styles.label}>Minh chứng xác thực <Text style={styles.required}>*</Text></Text>
@@ -80,7 +79,8 @@ const FillInfo = () => {
         )}
       </TouchableOpacity>
 
-      <Text style={styles.label}>Số tài khoản ngân hàng <Text style={styles.required}>*</Text></Text>
+      <Text style={styles.label}>Số tài khoản MoMo <Text style={styles.required}>*</Text></Text>
+      <Text style={styles.desc}>Hiện tại ứng dụng chỉ hỗ trợ tài khoản MoMo.</Text>
       <TextField
         style={styles.input}
         value={bankAccount}

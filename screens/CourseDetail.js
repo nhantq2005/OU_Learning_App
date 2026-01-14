@@ -1,15 +1,15 @@
-import { View, Text, StyleSheet, ScrollView, Dimensions, StatusBar } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Dimensions, StatusBar, TouchableOpacity } from "react-native";
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEvent } from "expo";
 import { ActivityIndicator, SegmentedButtons, Divider, Surface } from "react-native-paper";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useContext, useEffect, useState } from "react";
 import Apis, { authApis, endpoints } from "../utils/Apis";
-import { useRoute } from "@react-navigation/native";
-import ReviewView from "../components/ReviewView"; // Đảm bảo đường dẫn đúng
-import DetailView from "../components/DetailView"; // Đảm bảo đường dẫn đúng
+import {useNavigation, useRoute } from "@react-navigation/native";
+import ReviewView from "../components/ReviewView"; 
+import DetailView from "../components/DetailView"; 
 import { formatCurrency } from "../utils/Utils";
-import { Star, User, Clock } from "lucide-react-native"; // Cài: npm install lucide-react-native
+import { Star, User, Clock, MessageCircle } from "lucide-react-native"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MyUserContext } from "../utils/MyContexts";
 import StudentView from "../components/StudentView";
@@ -23,13 +23,11 @@ const CourseDetail = () => {
     const [currentCourse, setCurrentCourse] = useState(null);
     const [loading, setLoading] = useState(true);
     const [view, setView] = useState('details');
-
+    const nav = useNavigation();
     const loadCourseDetails = async () => {
         try {
             setLoading(true);
             const token = await AsyncStorage.getItem("token");
-
-            // Gọi API đăng ký
             let res = await authApis(token).get(endpoints['course_detail'](courseId));
             setCurrentCourse(res.data);
             console.log("Course Details:", res.data);
@@ -41,6 +39,7 @@ const CourseDetail = () => {
     }
 
     const loadStudents = async () => {
+        if (user.role !== 'teacher') return;
         try {
             const token = await AsyncStorage.getItem("token");
             let res = await authApis(token).get(endpoints['course_students'](courseId));
@@ -61,10 +60,9 @@ const CourseDetail = () => {
     const videoSource = currentCourse?.intro_video ?? '';
     const player = useVideoPlayer(videoSource, player => {
         player.loop = true;
-        // player.play(); // Auto play nếu cần
+        player.play(); 
     });
 
-    // Xử lý xoay màn hình gọn gàng hơn
     useEffect(() => {
         const subscription = player.addListener('fullscreenChange', async () => {
             if (player.fullscreen) {
@@ -95,9 +93,6 @@ const CourseDetail = () => {
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#000" />
 
-            {/* ScrollView bao trùm toàn bộ để cuộn nội dung */}
-            {/* <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}> */}
-            {/* Video Section */}
             <View style={styles.videoContainer}>
                 <VideoView
                     style={styles.video}
@@ -107,32 +102,45 @@ const CourseDetail = () => {
                 />
             </View>
 
-            {/* Content Section */}
             <Surface style={styles.contentSurface} elevation={0}>
                 <View style={styles.headerInfo}>
                     <Text style={styles.title}>{currentCourse.title}</Text>
 
-                    {/* Instructor & Rating */}
                     <View style={styles.metaRow}>
                         <View style={styles.instructorInfo}>
                             <User size={16} color="#666" />
                             <Text style={styles.instructorName}>
                                 {currentCourse.instructor.last_name} {currentCourse.instructor.first_name}
                             </Text>
+                            {user.role === 'student' && (
+                            <TouchableOpacity
+                                style={styles.messageButton}
+                                onPress={() => {
+                                     nav.replace('Chat', {
+                                            partnerId: currentCourse.instructor.id,
+                                            partnerName: `${currentCourse.instructor.last_name} ${currentCourse.instructor.first_name}`,
+                                            partnerAvatar: currentCourse.instructor.avatar
+                                        })
+                                    
+                                }}
+                            >
+                                <MessageCircle size={16} color="#fff" style={{ marginRight: 6 }} />
+                                <Text style={styles.messageButtonText}>Nhắn tin</Text>
+                            </TouchableOpacity>
+                            )}
                         </View>
+
                         <View style={styles.ratingBadge}>
                             <Text style={styles.ratingText}>{(currentCourse.avg_rating || 0).toFixed(1)}</Text>
                             <Star size={14} color="#FFD700" fill="#FFD700" />
                         </View>
                     </View>
 
-                    {/* Price */}
                     <Text style={styles.price}>{formatCurrency(currentCourse.price)}</Text>
                 </View>
 
                 <Divider style={{ marginVertical: 16 }} />
 
-                {/* Tab Switcher */}
                 <SegmentedButtons
                     value={view}
                     onValueChange={setView}
@@ -142,7 +150,6 @@ const CourseDetail = () => {
                     theme={{ colors: { secondaryContainer: '#E3F2FD', onSecondaryContainer: '#1976D2' } }}
                 />
 
-                {/* Dynamic View */}
                 <View style={styles.viewContainer}>
                     {view === 'students' && user.role === 'teacher' ? (
                         <StudentView courseId={courseId} />
@@ -154,7 +161,6 @@ const CourseDetail = () => {
 
                 </View>
             </Surface>
-            {/* </ScrollView> */}
         </View>
     );
 }
@@ -173,7 +179,7 @@ const styles = StyleSheet.create({
     },
     videoContainer: {
         width: '100%',
-        height: width * (9 / 16), // 16:9 Aspect Ratio
+        height: width * (9 / 16), 
         backgroundColor: '#000',
     },
     video: {
@@ -185,7 +191,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
-        marginTop: -15, // Hiệu ứng đè lên video
+        marginTop: -15, 
         paddingHorizontal: 20,
         paddingTop: 24,
         paddingBottom: 20,
@@ -207,7 +213,27 @@ const styles = StyleSheet.create({
     instructorInfo: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
+        gap: 8,
+        justifyContent: 'center',
+    },
+    messageButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 12,
+        backgroundColor: '#1976D2',
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        shadowColor: '#1976D2',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.12,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    messageButtonText: {
+        color: '#fff',
+        fontWeight: '600',
+        fontSize: 14,
     },
     instructorName: {
         fontSize: 14,
@@ -238,7 +264,5 @@ const styles = StyleSheet.create({
     },
     viewContainer: {
         flex: 1,
-        // minHeight: 200,
-        // paddingBottom: 20,
     }
 });

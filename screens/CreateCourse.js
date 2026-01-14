@@ -42,18 +42,15 @@ const CreateCourse = () => {
             let res = await authApis(token).get(endpoints['course_detail'](id));
             console.info("Course details:", res.data);
             setCourse(res.data);
-           if (res.data.tags && Array.isArray(res.data.tags)) {
-            const tagIds = res.data.tags.map(tag => tag.id);
-            setSelectedTags(tagIds); 
-        } else {
-            // Trường hợp API trả về sẵn array ID (hiếm gặp ở detail)
-            setSelectedTags(res.data.tags_id || []);
-        }
+            if (res.data.tags && Array.isArray(res.data.tags)) {
+                const tagIds = res.data.tags.map(tag => tag.id);
+                setSelectedTags(tagIds);
+            } else {
+                setSelectedTags(res.data.tags_id || []);
+            }
 
-        // --- SỬA LỖI CATEGORY ---
-        // Tương tự, nếu category là object {id: 5, name: 'IT'} -> Lấy id
-        const catValue = res.data.category?.id || res.data.category_id || res.data.category;
-        setValue(catValue);
+            const catValue = res.data.category?.id || res.data.category_id || res.data.category;
+            setValue(catValue);
             setLoading(false);
         } catch (ex) {
             console.error("Failed to load course details:", ex);
@@ -75,7 +72,6 @@ const CreateCourse = () => {
     const loadCategories = async () => {
         try {
             let res = await Apis.get(endpoints['categories']);
-            // Map categories to fit Dropdown's labelField/valueField
             const mapped = res.data.results.map(cat => ({
                 label: cat.name || cat.title || cat.label || `Danh mục ${cat.id}`,
                 value: cat.id
@@ -90,7 +86,6 @@ const CreateCourse = () => {
         try {
             setLoading(true);
             let res = await Apis.get(endpoints['tags']);
-            // Map tags to fit Dropdown's labelField/valueField
             console.info("TAGS RES", res.data);
             const mapped = (res.data || []).map(tag => ({
                 label: tag.name || tag.title || `Tag ${tag.id}`,
@@ -204,7 +199,7 @@ const CreateCourse = () => {
                 if (res.status === 201) {
                     Alert.alert("Thành công", `Khóa học "${course.title}" đã được tạo và đang chờ duyệt.`);
                     console.log("Course created:", res.data);
-                    // navigation.goBack(); 
+                    navigation.goBack();
                 }
             } catch (ex) {
                 if (ex.response) {
@@ -224,87 +219,56 @@ const CreateCourse = () => {
     const updateCourse = async () => {
         if (validate()) {
             try {
-                // setLoading(true);
+                setLoading(true);
                 const formData = new FormData();
-                // formData.append('instructor_id', user.id);
-                // formData.append('duration', duration || course.duration || 0);
-                // for (let key in course) {
-                //     if (key === 'tags_id') {
-                //         if (selectedTags && selectedTags.length > 0) {
-                //             selectedTags.forEach(tagId => {
-                //                 formData.append('tags_id', tagId);
-                //             });
-                //         }
-                //     } else if (key === 'image') {
-                //         if (course.image.uri && !course.image.uri.startsWith('http')) {
-                //             formData.append('image', {
-                //                 uri: course.image.uri,
-                //                 name: course.image.fileName || 'image.jpg',
-                //                 type: course.image.mimeType || 'image/jpeg'
-                //             });
-                //         }
-                //     } else if (key === 'intro_video') {
-                //         if (course.intro_video.uri && !course.intro_video.uri.startsWith('http')) {
-                //             formData.append('intro_video', {
-                //                 uri: course.intro_video.uri,
-                //                 name: course.intro_video.fileName || 'video.mp4',
-                //                 type: course.intro_video.mimeType || 'video/mp4'
-                //             });
-                //         }
-                //     } else {
-                //         formData.append(key, course[key]);
-                //     }
-                // }
+                formData.append('title', course.title);
+                formData.append('description', course.description);
+                formData.append('price', course.price);
+                formData.append('category_id', value); // Lấy từ state value
+                formData.append('duration', duration || course.duration || 0);
 
-                // 1. Chỉ append những trường cần thiết (Tránh gửi rác)
-        formData.append('title', course.title);
-        formData.append('description', course.description);
-        formData.append('price', course.price);
-        formData.append('category_id', value); // Lấy từ state value
-        formData.append('duration', duration || course.duration || 0);
-        
-        // Backend thường không cho sửa instructor qua API này, nhưng nếu cần thì gửi ID
-        // formData.append('instructor_id', user.id); 
+                // Backend thường không cho sửa instructor qua API này, nhưng nếu cần thì gửi ID
+                // formData.append('instructor_id', user.id); 
 
-        // 2. Xử lý Tags
-        if (selectedTags && selectedTags.length > 0) {
-            selectedTags.forEach(tagId => {
-                formData.append('tags_id', tagId);
-            });
-        }
+                // 2. Xử lý Tags
+                if (selectedTags && selectedTags.length > 0) {
+                    selectedTags.forEach(tagId => {
+                        formData.append('tags_id', tagId);
+                    });
+                }
 
-        // 3. Xử lý Ảnh (Quan trọng: Chỉ gửi nếu là file mới)
-        if (course.image && typeof course.image === 'object' && course.image.uri) {
-            // Hack nhỏ cho Android: Đôi khi uri từ thư viện thiếu extension
-            let localUri = course.image.uri;
-            let filename = localUri.split('/').pop();
-            
-            // Tự đoán type nếu thư viện không trả về (tránh lỗi Network Error)
-            let match = /\.(\w+)$/.exec(filename);
-            let type = match ? `image/${match[1]}` : `image/jpeg`;
+                // 3. Xử lý Ảnh (Quan trọng: Chỉ gửi nếu là file mới)
+                if (course.image && typeof course.image === 'object' && course.image.uri) {
+                    // Hack nhỏ cho Android: Đôi khi uri từ thư viện thiếu extension
+                    let localUri = course.image.uri;
+                    let filename = localUri.split('/').pop();
 
-            formData.append('image', {
-                uri: localUri, 
-                name: filename,
-                type: course.image.mimeType || type 
-            });
-        }
+                    // Tự đoán type nếu thư viện không trả về (tránh lỗi Network Error)
+                    let match = /\.(\w+)$/.exec(filename);
+                    let type = match ? `image/${match[1]}` : `image/jpeg`;
 
-        // 4. Xử lý Video
-        if (course.intro_video && typeof course.intro_video === 'object' && course.intro_video.uri) {
-            let localUri = course.intro_video.uri;
-            let filename = localUri.split('/').pop();
-            let match = /\.(\w+)$/.exec(filename);
-            let type = match ? `video/${match[1]}` : `video/mp4`;
+                    formData.append('image', {
+                        uri: localUri,
+                        name: filename,
+                        type: course.image.mimeType || type
+                    });
+                }
 
-            formData.append('intro_video', {
-                uri: localUri,
-                name: filename,
-                type: course.intro_video.mimeType || type
-            });
-        }
+                // 4. Xử lý Video
+                if (course.intro_video && typeof course.intro_video === 'object' && course.intro_video.uri) {
+                    let localUri = course.intro_video.uri;
+                    let filename = localUri.split('/').pop();
+                    let match = /\.(\w+)$/.exec(filename);
+                    let type = match ? `video/${match[1]}` : `video/mp4`;
 
-        console.info("Updating Course ID:", courseId);
+                    formData.append('intro_video', {
+                        uri: localUri,
+                        name: filename,
+                        type: course.intro_video.mimeType || type
+                    });
+                }
+
+                console.info("Updating Course ID:", courseId);
 
 
                 console.info("Sending FormData...");
@@ -364,7 +328,7 @@ const CreateCourse = () => {
         <ScrollView style={{ flex: 1, backgroundColor: Colors.light.background, paddingTop: 15 }}>
             <View style={{ alignItems: 'center', paddingHorizontal: 18 }}>
                 <TouchableOpacity
-                    // onPress={() => navigation.goBack()}
+                    onPress={() => navigation.goBack()}
                     style={{ position: 'absolute', left: 0, top: 0, padding: 8, zIndex: 10 }}
                 >
                     <ArrowLeftCircle color={Colors.light.primary} size={36} />
@@ -391,7 +355,6 @@ const CreateCourse = () => {
                 )}
 
                 <View style={{ width: '100%', marginBottom: 12, }}>
-                    {/* {renderCategoryLabel()} */}
                     <Dropdown
                         style={[styles.dropdown, {
                             borderRadius: 20,
@@ -452,7 +415,6 @@ const CreateCourse = () => {
                         renderLeftIcon={() => (
                             <Tag color="black" size={20} style={styles.icon} />
                         )}
-                        // renderItem={renderTagItem}
                         renderSelectedItem={(item, unSelect) => (
                             <TouchableOpacity onPress={() => unSelect && unSelect(item)}>
                                 <View style={[styles.selectedStyle, { borderColor: 'black', borderWidth: 1 }]}>
@@ -464,7 +426,6 @@ const CreateCourse = () => {
                     />
                 </View>
 
-                {/* Upload Image */}
                 <TouchableOpacity
                     onPress={picker}
                     activeOpacity={0.7}
@@ -509,9 +470,6 @@ const CreateCourse = () => {
                     )}
                 </TouchableOpacity>
 
-
-
-                {/* Upload Video */}
                 <TouchableOpacity
                     onPress={pickVideo}
                     activeOpacity={0.7}
@@ -683,48 +641,3 @@ const styles = StyleSheet.create({
     },
 });
 
-
-// const createCourse = async () => {
-//         if (validate()) {
-//             try {
-//                 // setCourse({ ...course, "instructor_id ": 7 });
-//                 setLoading(true);
-//                 let form = new FormData();
-//                 form.append('instructor_id', 7);
-//                 for (let key in course)
-//                     if (key === 'image') {
-//                         form.append(key, {
-//                         uri: course.image.uri,
-//                         name: course.image.fileName,
-//                         type: course.image.type
-//                     });
-//                     }else if (key === 'intro_video') {
-//                         form.append(key, {
-//                             uri: course.intro_video.uri,
-//                             name: course.intro_video.fileName,
-//                             type: course.intro_video.type
-//                         });
-//                     }
-
-//                     else
-//                         form.append(key, course[key]);
-
-//                 console.info(course);
-
-//                 let res = await Apis.post(endpoints['courses'], form, {
-//                     headers: {
-//                         'Content-Type': 'multipart/form-data'
-//                     }
-//                 });
-
-//                 if (res.status === 201) {
-//                     // nav.navigate("Login");
-//                     console.log("Course created successfully:", res.data);
-//                 }
-//             } catch (ex) {
-//                 console.error(ex);
-//             } finally {
-//                 setLoading(false);
-//             }
-//         }
-//     }

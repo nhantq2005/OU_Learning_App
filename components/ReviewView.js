@@ -5,7 +5,7 @@
     import 'moment/locale/vi';
     import moment from 'moment';
     import AsyncStorage from "@react-native-async-storage/async-storage";
-    import { Star } from "lucide-react-native"; // npm install lucide-react-native
+    import { Star } from "lucide-react-native";
 
     const ReviewView = ({ courseId }) => {
         const [reviews, setReviews] = useState([]);
@@ -39,7 +39,7 @@
             try {
                 setLoading(true);
                 let res = await Apis.get(endpoints['reviews'](courseId));
-                setReviews(res.data);
+                setReviews(res.data.results);
             } catch (error) {
                 console.error("Failed to load reviews:", error);
             } finally {
@@ -62,7 +62,10 @@
                 } catch (error) {
                     if (error.response?.status === 500) {
                         alert("Bạn đã đánh giá khóa học này rồi.");
-                    } else {
+                    } else if (error.response?.status === 403) {
+                        alert("Bạn không có quyền đăng đánh giá này.");
+                    }
+                     else {
                         alert("Có lỗi xảy ra, vui lòng thử lại.");
                     }
                 } finally {
@@ -75,7 +78,6 @@
             if (courseId) loadReviews();
         }, [courseId]);
 
-        // Component hiển thị sao (Refactor nhỏ để tái sử dụng)
         const StarRating = ({ score, size = 16, interactive = false, onRate }) => {
             return (
                 <View style={{ flexDirection: 'row', gap: 4 }}>
@@ -102,7 +104,6 @@
 
         return (
             <View style={styles.container}>
-                {/* --- Form Đánh Giá --- */}
                 <View style={styles.headerContainer}>
                     <Text style={styles.sectionHeader}>Đánh giá ({reviews.length})</Text>
                     {!isWriting && (
@@ -112,7 +113,6 @@
                     )}
                 </View>
 
-                {/* --- Form Đánh Giá (Ẩn/Hiện) --- */}
                 {isWriting && (
                     <Card style={styles.inputCard} mode="elevated" elevation={2}>
                         <Card.Content>
@@ -148,7 +148,6 @@
                     </Card>
                 )}
 
-                {/* --- Danh Sách Đánh Giá --- */}
                 <Text style={[styles.sectionHeader, { marginTop: 24, marginBottom: 12 }]}>
                     Đánh giá từ học viên ({reviews.length})
                 </Text>
@@ -166,7 +165,6 @@
                         style={{ flex: 1 }}
                         renderItem={({ item }) => (
                             <View style={styles.reviewItem}>
-                                {/* Avatar */}
                                 {item.user?.avatar ? (
                                     <Image source={{ uri: item.user.avatar }} style={styles.avatar} />
                                 ) : (
@@ -207,7 +205,6 @@
             color: '#212121',
             marginBottom: 8,
         },
-        // Input Card Styles
         inputCard: {
             backgroundColor: '#fff',
             borderRadius: 16,
@@ -229,7 +226,6 @@
             borderRadius: 8,
             backgroundColor: '#1976D2',
         },
-        // Review List Styles
         emptyState: {
             padding: 20,
             alignItems: 'center',
@@ -273,7 +269,7 @@
             color: '#424242',
             lineHeight: 20,
         },
-        container: { flex: 1, paddingHorizontal: 4 }, // Thêm padding nhỏ
+        container: { flex: 1, paddingHorizontal: 4 }, 
         headerContainer: {
             flexDirection: 'row',
             justifyContent: 'space-between',

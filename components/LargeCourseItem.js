@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions } from "react-native";
 import { useNavigation } from '@react-navigation/native';
-import { Star, Clock, User } from 'lucide-react-native'; // Import icon vector
-import Colors from "../styles/Colors"; // Giả sử bạn có file này
+import { Star, Clock, User } from 'lucide-react-native'; 
+import Colors from "../styles/Colors"; 
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width * 0.6; // Card chiếm 75% màn hình (để scroll ngang đẹp)
+const CARD_WIDTH = width * 0.6; 
 
 const LargeCourseItem = ({ course }) => {
     const nav = useNavigation();
@@ -24,7 +24,6 @@ const LargeCourseItem = ({ course }) => {
             return '0 giây';
         }
 
-    // Format tiền tệ (Ví dụ)
     const formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.price || 500000);
 
     return (
@@ -34,27 +33,22 @@ const LargeCourseItem = ({ course }) => {
 
             style={styles.container}
         >
-            {/* 1. IMAGE SECTION */}
             <View style={styles.imageContainer}>
                 <Image
                     source={{ uri: course.image }}
                     style={styles.image}
                     resizeMode="cover"
                 />
-                {/* Category Badge - Nổi trên ảnh */}
                 <View style={styles.categoryBadge}>
                     <Text style={styles.categoryText}>{course.category.name}</Text>
                 </View>
             </View>
 
-            {/* 2. CONTENT SECTION */}
             <View style={styles.content}>
-                {/* Title */}
                 <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
                     {course.title}
                 </Text>
 
-                {/* Instructor */}
                 <View style={styles.row}>
                     <User size={14} color="#666" style={{ marginRight: 4 }} />
                     <Text style={styles.instructor} numberOfLines={1}>
@@ -62,7 +56,6 @@ const LargeCourseItem = ({ course }) => {
                     </Text>
                 </View>
 
-                {/* Metrics: Rating & Duration */}
                 <View style={styles.metaContainer}>
                     <View style={styles.metaItem}>
                         <Star size={14} color="#FFD700" fill="#FFD700" style={{ marginRight: 4 }} />
@@ -77,10 +70,8 @@ const LargeCourseItem = ({ course }) => {
                     </View>
                 </View>
 
-                {/* Price - Footer */}
                 <View style={styles.footer}>
                     <Text style={styles.price}>{formattedPrice}</Text>
-                    {/* Nút giả lập hoặc icon Add cart nếu cần */}
                 </View>
             </View>
         </TouchableOpacity>
@@ -89,26 +80,24 @@ const LargeCourseItem = ({ course }) => {
 
 const styles = StyleSheet.create({
     container: {
-        width: CARD_WIDTH, // Chiều rộng cố định để list đều nhau
+        width: CARD_WIDTH,
         backgroundColor: '#fff',
         borderRadius: 16,
         marginRight: 16,
         marginVertical: 10,
-        // Shadow iOS
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
-        // Shadow Android
         elevation: 4,
-        overflow: 'visible', // Để shadow hiện rõ
+        overflow: 'visible',
     },
     imageContainer: {
         position: 'relative',
     },
     image: {
         width: '100%',
-        height: 150, // Tăng chiều cao ảnh
+        height: 150, 
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
     },
@@ -116,7 +105,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 10,
         left: 10,
-        backgroundColor: 'rgba(0,0,0,0.6)', // Nền đen mờ sang trọng
+        backgroundColor: 'rgba(0,0,0,0.6)',
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 8,
@@ -133,10 +122,10 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#1a1a1a', // Đen dịu
+        color: '#1a1a1a', 
         lineHeight: 22,
         marginBottom: 6,
-        height: 44, // Giới hạn chiều cao cho 2 dòng text
+        height: 44, 
     },
     row: {
         flexDirection: 'row',
@@ -151,7 +140,7 @@ const styles = StyleSheet.create({
     metaContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F5F7FA', // Nền xám nhẹ cho thông số
+        backgroundColor: '#F5F7FA', 
         padding: 8,
         borderRadius: 8,
         marginBottom: 10,
@@ -184,7 +173,7 @@ const styles = StyleSheet.create({
     price: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#1976D2', // Màu chủ đạo (hoặc màu Cam #FF6B00)
+        color: '#1976D2', 
     },
 });
 

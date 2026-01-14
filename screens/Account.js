@@ -11,30 +11,24 @@ import {
     Moon,
     ChevronRight,
     UserPen,
-    ShieldCheck
+    ShieldCheck,
+    CreditCard
 } from 'lucide-react-native';
-
 import { MyUserContext } from '../utils/MyContexts';
-// import Colors from '../styles/Colors'; // Bỏ comment nếu có file
+import MyStyles from '../styles/MyStyles';
 
 const Account = () => {
     const [user, dispatch] = useContext(MyUserContext);
     const navigation = useNavigation();
     const [isDarkMode, setIsDarkMode] = useState(false);
 
-    // --- Logout Function ---
     const logout = () => {
         dispatch({
             "type": "logout",
             "payload": null
         });
-        // navigation.reset({
-        //     index: 0,
-        //     routes: [{ name: 'Login' }],
-        // });
     }
 
-    // --- HELPER COMPONENT: MENU ITEM ---
     const MenuItem = ({ icon: Icon, label, onPress, isLast, showToggle, toggleValue, onToggle }) => (
         <TouchableOpacity
             activeOpacity={0.7}
@@ -60,18 +54,16 @@ const Account = () => {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={MyStyles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#F5F7FA" />
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-
-                {/* --- HEADER SECTION --- */}
+                {console.log("User Context:", user)}
                 <View style={styles.header}>
                     <View style={styles.avatarContainer}>
                         {user?.avatar ? (
                             <Image source={{ uri: user.avatar }} style={styles.avatarImage} />
                         ) : (
-                            // Đảm bảo đường dẫn ảnh đúng
                             <Image source={require('../assets/student.png')} style={styles.avatarImage} />
                         )}
                         <TouchableOpacity style={styles.editIconBadge} onPress={() => console.log('Edit Avatar')}>
@@ -93,16 +85,14 @@ const Account = () => {
                         Chỉnh sửa thông tin
                     </Button>
                 </View>
-
-                {/* --- SECTION 1: TÀI KHOẢN --- */}
                 <View style={styles.sectionTitleContainer}>
                     <Text style={styles.sectionTitle}>Tài khoản</Text>
                 </View>
                 <Surface style={styles.menuContainer} elevation={1}>
                     <MenuItem
-                        icon={BookOpenCheck}
-                        label="Khóa học của tôi"
-                        onPress={() => navigation.navigate('MyCourses')}
+                        icon={CreditCard}
+                        label="Giao dịch của tôi"
+                        onPress={() => navigation.navigate('Transaction')}
                     />
                     <Divider style={styles.divider} />
                     <MenuItem
@@ -119,7 +109,6 @@ const Account = () => {
                     />
                 </Surface>
 
-                {/* --- SECTION 2: CÀI ĐẶT ỨNG DỤNG --- */}
                 <View style={styles.sectionTitleContainer}>
                     <Text style={styles.sectionTitle}>Ứng dụng</Text>
                 </View>
@@ -146,7 +135,6 @@ const Account = () => {
                     />
                 </Surface>
 
-                {/* --- LOGOUT BUTTON --- */}
                 <TouchableOpacity style={styles.logoutButton} onPress={logout} activeOpacity={0.8}>
                     <LogOut size={20} color="#EF4444" />
                     <Text style={styles.logoutText}>Đăng xuất</Text>
@@ -162,16 +150,11 @@ const Account = () => {
 export default Account;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F5F7FA',
-    },
     scrollContent: {
         paddingHorizontal: 20,
         paddingTop: 40,
         paddingBottom: 40,
     },
-    // --- Header Styles ---
     header: {
         alignItems: 'center',
         marginBottom: 24,
@@ -215,8 +198,6 @@ const styles = StyleSheet.create({
         color: '#64748B',
         marginBottom: 4,
     },
-
-    // --- Menu Section Styles ---
     sectionTitleContainer: {
         marginBottom: 8,
         marginLeft: 4,
@@ -241,9 +222,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         backgroundColor: '#fff',
     },
-    menuItemLast: {
-        // Style riêng cho item cuối nếu cần
-    },
     menuIconContainer: {
         width: 36,
         height: 36,
@@ -264,8 +242,6 @@ const styles = StyleSheet.create({
         height: 1,
         marginLeft: 66,
     },
-
-    // --- Logout Styles ---
     logoutButton: {
         flexDirection: 'row',
         alignItems: 'center',

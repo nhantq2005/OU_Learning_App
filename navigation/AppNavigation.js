@@ -16,7 +16,7 @@ const AppNavigation = () => {
             {
                 user === null ?
                     <AuthNavigation />
-                    : 
+                    :
                     <TabNavigation />
             }
         </NavigationContainer>

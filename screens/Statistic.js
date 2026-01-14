@@ -7,20 +7,12 @@ import { authApis, endpoints } from '../utils/Apis';
 
 const screenWidth = Dimensions.get("window").width;
 
-const PIE_COLORS = [
-    '#1976D2', // Xanh đậm (Top 1)
-    '#42A5F5', // Xanh vừa
-    '#90CAF9', // Xanh nhạt
-    '#FFB74D', // Cam nhạt (Điểm nhấn)
-    '#FF7043', // Cam đậm
-    '#78909C'  // Xám xanh (Các khóa khác)
-];
+const PIE_COLORS = ['#1976D2', '#42A5F5', '#90CAF9', '#FFB74D', '#FF7043', '#78909C'];
 
 const Statistic = () => {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
 
-    // Hàm gọi API
     const loadStats = async () => {
         try {
             setLoading(true);
@@ -39,12 +31,10 @@ const Statistic = () => {
         loadStats();
     }, []);
 
-    // Format tiền VNĐ
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
     };
 
-    // Chuẩn bị dữ liệu cho biểu đồ (React Native Gifted Charts)
     const prepareChartData = () => {
         if (!data?.chart_data) return [];
         return data.chart_data.map(item => ({
@@ -71,9 +61,9 @@ const Statistic = () => {
         if (!data?.chart_data) return [];
         return data.chart_data.map((item, index) => ({
             value: item.value,
-            color: PIE_COLORS[index % PIE_COLORS.length], // Lấy màu theo thứ tự
-            text: '', // Không hiện text trên biểu đồ cho đỡ rối
-            focused: index === 0, // Tự động focus vào cái lớn nhất
+            color: PIE_COLORS[index % PIE_COLORS.length], 
+            text: '',
+            focused: index === 0, 
         }));
     };
 
@@ -176,8 +166,6 @@ const Statistic = () => {
                 </View>
             </View>
 
-            {/* 3. Pie Chart Section */}
-
 
             <View style={[styles.section, styles.shadow]}>
                 <View style={styles.sectionHeader}>
@@ -188,15 +176,14 @@ const Statistic = () => {
                 <View style={{ marginTop: 20, alignItems: 'center' }}>
                     {data?.chart_data?.length > 0 ? (
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                            {/* Cột Trái: Biểu đồ */}
                             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                 <PieChart
                                     data={preparePieData()}
                                     donut
                                     showGradient
                                     sectionAutoFocus
-                                    radius={70} // Bán kính vòng ngoài
-                                    innerRadius={50} // Bán kính vòng trong (tạo lỗ rỗng)
+                                    radius={70} 
+                                    innerRadius={50} 
                                     innerCircleColor={'#fff'}
                                     centerLabelComponent={() => {
                                         return (
@@ -211,7 +198,6 @@ const Statistic = () => {
                                 />
                             </View>
 
-                            {/* Cột Phải: Chú thích (Legend) */}
                             <View style={{ flex: 1, marginLeft: 20 }}>
                                 {renderLegend()}
                             </View>
@@ -224,7 +210,6 @@ const Statistic = () => {
                 </View>
             </View>
 
-            {/* 4. Detail List (Danh sách chi tiết) */}
             <View style={[styles.section, styles.shadow, { marginBottom: 30 }]}>
                 <Text style={styles.sectionTitle}>Top khóa học hiệu quả</Text>
 
@@ -236,7 +221,6 @@ const Statistic = () => {
                         <View style={{ flex: 1, marginHorizontal: 10 }}>
                             <Text style={styles.itemTitle} numberOfLines={1}>{item.name}</Text>
                             <View style={styles.progressBarBg}>
-                                {/* Thanh progress mô phỏng tỷ lệ */}
                                 <View style={[styles.progressBarFill, { width: `${(index < 3 ? 100 - (index * 20) : 30)}%` }]} />
                             </View>
                         </View>
@@ -251,7 +235,7 @@ const Statistic = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F7FA', // Màu nền xám nhẹ hiện đại
+        backgroundColor: '#F5F7FA', 
     },
     center: {
         flex: 1,
@@ -267,7 +251,7 @@ const styles = StyleSheet.create({
     },
     header: {
         padding: 20,
-        paddingTop: 60, // Cho tai thỏ
+        paddingTop: 60, 
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -358,7 +342,6 @@ const styles = StyleSheet.create({
         color: '#1A1A1A',
         marginLeft: 8,
     },
-    // Styles cho list item
     listItem: {
         flexDirection: 'row',
         alignItems: 'center',

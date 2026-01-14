@@ -8,9 +8,8 @@ import { MyUserContext } from '../utils/MyContexts';
 import SmallCourseItem from '../components/SmallCourseItem';
 import { Edit, Eye, EyeOff, Trash } from 'lucide-react-native';
 import CourseItem from '../components/CourseItem';
+import MyStyles from '../styles/MyStyles';
 
-// Lấy chiều rộng màn hình để tính toán tỷ lệ
-const { width } = Dimensions.get('window');
 
 const MyCourse = () => {
     const [loading, setLoading] = useState(false);
@@ -18,13 +17,22 @@ const MyCourse = () => {
     const [user] = useContext(MyUserContext);
     const nav = useNavigation();
     const [refreshing, setRefreshing] = useState(false);
+    const [offset, setOffset] = useState(0);
+    const [hasNext, setHasNext] = useState(true);
 
     const loadMyCourses = async () => {
         try {
             setLoading(true);
             const token = await AsyncStorage.getItem("token");
-            let res = await authApis(token).get(endpoints['my_courses']);
-            setCourses(res.data);
+            let url = `${endpoints['my_courses']}?limit=5&offset=${offset}`;
+            let res = await authApis(token).get(url);
+            setHasNext(res.data.next !== null);
+            console.log("My Courses Response:", res.data);
+            if (offset === 0) {
+                setCourses(res.data.results);
+            } else {
+                setCourses([...courses, ...res.data.results]);
+            }
         } catch (error) {
             console.error("Failed to load courses:", error);
         } finally {
@@ -32,6 +40,19 @@ const MyCourse = () => {
             setRefreshing(false);
         }
     };
+
+    useEffect(() => {
+        if (offset > 0) {
+            loadMyCourses();
+        }
+    }, [offset]);
+
+        const loadMore = () => {
+        if (hasNext && !loading) {
+            setOffset(offset + 5);
+        }
+    }
+
 
     const loadTeacherCourses = async () => {
         try {
@@ -56,31 +77,30 @@ const MyCourse = () => {
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
+        setOffset(0);
         if (user.role === 'teacher')
             loadTeacherCourses();
         else
             loadMyCourses();
     }, []);
 
-    // Helper: Màu sắc cho badge trạng thái
     const getStatusColor = (status) => {
-        if (status === 'Hoàn thành') return { bg: '#E8F5E9', text: '#2E7D32' }; // Xanh lá nhạt
-        return { bg: '#E3F2FD', text: '#1565C0' }; // Xanh dương nhạt
+        if (status === 'Hoàn thành') return { bg: '#E8F5E9', text: '#2E7D32' }; 
+        return { bg: '#E3F2FD', text: '#1565C0' }; 
     };
 
     const deleteCourse = async (courseId) => {
         try {
             const token = await AsyncStorage.getItem("token");
             Alert.alert(
-                "Xác nhận", // Tiêu đề
-                "Bạn có chắc chắn muốn xóa khóa học này không?", // Nội dung
+                "Xác nhận",
+                "Bạn có chắc chắn muốn xóa khóa học này không?",
                 [
                     { text: "Hủy", style: "cancel" },
                     {
                         text: "Đồng ý", onPress: async () => {
                             try {
                                 await authApis(token).delete(endpoints['course_detail'](courseId));
-                                // Cập nhật lại danh sách sau khi xóa
                                 setCourses((prevCourses) => prevCourses.filter(c => c.id !== courseId));
                             } catch (err) {
                                 console.error(err);
@@ -116,7 +136,7 @@ const MyCourse = () => {
         }
     }
 
-    return (    
+    return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Khóa học của tôi</Text>
@@ -133,6 +153,8 @@ const MyCourse = () => {
                     keyExtractor={item => item.id.toString()}
                     renderItem={({ item }) => <CourseItem course={item} deleteCourse={deleteCourse} hideCourse={hideCourse} unhideCourse={unhideCourse} />}
                     contentContainerStyle={styles.listContainer}
+                    // onEndReached={loadMore}
+                    // onEndReachedThreshold={0.2}
                     showsVerticalScrollIndicator={false}
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />
@@ -152,7 +174,7 @@ const MyCourse = () => {
             {user.role === 'teacher' && (
                 <FAB
                     icon="plus"
-                    style={styles.fab}
+                    style={MyStyles.fab}
                     color="#fff"
                     onPress={() => nav.navigate('CreateCourse')}
                 />
@@ -166,7 +188,7 @@ export default MyCourse;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F7FA', // Màu nền sáng hiện đại (Off-white)
+        backgroundColor: '#F5F7FA',
     },
     header: {
         paddingHorizontal: 20,
@@ -193,21 +215,19 @@ const styles = StyleSheet.create({
     listContainer: {
         padding: 20,
         paddingTop: 10,
-        paddingBottom: 80, // Để tránh bị FAB che mất item cuối
+        paddingBottom: 80,
     },
-    // --- Card Styles ---
     card: {
         flexDirection: 'row',
         backgroundColor: '#fff',
         borderRadius: 16,
         marginBottom: 16,
         overflow: 'hidden',
-        // Hiệu ứng đổ bóng nhẹ
         shadowColor: '#64748B',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
         shadowRadius: 12,
-        elevation: 3, // Android shadow
+        elevation: 3,
     },
     cardImage: {
         width: 110,
@@ -254,114 +274,8 @@ const styles = StyleSheet.create({
         color: '#64748B',
         fontWeight: '500',
     },
-    actionButton: {
-        borderRadius: 8,
-        backgroundColor: '#2563EB', // Màu xanh hiện đại hơn #1976D2
-        alignSelf: 'flex-start',
-    },
-    actionButtonLabel: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#fff',
-        marginVertical: 6,
-        marginHorizontal: 12,
-    },
-    // --- FAB Styles ---
-    fab: {
-        position: 'absolute',
-        margin: 20,
-        right: 0,
-        bottom: 10,
-        backgroundColor: '#2563EB',
-        borderRadius: 50,
-        elevation: 6,
-    },
     emptyContainer: {
         alignItems: 'center',
         marginTop: 50,
     }
 });
-
-
-
-
-// const renderCourseItem = ({ item }) => {
-    //     const statusColors = getStatusColor(item.status);
-
-    //     return (
-    //         <TouchableOpacity
-    //             activeOpacity={0.9}
-    //             onPress={() => // Navigate trực tiếp trong Stack hiện tại
-    //                 nav.navigate('CourseDetail', { courseId: item.id })}
-    //         >
-    //             <Surface style={styles.card} elevation={2}>
-    //                 {/* Hình ảnh bên trái */}
-    //                 <Image source={{ uri: item.image }} style={styles.cardImage} />
-
-    //                 {/* Nội dung bên phải */}
-    //                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
-    //                     <View style={styles.cardContent}>
-    //                         {/* Badge trạng thái */}
-    //                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
-    //                             <View style={[styles.statusBadge, { backgroundColor: statusColors.bg }]}>
-    //                                 <Text style={[styles.statusText, { color: statusColors.text }]}>
-    //                                     {item.status || "Đang học"}
-    //                                 </Text>
-    //                             </View>
-
-    //                             {user.role === 'teacher' && (
-    //                                 <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-    //                                     {/* Dùng TouchableOpacity bọc icon để bấm được */}
-    //                                     <TouchableOpacity onPress={() => deleteLesson(item.id)} style={{ padding: 4 }}>
-    //                                         <Trash size={20} color="#EF4444" />
-    //                                     </TouchableOpacity>
-
-    //                                     <TouchableOpacity onPress={() => console.log('Edit')} style={{ padding: 4, marginLeft: 8 }}>
-    //                                         <Edit size={20} color="#1976D2" />
-    //                                     </TouchableOpacity>
-
-    //                                     {/* Demo logic ẩn hiện mắt */}
-    //                                     {item.active ? (
-    //                                         <TouchableOpacity onPress={() => console.log('Hide')} style={{ padding: 4, marginLeft: 8 }}>
-    //                                             <EyeOff size={20} color="#4B5563" />
-    //                                         </TouchableOpacity>
-    //                                     ) : (
-    //                                         <TouchableOpacity onPress={() => console.log('Unhide')} style={{ padding: 4, marginLeft: 8 }}>
-    //                                             <Eye size={20} color="#4B5563" />
-    //                                         </TouchableOpacity>
-    //                                     )}
-    //                                 </View>
-    //                             )}
-    //                         </View>
-
-    //                         <Text numberOfLines={2} style={styles.courseTitle}>
-    //                             {item.title}
-    //                         </Text>
-
-    //                         <View style={styles.instructorContainer}>
-    //                             <Image
-    //                                 source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} // Icon giảng viên
-    //                                 style={styles.instructorIcon}
-    //                             />
-    //                             <Text numberOfLines={1} style={styles.instructorName}>
-    //                                 {item.instructor.first_name || item.instructor}
-    //                             </Text>
-    //                         </View>
-
-    //                         <Button
-    //                             mode="contained"
-    //                             style={styles.actionButton}
-    //                             labelStyle={styles.actionButtonLabel}
-    //                             contentStyle={{ height: 36 }}
-    //                             onPress={() => nav.navigate('LessonDetail', { courseId: item.id })}
-    //                         >
-    //                             Tiếp tục học
-    //                         </Button>
-    //                     </View>
-
-
-    //                 </View>
-    //             </Surface>
-    //         </TouchableOpacity>
-    //     );
-    // };

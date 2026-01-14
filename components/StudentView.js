@@ -6,18 +6,13 @@ import { authApis, endpoints } from '../utils/Apis';
 
 const StudentView = ({ courseId }) => {
 
-  // 2. Xử lý phần trăm (API trả về 0-100, ProgressBar cần 0.0-1.0)
-  // const percentValue = (student.process_percent || 0);
-  // const progress = percentValue / 100;
-
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 3. Chọn màu sắc dựa trên tiến độ
   const getProgressColor = (process_percent) => {
-    if (process_percent >= 100) return '#4CAF50'; // Xanh lá (Hoàn thành)
-    if (process_percent > 0) return '#1976D2';    // Xanh dương (Đang học)
-    return '#E0E0E0';                          // Xám (Chưa học)
+    if (process_percent >= 100) return '#4CAF50'; 
+    if (process_percent > 0) return '#1976D2';    
+    return '#E0E0E0';                          
   };
 
   const loadStudents = async () => {
@@ -66,9 +61,7 @@ const StudentView = ({ courseId }) => {
               )}
             </View>
 
-            {/* --- B. INFO & PROGRESS --- */}
             <View style={styles.infoContainer}>
-              {/* Tên và Số % */}
               <View style={styles.headerRow}>
                 <Text style={styles.name} numberOfLines={1}>
                   {item.first_name} {item.last_name}
@@ -78,10 +71,8 @@ const StudentView = ({ courseId }) => {
                 </Text>
               </View>
 
-              {/* Email (Tuỳ chọn) */}
               <Text style={styles.email} numberOfLines={1}>{item.email}</Text>
 
-              {/* Thanh Tiến Độ */}
               <View style={styles.progressContainer}>
                 <ProgressBar
                   progress={item.process_percent/100}
@@ -90,7 +81,6 @@ const StudentView = ({ courseId }) => {
                 />
               </View>
 
-              {/* Thông tin phụ: Số bài đã học */}
               {item.completed_count !== undefined && (
                 <Text style={styles.lessonsCount}>
                   Đã hoàn thành: {item.completed_count} bài
@@ -134,7 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    flex: 1, // Để text tự xuống dòng hoặc cắt bớt nếu tên quá dài
+    flex: 1,
     marginRight: 8,
   },
   percentText: {
@@ -152,7 +142,7 @@ const styles = StyleSheet.create({
   progressBar: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#F5F5F5', // Màu nền của thanh progress
+    backgroundColor: '#F5F5F5', 
   },
   lessonsCount: {
     marginTop: 6,

@@ -7,23 +7,20 @@ import { MyUserReducer } from "./reducers/MyUserReducer";
 export const MyUserProvider = ({ children }) => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
 
-  // Load user từ AsyncStorage khi app khởi động
 useEffect(() => {
     const loadUser = async () => {
       try {
         const userData = await AsyncStorage.getItem("user");
         if (userData) {
-          // SỬA "LOGIN" -> "login" cho khớp với Reducer
           dispatch({ type: "login", payload: JSON.parse(userData) }); 
         }
       } catch (e) {
-        // Xử lý lỗi
+        console.error(e);
       }
     };
     loadUser();
   }, []);
 
-  // Lưu user vào AsyncStorage khi user thay đổi (đăng nhập/đăng xuất)
   useEffect(() => {
     const saveUser = async () => {
       if (user) {

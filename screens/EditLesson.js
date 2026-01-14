@@ -240,11 +240,10 @@ const EditLesson = () => {
                     <ChevronLeft color={Colors.light.primary} size={28} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Chỉnh sửa bài học</Text>
-                <View style={{ width: 40 }} /> {/* Cân bằng layout */}
+                <View style={{ width: 40 }} /> 
             </View>
 
             <View style={styles.formContainer}>
-                {/* Input Fields */}
                 <View style={styles.card}>
                     {info.map((i, index) => (
                         <View key={i.field} style={styles.inputWrapper}>
@@ -263,9 +262,7 @@ const EditLesson = () => {
 
                 <Text style={styles.sectionTitle}>Nội dung đính kèm</Text>
 
-                {/* Upload Row */}
                 <View style={styles.uploadRow}>
-                    {/* Thumbnail Upload */}
                     <TouchableOpacity
                         onPress={picker}
                         style={[styles.uploadBox, { borderColor: '#E0E0E0' }]}
@@ -283,7 +280,6 @@ const EditLesson = () => {
                         )}
                     </TouchableOpacity>
 
-                    {/* Video Upload */}
                     <TouchableOpacity
                         onPress={pickVideo}
                         style={[styles.uploadBox, { borderColor: '#E0E0E0' }]}
@@ -305,7 +301,6 @@ const EditLesson = () => {
                     </View>
                 )}
 
-                {/* Submit Button */}
                 <Button
                     mode="contained"
                     loading={loading}
@@ -325,7 +320,7 @@ const EditLesson = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8FAFC', // Màu nền xám cực nhẹ giúp nổi bật Card
+        backgroundColor: '#F8FAFC', 
     },
     header: {
         flexDirection: 'row',

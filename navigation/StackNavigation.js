@@ -8,6 +8,7 @@ import EditLesson from "../screens/EditLesson";
 import { useContext } from "react";
 import { MyUserContext } from "../utils/MyContexts";
 import Statistic from "../screens/Statistic";
+import Chat from "../screens/Chat";
 
 const StackNavigation = () => {
     const Stack = createNativeStackNavigator();
@@ -21,9 +22,9 @@ const StackNavigation = () => {
             )}
             <Stack.Screen name="CourseDetail" component={CourseDetail} />
             <Stack.Screen name="Enroll" component={Enroll} />
-            {/* <Stack.Screen name="MyCourse" component={MyCourse} /> */}
             <Stack.Screen name="LessonDetail" component={LessonDetail} />
             <Stack.Screen name="EditLesson" component={EditLesson} />
+            <Stack.Screen name="Chat" component={Chat} />
         </Stack.Navigator>
     );
 }

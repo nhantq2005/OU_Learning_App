@@ -25,18 +25,21 @@ const LessonDetail = () => {
     const [view, setView] = useState('list');
     const [user,] = useContext(MyUserContext);
     const [isCompleted, setIsCompleted] = useState(false);
+    const [offset, setOffset] = useState(0);
+    const [hasNext, setHasNext] = useState(true);
 
-    // --- API HANDLERS ---
     const loadLessons = async () => {
         try {
             setLoading(true);
             const token = await AsyncStorage.getItem("token");
+            let url = `${endpoints['lessons'](courseId)}?limit=5&offset=${offset}`;
+            let res = await authApis(token).get(url);
+            setHasNext(res.data.next !== null);
 
-            // Gọi API đăng ký
-            let res = await authApis(token).get(endpoints['lessons'](courseId));
-            // let res = await Apis.get(endpoints['lessons'](courseId));
-            const dataList = Array.isArray(res.data) ? res.data : (res.data.results || []);
-            setLessons(dataList);
+            if(offset ===0)
+                setLessons(res.data.results);
+            else
+                setLessons([...lessons, ...res.data.results]);
         } catch (error) {
             console.error("Failed to load lessons:", error);
         } finally {
@@ -46,7 +49,6 @@ const LessonDetail = () => {
 
     const loadLessonDetails = async (id) => {
         try {
-            // Có thể thêm loading cục bộ nếu cần
             const token = await AsyncStorage.getItem("token");
             let res = await authApis(token).get(endpoints['lesson_detail'](id));
             setCurrentLesson(res.data);
@@ -59,6 +61,7 @@ const LessonDetail = () => {
         try {
             const token = await AsyncStorage.getItem("token");
             await authApis(token).post(endpoints['complete_lesson'](id));
+            console.log("Lesson marked as complete.", id);
         } catch (error) {
             console.error("Failed to mark lesson as complete:", error);
         }
@@ -69,18 +72,15 @@ const LessonDetail = () => {
         try {
             const token = await AsyncStorage.getItem("token");
             Alert.alert(
-                "Xác nhận", // Tiêu đề
-                "Bạn có chắc chắn muốn xóa mục này không?", // Nội dung
+                "Xác nhận",
+                "Bạn có chắc chắn muốn xóa mục này không?",
                 [
                     { text: "Hủy", style: "cancel" },
                     {
                         text: "Đồng ý", onPress: async () => {
                             try {
                                 await authApis(token).delete(endpoints['lesson_detail'](lessonId));
-                                // Cập nhật lại danh sách sau khi xóa
                                 setLessons((prevLessons) => prevLessons.filter(c => c.id !== lessonId));
-                                
-                                // Nếu xóa bài đang xem, reset currentLesson hoặc chọn bài khác
                                 if (lessonId === lessonId) {
                                     setLessonId(null);
                                     setCurrentLesson(lessons.length > 0 ? lessons[0] : null);
@@ -119,19 +119,16 @@ const LessonDetail = () => {
         }
     }
 
-    // --- EFFECTS ---
     useEffect(() => {
         loadLessons();
     }, [courseId]);
 
-    // Tự động chọn bài đầu tiên
     useEffect(() => {
         if (lessons.length > 0 && !lessonId) {
             setLessonId(lessons[0].id);
         }
     }, [lessons]);
 
-    // Load chi tiết khi đổi bài
     useEffect(() => {
         if (lessonId) {
             setIsCompleted(false);
@@ -139,11 +136,23 @@ const LessonDetail = () => {
         }
     }, [lessonId]);
 
-    // --- VIDEO PLAYER ---
+        useEffect(() => {
+            if (offset > 0) {
+                loadCourses(offset);
+            }
+        }, [offset]);
+
+    
+    const loadMore = () => {
+        if (hasNext && !loading) {
+            setOffset(offset + 5);
+        }
+    }
+
     const videoSource = currentLesson?.video ?? '';
     const player = useVideoPlayer(videoSource, player => {
         player.loop = true;
-        // player.play(); 
+        player.play(); 
     });
 
     useEffect(() => {
@@ -160,29 +169,26 @@ const LessonDetail = () => {
         };
     }, [player]);
 
+   useEffect(() => {
+        if (!player) return;
 
-    useEffect(() => {
-        const subscription = player.addListener('timeUpdate', () => {
+        const interval = setInterval(() => {
             const current = player.currentTime;
             const duration = player.duration;
+            console.log(`Current Time: ${current}, Duration: ${duration}`);
 
-            // Kiểm tra: Duration > 0, chưa hoàn thành, và tỷ lệ >= 70%
-            if (duration > 0 && !isCompleted && (current / duration) >= 0.7) {
-                console.log("XONG"); 
-                setIsCompleted(true); // Chặn không cho log tiếp
-                completeLesson(lessonId);
-
-                // Gọi API cập nhật tiến độ (nếu cần)
-                // handleLessonComplete(); 
+            if (duration > 0 && !isCompleted && lessonId) {
+                if ((current / duration) >= 0.7) {
+                    console.log("✅ Interval Trigger: Done!");
+                    setIsCompleted(true);
+                    completeLesson(lessonId);
+                }
             }
-        });
+        }, 1000); 
 
-        return () => {
-            subscription.remove();
-        };
-    }, [player, isCompleted]);
+        return () => clearInterval(interval);
+    }, [player, lessonId, isCompleted]);
 
-    // --- TABS ---
     const buttons = [
         {
             value: 'list',
@@ -209,7 +215,6 @@ const LessonDetail = () => {
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#000" />
 
-            {/* VIDEO SECTION */}
             <View style={styles.videoContainer}>
                 <VideoView
                     style={styles.video}
@@ -220,16 +225,13 @@ const LessonDetail = () => {
                 />
             </View>
 
-            {/* CONTENT SECTION */}
             <View style={styles.contentContainer}>
-                {/* Tiêu đề bài học */}
                 <View style={styles.header}>
                     <Text style={styles.lessonTitle}>
                         {currentLesson?.name || "Đang tải tiêu đề..."}
                     </Text>
                 </View>
 
-                {/* Tab Switcher */}
                 <SegmentedButtons
                     value={view}
                     onValueChange={setView}
@@ -241,7 +243,6 @@ const LessonDetail = () => {
 
                 <Divider style={{ marginBottom: 10, backgroundColor: '#E0E0E0' }} />
 
-                {/* Dynamic Content */}
                 <View style={styles.tabContent}>
                     {view === 'list' ? (
                         <LessonsView
@@ -260,7 +261,6 @@ const LessonDetail = () => {
                                     {currentLesson?.description || "Chưa có mô tả cho bài học này."}
                                 </Text>
                             </View>
-                            {/* Có thể thêm phần Tài liệu đính kèm, Bài tập... ở đây */}
                         </ScrollView>
                     )}
                 </View>
@@ -326,7 +326,6 @@ const styles = StyleSheet.create({
     tabContent: {
         flex: 1,
     },
-    // Description Styles
     descriptionBox: {
         backgroundColor: '#fff',
         padding: 16,

@@ -52,53 +52,7 @@ const SmallCourseItem = (course) => {
                     </Text>
                 </View>
             </View>
-            
         </TouchableOpacity>
-
-        // <TouchableOpacity
-        //         activeOpacity={0.9}
-        //         onPress={() => // Navigate trực tiếp trong Stack hiện tại
-        //             nav.navigate('CourseDetail', { courseId: item.id })}
-        //     >
-        //         <Surface style={styles.card} elevation={2}>
-        //             {/* Hình ảnh bên trái */}
-        //             <Image source={{ uri: item.image }} style={styles.cardImage} />
-
-        //             {/* Nội dung bên phải */}
-        //             <View style={styles.cardContent}>
-        //                 {/* Badge trạng thái */}
-        //                 <View style={[styles.statusBadge, { backgroundColor: statusColors.bg }]}>
-        //                     <Text style={[styles.statusText, { color: statusColors.text }]}>
-        //                         {item.status || "Đang học"}
-        //                     </Text>
-        //                 </View>
-
-        //                 <Text numberOfLines={2} style={styles.courseTitle}>
-        //                     {item.title}
-        //                 </Text>
-
-        //                 <View style={styles.instructorContainer}>
-        //                     <Image
-        //                         source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }} // Icon giảng viên
-        //                         style={styles.instructorIcon}
-        //                     />
-        //                     <Text numberOfLines={1} style={styles.instructorName}>
-        //                         {item.instructor.first_name || item.instructor}
-        //                     </Text>
-        //                 </View>
-
-        //                 <Button
-        //                     mode="contained"
-        //                     style={styles.actionButton}
-        //                     labelStyle={styles.actionButtonLabel}
-        //                     contentStyle={{ height: 36 }}
-        //                     onPress={() => nav.navigate('LessonDetail', { courseId: item.id })}
-        //                 >
-        //                     Tiếp tục học
-        //                 </Button>
-        //             </View>
-        //         </Surface>
-        //     </TouchableOpacity>
     )
 }
 
@@ -107,7 +61,7 @@ export default SmallCourseItem
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F7FA', // Màu nền sáng hiện đại (Off-white)
+        backgroundColor: '#F5F7FA', 
     },
     header: {
         paddingHorizontal: 20,
@@ -134,21 +88,19 @@ const styles = StyleSheet.create({
     listContainer: {
         padding: 20,
         paddingTop: 10,
-        paddingBottom: 80, // Để tránh bị FAB che mất item cuối
+        paddingBottom: 80,
     },
-    // --- Card Styles ---
     card: {
         flexDirection: 'row',
         backgroundColor: '#fff',
         borderRadius: 16,
         marginBottom: 16,
         overflow: 'hidden',
-        // Hiệu ứng đổ bóng nhẹ
         shadowColor: '#64748B',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
         shadowRadius: 12,
-        elevation: 3, // Android shadow
+        elevation: 3,
     },
     cardImage: {
         width: 110,
@@ -197,8 +149,7 @@ const styles = StyleSheet.create({
     },
     actionButton: {
         borderRadius: 8,
-        backgroundColor: '#2563EB', // Màu xanh hiện đại hơn #1976D2
-        alignSelf: 'flex-start',
+        backgroundColor: '#2563EB', 
     },
     actionButtonLabel: {
         fontSize: 12,
@@ -207,7 +158,6 @@ const styles = StyleSheet.create({
         marginVertical: 6,
         marginHorizontal: 12,
     },
-    // --- FAB Styles ---
     fab: {
         position: 'absolute',
         margin: 20,

@@ -1,9 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Card } from 'react-native-paper';
-
-import moment from 'moment'; // Cần cài: npm install moment
-// Hoặc dùng toLocaleDateString có sẵn của JS
+import moment from 'moment'; 
 
 const Review = ({ avatar, name, content, date }) => (
   <Card style={styles.card}>
@@ -12,7 +10,6 @@ const Review = ({ avatar, name, content, date }) => (
       <View style={styles.contentBox}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.content}>{content}</Text>
-        {/* Format ngày tháng cho dễ đọc */}
         <Text style={styles.date}>{moment(date).format("DD/MM/YYYY HH:mm")}</Text> 
       </View>
     </View>

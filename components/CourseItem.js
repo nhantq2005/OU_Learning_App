@@ -14,26 +14,25 @@ const CourseItem = ({ course, deleteCourse, hideCourse, unhideCourse }) => {
     const [user] = useContext(MyUserContext);
     const nav = useNavigation();
 
-    // Helper: Màu sắc cho badge trạng thái
     const getStatusColor = (status) => {
-        if (status === 'Hoàn thành') return { bg: '#E8F5E9', text: '#2E7D32' }; // Xanh lá nhạt
-        return { bg: '#E3F2FD', text: '#1565C0' }; // Xanh dương nhạt
+        if (status === 'Hoàn thành') return { bg: '#E8F5E9', text: '#2E7D32' }; 
+        return { bg: '#E3F2FD', text: '#1565C0' }; 
     };
 
         const statusColors = getStatusColor(course.status);
     return (
         <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => // Navigate trực tiếp trong Stack hiện tại
+            onPress={() => 
                 nav.navigate('CourseDetail', { courseId: course.id })}
         >
             <Surface style={styles.card} elevation={2}>
-                {/* Hình ảnh bên trái */}
+               
                 <Image source={{ uri: course.image }} style={styles.cardImage} />
-                {/* Nội dung bên phải */}
+               
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
                     <View style={styles.cardContent}>
-                        {/* Badge trạng thái */}
+                       
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
                             <View style={[styles.statusBadge, { backgroundColor: statusColors.bg }]}>
                                 <Text style={[styles.statusText, { color: statusColors.text }]}>
@@ -43,7 +42,6 @@ const CourseItem = ({ course, deleteCourse, hideCourse, unhideCourse }) => {
 
                             {user.role === 'teacher' && (
                                 <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-                                    {/* Dùng TouchableOpacity bọc icon để bấm được */}
                                     <TouchableOpacity onPress={() => deleteCourse(course.id)} style={{ padding: 4 }}>
                                         <Trash size={20} color="#EF4444" />
                                     </TouchableOpacity>
@@ -52,7 +50,6 @@ const CourseItem = ({ course, deleteCourse, hideCourse, unhideCourse }) => {
                                         <Edit size={20} color="#1976D2" />
                                     </TouchableOpacity>
 
-                                    {/* Demo logic ẩn hiện mắt */}
                                     {course.active ? (
                                         <TouchableOpacity onPress={() => hideCourse(course.id)} style={{ padding: 4, marginLeft: 8 }}>
                                             <EyeOff size={20} color="#4B5563" />
@@ -104,7 +101,7 @@ const CourseItem = ({ course, deleteCourse, hideCourse, unhideCourse }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F7FA', // Màu nền sáng hiện đại (Off-white)
+        backgroundColor: '#F5F7FA', 
     },
     header: {
         paddingHorizontal: 20,
@@ -131,21 +128,19 @@ const styles = StyleSheet.create({
     listContainer: {
         padding: 20,
         paddingTop: 10,
-        paddingBottom: 80, // Để tránh bị FAB che mất item cuối
+        paddingBottom: 80, 
     },
-    // --- Card Styles ---
     card: {
         flexDirection: 'row',
         backgroundColor: '#fff',
         borderRadius: 16,
         marginBottom: 16,
         overflow: 'hidden',
-        // Hiệu ứng đổ bóng nhẹ
         shadowColor: '#64748B',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
         shadowRadius: 12,
-        elevation: 3, // Android shadow
+        elevation: 3, 
     },
     cardImage: {
         width: 110,
@@ -194,7 +189,7 @@ const styles = StyleSheet.create({
     },
     actionButton: {
         borderRadius: 8,
-        backgroundColor: '#2563EB', // Màu xanh hiện đại hơn #1976D2
+        backgroundColor: '#2563EB', 
         alignSelf: 'flex-start',
     },
     actionButtonLabel: {
@@ -204,7 +199,6 @@ const styles = StyleSheet.create({
         marginVertical: 6,
         marginHorizontal: 12,
     },
-    // --- FAB Styles ---
     fab: {
         position: 'absolute',
         margin: 20,

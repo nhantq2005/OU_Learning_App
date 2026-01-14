@@ -27,12 +27,11 @@ const Enroll = () => {
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // Xử lý Modal
     const showModal = () => setVisible(true);
     const hideModal = () => {
         setVisible(false);
-        // Sau khi đóng modal thành công, có thể quay về trang chủ hoặc trang khóa học của tôi
-        nav.navigate("MyCourses"); // Hoặc nav.goBack();
+        // nav.navigate("MyCourses"); 
+         nav.goBack();
     };
 
     const handleEnroll = async () => {
@@ -314,7 +313,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: Colors.white,
     },
-    // Modal
     modalContainer: {
         backgroundColor: 'white',
         margin: 30,
