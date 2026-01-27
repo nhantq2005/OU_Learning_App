@@ -1,7 +1,9 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { RegisterProvider } from "../utils/RegisterProvider";;
-import Account from "../screens/Account";
-import Transaction from "../screens/Transaction";
+import { RegisterProvider } from "../utils/providers/RegisterProvider";
+import Account from "../screens/user/Account";
+import Transaction from "../screens/user/Transaction";
+
+
 
 const AccountNavigation = () => {
     const Stack = createNativeStackNavigator();

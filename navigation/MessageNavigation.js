@@ -3,8 +3,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useContext } from "react";
 import { MyUserContext } from "../utils/MyContexts";
 
-import Message from "../screens/Message";
-import Chat from "../screens/Chat";
+import Message from "../screens/message/Message";
+import Chat from "../screens/message/Chat";
 
 const MessageNavigation = () => {
     const Stack = createNativeStackNavigator();

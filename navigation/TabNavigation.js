@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Home as HomeIcon, User, LogIn, UserPlus, BookOpen } from 'lucide-react-native';
-import Account from '../screens/Account';
+import Account from '../screens/user/Account';
 import { MessageCircleMore } from 'lucide-react-native/icons';
 import StackNavigation from './StackNavigation';
 import MyCourseNavigation from './MyCourseNavigation';
@@ -14,7 +14,6 @@ const TabNavigation = () => {
     const Tab = createBottomTabNavigator();
     const unreadCount = useContext(NotificationContext);
     return (
-        console.log("Unread Count in TabNavigation:", unreadCount),
         <Tab.Navigator
             screenOptions={{
                 headerShown: false,

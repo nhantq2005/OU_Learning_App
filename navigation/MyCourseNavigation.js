@@ -1,10 +1,11 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import CreateCourse from "../screens/CreateCourse"; 
-import MyCourse from "../screens/MyCourse";
-import CourseDetail from "../screens/CourseDetail";
-import Enroll from "../screens/Enroll";
-import LessonDetail from "../screens/LessonDetail";
-import EditLesson from '../screens/EditLesson';
+import CreateCourse from "../screens/course/CreateCourse"; 
+import MyCourse from "../screens/course/MyCourse";
+import CourseDetail from "../screens/course/CourseDetail";
+import Enroll from "../screens/course/Enroll";
+import LessonDetail from "../screens/lesson/LessonDetail";
+import EditLesson from '../screens/lesson/EditLesson';
+import Chat from "../screens/message/Chat";
 
 const MyCourseNavigation = () => {
     const Stack = createNativeStackNavigator();
@@ -16,6 +17,7 @@ const MyCourseNavigation = () => {
             <Stack.Screen name="LessonDetail" component={LessonDetail} />
             <Stack.Screen name="CreateCourse" component={CreateCourse} />
             <Stack.Screen name="EditLesson" component={EditLesson} />
+            <Stack.Screen name="Chat" component={Chat} />
         </Stack.Navigator>
     );
 }

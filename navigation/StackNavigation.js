@@ -1,14 +1,13 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import CourseDetail from "../screens/CourseDetail";
-import Home from "../screens/Home";
-import Enroll from "../screens/Enroll";
-import MyCourse from "../screens/MyCourse";
-import LessonDetail from "../screens/LessonDetail";
-import EditLesson from "../screens/EditLesson";
+import CourseDetail from "../screens/course/CourseDetail";
+import Home from "../screens/course/Home";
+import Enroll from "../screens/course/Enroll";
+import LessonDetail from "../screens/lesson/LessonDetail";
+import EditLesson from "../screens/lesson/EditLesson";
 import { useContext } from "react";
 import { MyUserContext } from "../utils/MyContexts";
-import Statistic from "../screens/Statistic";
-import Chat from "../screens/Chat";
+import Statistic from "../screens/teacher/Statistic";
+import Chat from "../screens/message/Chat";
 
 const StackNavigation = () => {
     const Stack = createNativeStackNavigator();

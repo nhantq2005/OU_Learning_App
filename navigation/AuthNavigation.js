@@ -1,14 +1,14 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import ChooseRole from "../screens/ChooseRole";
-import Login from "../screens/Login";
-import Onboarding from "../screens/Onboarding";
-import RegisterAccount from "../screens/RegisterAccount";
-import Splash from "../screens/Splash";
-import { RegisterProvider } from "../utils/RegisterProvider";
+import ChooseRole from "../screens/user/ChooseRole";
+import Login from "../screens/user/Login";
+import Onboarding from "../screens/course/Onboarding";
+import RegisterAccount from "../screens/user/RegisterAccount";
+import Splash from "../screens/user/Splash";
+import { RegisterProvider } from "../utils/providers/RegisterProvider";
 import TabNavigation from "./TabNavigation";
-import RegisterInfo from "../screens/RegisterInfo";
-import FillInfo from "../screens/FillInfo";
-import Account from "../screens/Account";
+import RegisterInfo from "../screens/user/RegisterInfo";
+import FillInfo from "../screens/user/FillInfo";
+import Account from "../screens/user/Account";
 
 const AuthNavigation = () => {
     const Stack = createNativeStackNavigator();

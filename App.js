@@ -1,13 +1,7 @@
-import { StyleSheet, Text, View, Button } from 'react-native';
-import Login from "./screens/Login";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Home from './screens/Home';
-import { RegisterProvider } from './utils/RegisterProvider';
-import { MyUserProvider } from './utils/MyUserProvider';
+import { MyUserProvider } from './utils/providers/MyUserProvider';
 import AppNavigation from './navigation/AppNavigation';
-import { NotificationProvider } from './utils/NotificationProvider';
+import { NotificationProvider } from './utils/providers/NotificationProvider';
 
 
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = 'http://192.168.113.103:8000/';
+const BASE_URL = 'http://10.17.48.118:8000/';
 
 export const endpoints = {
     'categories': '/categories/',
@@ -26,6 +26,7 @@ export const endpoints = {
     'complete_lesson': (lessonId) => `/lessons/${lessonId}/complete/`,
     'course_students': (courseId) => `/courses/${courseId}/students/`,
     'google_signin': '/auth/google/',
+    'random_courses': '/courses/random/',
 };
 
 
