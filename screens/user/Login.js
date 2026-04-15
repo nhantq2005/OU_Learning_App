@@ -22,8 +22,8 @@ const Login = () => {
     const nav = useNavigation();
 
  const [request, response, promptAsync] = Google.useAuthRequest({
-        androidClientId: "931618240110-1kmq5icbk3bjeu5bu13timkbsl1p97vk.apps.googleusercontent.com",
-        webClientId: "931618240110-54ch8bgphqs3j1kitopslqfsmef533rb.apps.googleusercontent.com",
+        androidClientId: "",
+        webClientId: "",
     });
 
     useEffect(() => {
