@@ -7,6 +7,7 @@ import { BriefcaseBusiness, CreditCard, Landmark, Route } from 'lucide-react-nat
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import Apis, { endpoints } from '../../utils/Apis';
+import Theme from '../../styles/Theme';
 
 const FillInfo = () => {
   const [document, setDocument] = useState(null);
@@ -118,7 +119,7 @@ const FillInfo = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 24,
-    backgroundColor: '#fff',
+    backgroundColor: Theme.colors.surface,
     flex: 1,
   },
   title: {
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitText: {
-    color: '#fff',
+    color: Theme.colors.surface,
     fontSize: 17,
     fontWeight: 'bold',
   },

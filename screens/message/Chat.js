@@ -6,6 +6,7 @@ import { db } from '../../utils/FireBaseConfig';
 import { MyUserContext } from '../../utils/MyContexts';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import Theme from '../../styles/Theme';
 
 const Chat = () => {
     const [messages, setMessages] = useState([]);
@@ -32,7 +33,7 @@ const Chat = () => {
                     </View>
                 </View>
             ),
-            headerStyle: { backgroundColor: '#fff', elevation: 0, shadowOpacity: 0, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
+            headerStyle: { backgroundColor: Theme.colors.surface, elevation: 0, shadowOpacity: 0, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
             headerTitleAlign: 'left',
         });
     }, [navigation, partnerName, partnerAvatar]);
@@ -116,7 +117,7 @@ const Chat = () => {
                     marginBottom: 5
                 },
                 left: {
-                    backgroundColor: '#fff',
+                    backgroundColor: Theme.colors.surface,
                     borderBottomLeftRadius: 0,
                     borderTopRightRadius: 15, borderTopLeftRadius: 15, borderBottomRightRadius: 15,
                     marginBottom: 5,
@@ -124,8 +125,8 @@ const Chat = () => {
                 }
             }}
             textStyle={{
-                right: { color: '#fff', fontSize: 15 },
-                left: { color: '#333', fontSize: 15 }
+                right: { color: Theme.colors.surface, fontSize: 15 },
+                left: { color: Theme.colors.text, fontSize: 15 }
             }}
         />
     ), []);
@@ -143,7 +144,7 @@ const Chat = () => {
             {...props}
             textInputStyle={styles.composer}
             placeholder="Nhập tin nhắn..."
-            placeholderTextColor="#999"
+            placeholderTextColor={Theme.colors.textMuted}
             multiline={true}
         />
     ), []);
@@ -151,7 +152,7 @@ const Chat = () => {
     const renderSend = useCallback((props) => (
         <Send {...props} containerStyle={{ justifyContent: 'center', marginRight: 10 }}>
             <View style={styles.sendButton}>
-                <Ionicons name="send" size={20} color="#fff" style={{ marginLeft: 2 }} />
+                <Ionicons name="send" size={20} color={Theme.colors.surface} style={{ marginLeft: 2 }} />
             </View>
         </Send>
     ), []);
@@ -167,13 +168,13 @@ const Chat = () => {
             {...props}
             timeTextStyle={{
                 right: { color: 'rgba(255,255,255,0.7)' },
-                left: { color: '#999' }
+                left: { color: Theme.colors.textMuted }
             }}
         />
     ), []);
 
     const scrollToBottomComponent = useCallback(() => (
-        <Ionicons name="chevron-down" size={24} color="#666" />
+        <Ionicons name="chevron-down" size={24} color={Theme.colors.textMuted} />
     ), []);
 
 
@@ -189,7 +190,7 @@ const Chat = () => {
                 renderSend={renderSend}
                 // renderActions={renderActions}
                 renderTime={renderTime}
-                renderDay={(props) => <Day {...props} textStyle={{ color: '#888', fontWeight: '600' }} />}
+                renderDay={(props) => <Day {...props} textStyle={{ color: Theme.colors.textMuted, fontWeight: '600' }} />}
                 maxInputLength={200}
                 alwaysShowSend
                 scrollToBottom
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5F7FB'
     },
     shadow: {
-        shadowColor: "#000",
+        shadowColor: Theme.colors.text,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 1,
@@ -225,12 +226,12 @@ const styles = StyleSheet.create({
         height: 40,
         borderRadius: 20,
         marginRight: 10,
-        backgroundColor: '#eee'
+        backgroundColor: Theme.colors.surfaceMuted
     },
     headerName: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333'
+        color: Theme.colors.text
     },
     headerStatus: {
         fontSize: 12,
@@ -238,14 +239,14 @@ const styles = StyleSheet.create({
         fontWeight: '500'
     },
     inputToolbar: {
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
         borderTopWidth: 0,
         marginHorizontal: 15,
         marginBottom: 10,
         marginTop: 5,
         borderRadius: 25,
         paddingVertical: 2,
-        shadowColor: "#000",
+        shadowColor: Theme.colors.text,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
         paddingTop: 8,
         marginRight: 10,
         fontSize: 16,
-        color: '#333',
+        color: Theme.colors.text,
         minHeight: 35,
     },
     sendButton: {
@@ -268,7 +269,7 @@ const styles = StyleSheet.create({
         borderRadius: 22,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: "#000",
+        shadowColor: Theme.colors.text,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 2.62,

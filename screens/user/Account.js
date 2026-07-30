@@ -16,6 +16,7 @@ import {
 } from 'lucide-react-native';
 import { MyUserContext } from '../../utils/MyContexts';
 import MyStyles from '../../styles/MyStyles';
+import Theme from '../../styles/Theme';
 
 const Account = () => {
     const [user, dispatch] = useContext(MyUserContext);
@@ -36,7 +37,7 @@ const Account = () => {
             style={[styles.menuItem, isLast && styles.menuItemLast]}
         >
             <View style={styles.menuIconContainer}>
-                <Icon size={20} color="#1976D2" strokeWidth={2} />
+                <Icon size={20} color={Theme.colors.primary} strokeWidth={2} />
             </View>
             <Text style={styles.menuLabel}>{label}</Text>
 
@@ -48,14 +49,14 @@ const Account = () => {
                     thumbColor={toggleValue ? "#1976D2" : "#f4f3f4"}
                 />
             ) : (
-                <ChevronRight size={20} color="#CBD5E1" />
+                <ChevronRight size={20} color={Theme.colors.textMuted} />
             )}
         </TouchableOpacity>
     );
 
     return (
         <View style={MyStyles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#F5F7FA" />
+            <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.canvas} />
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                 {console.log("User Context:", user)}
@@ -67,7 +68,7 @@ const Account = () => {
                             <Image source={require('../../assets/student.png')} style={styles.avatarImage} />
                         )}
                         <TouchableOpacity style={styles.editIconBadge} onPress={() => console.log('Edit Avatar')}>
-                            <UserPen size={14} color="#fff" />
+                            <UserPen size={14} color={Theme.colors.surface} />
                         </TouchableOpacity>
                     </View>
 
@@ -79,7 +80,7 @@ const Account = () => {
                     <Button
                         mode="text"
                         compact
-                        labelStyle={{ color: '#1976D2', fontWeight: '600' }}
+                        labelStyle={{ color: Theme.colors.primary, fontWeight: '700' }}
                         onPress={() => console.log('Edit Profile')}
                     >
                         Chỉnh sửa thông tin
@@ -152,12 +153,12 @@ export default Account;
 const styles = StyleSheet.create({
     scrollContent: {
         paddingHorizontal: 20,
-        paddingTop: 40,
+        paddingTop: 32,
         paddingBottom: 40,
     },
     header: {
         alignItems: 'center',
-        marginBottom: 24,
+        marginBottom: 28,
     },
     avatarContainer: {
         position: 'relative',
@@ -168,34 +169,31 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         borderWidth: 3,
-        borderColor: '#fff',
-        shadowColor: '#1976D2',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
+        borderColor: Theme.colors.surface,
+        ...Theme.shadow,
     },
     editIconBadge: {
         position: 'absolute',
         bottom: 0,
         right: 0,
-        backgroundColor: '#1976D2',
+        backgroundColor: Theme.colors.primary,
         width: 32,
         height: 32,
         borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 2,
-        borderColor: '#fff',
+        borderColor: Theme.colors.surface,
     },
     userName: {
         fontSize: 22,
         fontWeight: '800',
-        color: '#1E293B',
+        color: Theme.colors.text,
         marginBottom: 4,
     },
     userEmail: {
         fontSize: 14,
-        color: '#64748B',
+        color: Theme.colors.textMuted,
         marginBottom: 4,
     },
     sectionTitleContainer: {
@@ -205,28 +203,30 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#64748B',
+        color: Theme.colors.textMuted,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
     },
     menuContainer: {
-        backgroundColor: '#fff',
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.md,
         marginBottom: 24,
         overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: Theme.colors.border,
     },
     menuItem: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 16,
         paddingHorizontal: 16,
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
     },
     menuIconContainer: {
         width: 36,
         height: 36,
         borderRadius: 10,
-        backgroundColor: '#F1F5F9',
+        backgroundColor: Theme.colors.primarySoft,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 14,
@@ -235,10 +235,10 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         fontWeight: '500',
-        color: '#334155',
+        color: Theme.colors.text,
     },
     divider: {
-        backgroundColor: '#F1F5F9',
+        backgroundColor: Theme.colors.border,
         height: 1,
         marginLeft: 66,
     },
@@ -246,22 +246,22 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#FEF2F2',
+        backgroundColor: Theme.colors.dangerSoft,
         paddingVertical: 14,
         borderRadius: 16,
         borderWidth: 1,
-        borderColor: '#FECACA',
+        borderColor: '#FFD5D8',
         marginBottom: 20,
         gap: 8,
     },
     logoutText: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#EF4444',
+        color: Theme.colors.danger,
     },
     versionText: {
         textAlign: 'center',
-        color: '#94A3B8',
+        color: Theme.colors.textMuted,
         fontSize: 12,
     },
 });

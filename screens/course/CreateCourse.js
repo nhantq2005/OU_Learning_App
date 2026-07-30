@@ -17,6 +17,7 @@ import { MyUserContext } from '../../utils/MyContexts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CheckCircle } from 'lucide-react-native';
+import Theme from '../../styles/Theme';
 
 const CreateCourse = () => {
     const navigation = useNavigation();
@@ -349,7 +350,7 @@ const CreateCourse = () => {
                     <Dropdown
                         style={[styles.dropdown, {
                             borderRadius: 20,
-                            backgroundColor: 'white',
+                            backgroundColor: Theme.colors.surface,
                             elevation: 8,
                             marginVertical: Spacing.sm,
                             width: '100%',
@@ -374,7 +375,7 @@ const CreateCourse = () => {
                             setIsFocus(false);
                         }}
                         renderLeftIcon={() => (
-                            <MenuSquare color="black" size={20} style={styles.icon} />
+                            <MenuSquare color={Theme.colors.text} size={20} style={styles.icon} />
                         )}
                     />
                 </View>
@@ -383,7 +384,7 @@ const CreateCourse = () => {
                     <MultiSelect
                         style={[styles.dropdown, {
                             borderRadius: 20,
-                            backgroundColor: 'white',
+                            backgroundColor: Theme.colors.surface,
                             elevation: 8,
                             marginBottom: Spacing.sm,
                             width: '100%',
@@ -404,13 +405,13 @@ const CreateCourse = () => {
                             setCourse({ ...course, "tags_id": selectedTags });
                         }}
                         renderLeftIcon={() => (
-                            <Tag color="black" size={20} style={styles.icon} />
+                            <Tag color={Theme.colors.text} size={20} style={styles.icon} />
                         )}
                         renderSelectedItem={(item, unSelect) => (
                             <TouchableOpacity onPress={() => unSelect && unSelect(item)}>
-                                <View style={[styles.selectedStyle, { borderColor: 'black', borderWidth: 1 }]}>
+                                <View style={[styles.selectedStyle, { borderColor: Theme.colors.text, borderWidth: 1 }]}>
                                     <Text style={styles.textSelectedStyle}>{item.label}</Text>
-                                    <X color="red" size={17} style={styles.icon} />
+                                    <X color={Theme.colors.danger} size={17} style={styles.icon} />
                                 </View>
                             </TouchableOpacity>
                         )}
@@ -428,7 +429,7 @@ const CreateCourse = () => {
                         borderColor: '#4F8EF7',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: '#fff',
+                        backgroundColor: Theme.colors.surface,
                         elevation: 8,
                         shadowColor: '#4F8EF7',
                         shadowOffset: { width: 0, height: 2 },
@@ -472,7 +473,7 @@ const CreateCourse = () => {
                         borderColor: '#F57C00',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: '#fff',
+                        backgroundColor: Theme.colors.surface,
                         elevation: 8,
                         shadowColor: '#F57C00',
                         shadowOffset: { width: 0, height: 2 },
@@ -488,7 +489,7 @@ const CreateCourse = () => {
                             <Text style={{ color: '#F57C00', fontWeight: 'bold', fontSize: 15, textAlign: 'center', marginBottom: 6 }}>
                                 Video đã chọn
                             </Text>
-                            <Text style={{ color: '#333', fontSize: 13, textAlign: 'center' }} numberOfLines={2} ellipsizeMode="middle">
+                            <Text style={{ color: Theme.colors.text, fontSize: 13, textAlign: 'center' }} numberOfLines={2} ellipsizeMode="middle">
                                 {video.fileName || video.uri?.split('/').pop()}
                             </Text>
                         </View>
@@ -530,12 +531,12 @@ export default CreateCourse;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'white',
+        backgroundColor: Theme.colors.surface,
         padding: 16,
     },
     dropdown: {
         height: 50,
-        borderColor: 'gray',
+        borderColor: Theme.colors.textMuted,
         borderWidth: 0.5,
         borderRadius: 8,
         paddingHorizontal: 8,
@@ -545,7 +546,7 @@ const styles = StyleSheet.create({
     },
     label: {
         position: 'absolute',
-        backgroundColor: 'white',
+        backgroundColor: Theme.colors.surface,
         left: 22,
         top: 8,
         zIndex: 999,
@@ -569,10 +570,10 @@ const styles = StyleSheet.create({
     container: { padding: 16 },
     dropdown: {
         height: 50,
-        backgroundColor: 'white',
+        backgroundColor: Theme.colors.surface,
         borderRadius: 12,
         padding: 12,
-        shadowColor: '#000',
+        shadowColor: Theme.colors.text,
         shadowOffset: {
             width: 0,
             height: 1,
@@ -610,8 +611,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 14,
-        backgroundColor: 'white',
-        shadowColor: '#000',
+        backgroundColor: Theme.colors.surface,
+        shadowColor: Theme.colors.text,
         marginTop: 8,
         marginRight: 12,
         paddingHorizontal: 12,

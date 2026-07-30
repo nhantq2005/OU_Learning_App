@@ -5,12 +5,13 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ArrowLeft, User, ShieldCheck, CheckCircle2, CreditCard } from 'lucide-react-native';
 import { authApis, endpoints } from '../../utils/Apis';
+import Theme from '../../styles/Theme';
 const Colors = {
     primary: '#1976D2',
     background: '#F5F7FA',
     text: '#1E293B',
     success: '#4CAF50',
-    white: '#FFFFFF',
+    white: Theme.colors.surface,
     gray: '#64748B',
     lightGray: '#E2E8F0'
 };
@@ -295,7 +296,7 @@ const styles = StyleSheet.create({
         color: Colors.white,
     },
     modalContainer: {
-        backgroundColor: 'white',
+        backgroundColor: Theme.colors.surface,
         margin: 30,
         padding: 30,
         borderRadius: 24,

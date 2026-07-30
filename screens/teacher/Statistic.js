@@ -4,6 +4,7 @@ import { BarChart, PieChart } from "react-native-gifted-charts";
 import { DollarSign, Users, BookOpen, TrendingUp, Calendar } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authApis, endpoints } from '../../utils/Apis';
+import Theme from '../../styles/Theme';
 const screenWidth = Dimensions.get("window").width;
 
 const PIE_COLORS = ['#1976D2', '#42A5F5', '#90CAF9', '#FFB74D', '#FF7043', '#78909C'];
@@ -94,7 +95,7 @@ const Statistic = () => {
                     <Text style={styles.headerSubtitle}>Hiệu quả kinh doanh của bạn</Text>
                 </View>
                 <TouchableOpacity style={styles.dateFilterBtn}>
-                    <Calendar size={20} color="#666" />
+                    <Calendar size={20} color={Theme.colors.textMuted} />
                     <Text style={styles.dateFilterText}>Tháng này</Text>
                 </TouchableOpacity>
             </View>
@@ -146,7 +147,7 @@ const Statistic = () => {
                             hideRules
                             xAxisThickness={0}
                             yAxisThickness={0}
-                            yAxisTextStyle={{ color: '#999' }}
+                            yAxisTextStyle={{ color: Theme.colors.textMuted }}
                             noOfSections={4}
                             maxValue={Math.max(...(data?.chart_data.map(d => d.value) || [1000000])) * 1.2}
                             height={200}
@@ -154,7 +155,7 @@ const Statistic = () => {
                             isAnimated
                         />
                     ) : (
-                        <Text style={{ color: '#999', marginVertical: 30 }}>Chưa có dữ liệu doanh thu</Text>
+                        <Text style={{ color: Theme.colors.textMuted, marginVertical: 30 }}>Chưa có dữ liệu doanh thu</Text>
                     )}
                 </View>
             </View>
@@ -177,14 +178,14 @@ const Statistic = () => {
                                     sectionAutoFocus
                                     radius={70} 
                                     innerRadius={50} 
-                                    innerCircleColor={'#fff'}
+                                    innerCircleColor={Theme.colors.surface}
                                     centerLabelComponent={() => {
                                         return (
                                             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                                 <Text style={{ fontSize: 18, color: '#1976D2', fontWeight: 'bold' }}>
                                                     {data.chart_data.length}
                                                 </Text>
-                                                <Text style={{ fontSize: 10, color: '#666' }}>Khóa</Text>
+                                                <Text style={{ fontSize: 10, color: Theme.colors.textMuted }}>Khóa</Text>
                                             </View>
                                         );
                                     }}
@@ -196,7 +197,7 @@ const Statistic = () => {
                             </View>
                         </View>
                     ) : (
-                        <Text style={{ color: '#999', marginVertical: 30, textAlign: 'center' }}>
+                        <Text style={{ color: Theme.colors.textMuted, marginVertical: 30, textAlign: 'center' }}>
                             Chưa có dữ liệu doanh thu
                         </Text>
                     )}
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
     },
     shadow: {
         elevation: 4,
-        shadowColor: '#000',
+        shadowColor: Theme.colors.text,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 8,
@@ -248,10 +249,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
-        shadowColor: "#000",
+        shadowColor: Theme.colors.text,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.05,
         shadowRadius: 10,
@@ -265,7 +266,7 @@ const styles = StyleSheet.create({
     },
     headerSubtitle: {
         fontSize: 14,
-        color: '#666',
+        color: Theme.colors.textMuted,
         marginTop: 4,
     },
     dateFilterBtn: {
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
     },
     dateFilterText: {
         fontSize: 13,
-        color: '#666',
+        color: Theme.colors.textMuted,
         marginLeft: 6,
         fontWeight: '600',
     },
@@ -287,7 +288,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
         borderRadius: 16,
         padding: 16,
         marginBottom: 16,
@@ -309,7 +310,7 @@ const styles = StyleSheet.create({
     },
     cardLabel: {
         fontSize: 14,
-        color: '#666',
+        color: Theme.colors.textMuted,
         marginBottom: 4,
     },
     cardValue: {
@@ -318,7 +319,7 @@ const styles = StyleSheet.create({
         color: '#1A1A1A',
     },
     section: {
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
         marginHorizontal: 16,
         borderRadius: 16,
         padding: 16,
@@ -358,7 +359,7 @@ const styles = StyleSheet.create({
     itemTitle: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#333',
+        color: Theme.colors.text,
         marginBottom: 6,
     },
     itemValue: {

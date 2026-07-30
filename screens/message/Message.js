@@ -10,6 +10,7 @@ import { MyUserContext } from '../../utils/MyContexts';
 import moment from 'moment';
 import 'moment/locale/vi';
 import { MessageCircleOff } from 'lucide-react-native';
+import Theme from '../../styles/Theme';
 moment.locale('vi');
 
 const Message = () => {
@@ -115,7 +116,7 @@ const Message = () => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+            <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.surface} />
 
             <View style={styles.headerContainer}>
                 <Text style={styles.headerTitle}>Tin nhắn</Text>
@@ -124,7 +125,7 @@ const Message = () => {
                     <Text style={styles.searchIcon}>🔍</Text>
                     <TextInput
                         placeholder="Tìm kiếm cuộc trò chuyện..."
-                        placeholderTextColor="#999"
+                        placeholderTextColor={Theme.colors.textMuted}
                         style={styles.searchInput}
                         value={searchText}
                         onChangeText={setSearchText}
@@ -135,7 +136,7 @@ const Message = () => {
             <View style={styles.container}>
                 {conversations.length === 0 ? (
                     <View style={styles.emptyContainer}>
-                        <MessageCircleOff size={64} color="#999" />
+                        <MessageCircleOff size={64} color={Theme.colors.textMuted} />
                         <Text style={styles.emptyText}>Chưa có cuộc trò chuyện nào</Text>
                         <Text style={styles.emptySubText}>Hãy bắt đầu kết nối với mọi người ngay!</Text>
                     </View>
@@ -158,13 +159,13 @@ export default Message;
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
     },
     headerContainer: {
         paddingHorizontal: 20,
         paddingTop: 10,
         paddingBottom: 15,
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
         borderBottomWidth: 1,
         borderBottomColor: '#F0F0F0',
     },
@@ -189,11 +190,11 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         fontSize: 16,
-        color: '#333',
+        color: Theme.colors.text,
     },
     container: {
         flex: 1,
-        backgroundColor: '#fff'
+        backgroundColor: Theme.colors.surface
     },
     listContent: {
         paddingVertical: 10,
@@ -202,11 +203,11 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
     },
     loadingText: {
         marginTop: 10,
-        color: '#888',
+        color: Theme.colors.textMuted,
         fontSize: 14,
     },
 
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         backgroundColor: '#4CAF50',
         borderWidth: 2,
-        borderColor: '#fff',
+        borderColor: Theme.colors.surface,
     },
     contentContainer: {
         flex: 1,
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
     },
     time: {
         fontSize: 12,
-        color: '#999',
+        color: Theme.colors.textMuted,
         fontWeight: '500',
     },
     bottomRow: {
@@ -267,7 +268,7 @@ const styles = StyleSheet.create({
     },
     lastMessage: {
         fontSize: 15,
-        color: '#666',
+        color: Theme.colors.textMuted,
         flex: 1,
     },
 
@@ -281,12 +282,12 @@ const styles = StyleSheet.create({
     emptyText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#333',
+        color: Theme.colors.text,
         marginBottom: 8,
     },
     emptySubText: {
         fontSize: 14,
-        color: '#999',
+        color: Theme.colors.textMuted,
     },
     badge: {
         backgroundColor: '#FF3B30',
@@ -299,7 +300,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
     },
     badgeText: {
-        color: '#fff',
+        color: Theme.colors.surface,
         fontSize: 11,
         fontWeight: 'bold',
     },

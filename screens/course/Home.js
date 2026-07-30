@@ -9,6 +9,7 @@ import LargeCourseItem from '../../components/items/LargeCourseItem';
 import { MyUserContext } from '../../utils/MyContexts';
 import SmallCourseItem from '../../components/items/SmallCourseItem';
 import BottomSheet from '../../components/views/BottomSheet';
+import Theme from '../../styles/Theme';
 
 const Home = () => {
     const [categories, setCategories] = useState([]);
@@ -145,7 +146,7 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#F5F7FA" />
+            <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.canvas} />
 
             <View style={styles.headerContainer}>
                 <View>
@@ -165,8 +166,8 @@ const Home = () => {
                     value={filter.q}
                     style={styles.searchBar}
                     inputStyle={styles.searchInput}
-                    iconColor="#94A3B8"
-                    placeholderTextColor="#94A3B8"
+                    iconColor={Theme.colors.textMuted}
+                    placeholderTextColor={Theme.colors.textMuted}
                 />
                 <TouchableOpacity
                     style={styles.filterButton}
@@ -175,7 +176,7 @@ const Home = () => {
                 >
                     <FilterIcon
                         size={22}
-                        color={filter.min_price || filter.max_price ? "#1976D2" : "#64748B"}
+                        color={filter.min_price || filter.max_price ? Theme.colors.primary : Theme.colors.textMuted}
                     />
                 </TouchableOpacity>
             </View>
@@ -210,7 +211,7 @@ const Home = () => {
 
             {loading && !refreshing ? (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator color="#1976D2" size="large" />
+                    <ActivityIndicator color={Theme.colors.primary} size="large" />
                 </View>
             ) : (
                 <>
@@ -223,7 +224,7 @@ const Home = () => {
                             onEndReached={loadMore}
                             onEndReachedThreshold={0.3}
                             refreshControl={
-                                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />
+                                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Theme.colors.primary]} />
                             }
                             ListEmptyComponent={
                                 <Text style={styles.emptyText}>Không tìm thấy khóa học nào.</Text>
@@ -271,12 +272,12 @@ const Home = () => {
                 useNativeDriver={true}
                 height={420}
                 customStyles={{
-                    wrapper: { backgroundColor: 'rgba(0,0,0,0.3)' },
-                    draggableIcon: { backgroundColor: '#CBD5E1', width: 50 },
+                    wrapper: { backgroundColor: 'rgba(23,32,51,0.38)' },
+                    draggableIcon: { backgroundColor: Theme.colors.border, width: 50 },
                     container: {
                         borderTopLeftRadius: 24,
                         borderTopRightRadius: 24,
-                        backgroundColor: '#fff',
+                        backgroundColor: Theme.colors.surface,
                         elevation: 20
                     },
                 }}
@@ -296,104 +297,98 @@ export default Home;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F7FA',
-        paddingTop: 10,
+        backgroundColor: Theme.colors.canvas,
+        paddingTop: 14,
     },
     headerContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        marginBottom: 20,
-        marginTop: 10,
+        marginBottom: 22,
+        marginTop: 6,
     },
     greetingText: {
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: '800',
-        color: '#1E293B',
-        letterSpacing: 0.5,
+        color: Theme.colors.text,
+        letterSpacing: -0.4,
     },
     subGreetingText: {
         fontSize: 14,
-        color: '#64748B',
-        marginTop: 4,
+        color: Theme.colors.textMuted,
+        marginTop: 5,
     },
     avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        borderWidth: 2,
-        borderColor: '#fff',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
+        width: 52,
+        height: 52,
+        borderRadius: 26,
+        borderWidth: 3,
+        borderColor: Theme.colors.surface,
+        ...Theme.shadow,
     },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 20,
-        marginBottom: 10,
+        marginBottom: 14,
         gap: 12,
     },
     searchBar: {
         flex: 1,
-        backgroundColor: '#fff',
-        borderRadius: 14,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.md,
         elevation: 0,
         borderWidth: 1,
-        borderColor: '#E2E8F0',
-        height: 50,
+        borderColor: Theme.colors.border,
+        height: 52,
     },
     searchInput: {
-        fontSize: 15,
+        fontSize: 14,
         alignSelf: 'center',
         top: -2,
     },
     filterButton: {
-        width: 50,
-        height: 50,
-        backgroundColor: '#fff',
-        borderRadius: 14,
+        width: 52,
+        height: 52,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.md,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#E2E8F0',
-        shadowColor: '#64748B',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
+        borderColor: Theme.colors.border,
+        ...Theme.shadow,
     },
     sectionHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        marginTop: 24,
-        marginBottom: 12,
+        marginTop: 26,
+        marginBottom: 8,
     },
     sectionTitle: {
-        fontSize: 20,
-        fontWeight: '700',
-        color: '#1E293B',
+        fontSize: 19,
+        fontWeight: '800',
+        color: Theme.colors.text,
     },
     seeAllText: {
         fontSize: 14,
-        color: '#1976D2',
+        color: Theme.colors.primary,
         fontWeight: '600',
     },
     categoriesList: {
         paddingHorizontal: 20,
-        paddingBottom: 8,
+        paddingBottom: 10,
     },
     horizontalList: {
-        paddingHorizontal: 14,
-        paddingBottom: 10,
+        paddingHorizontal: 20,
+        paddingBottom: 12,
     },
     listContent: {
         paddingHorizontal: 20,
-        paddingTop: 10,
+        paddingTop: 4,
+        paddingBottom: 96,
     },
 
     loadingContainer: {
@@ -403,7 +398,7 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         textAlign: 'center',
-        color: '#94A3B8',
+        color: Theme.colors.textMuted,
         marginTop: 40,
         fontSize: 16,
     }

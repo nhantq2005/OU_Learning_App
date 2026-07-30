@@ -7,6 +7,7 @@ import { authApis, endpoints } from '../../utils/Apis';
 import { MyUserContext } from '../../utils/MyContexts';
 import SmallCourseItem from './SmallCourseItem';
 import { Edit, Eye, EyeOff, Trash } from 'lucide-react-native';
+import Theme from '../../styles/Theme';
 
 
 const CourseItem = ({ course, deleteCourse, hideCourse, unhideCourse }) => {
@@ -43,20 +44,20 @@ const CourseItem = ({ course, deleteCourse, hideCourse, unhideCourse }) => {
                             {user.role === 'teacher' && (
                                 <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
                                     <TouchableOpacity onPress={() => deleteCourse(course.id)} style={{ padding: 4 }}>
-                                        <Trash size={20} color="#EF4444" />
+                                        <Trash size={20} color={Theme.colors.danger} />
                                     </TouchableOpacity>
 
                                     <TouchableOpacity onPress={() => nav.navigate('CreateCourse', { courseId: course.id })} style={{ padding: 4, marginLeft: 8 }}>
-                                        <Edit size={20} color="#1976D2" />
+                                        <Edit size={20} color={Theme.colors.primary} />
                                     </TouchableOpacity>
 
                                     {course.active ? (
                                         <TouchableOpacity onPress={() => hideCourse(course.id)} style={{ padding: 4, marginLeft: 8 }}>
-                                            <EyeOff size={20} color="#4B5563" />
+                                            <EyeOff size={20} color={Theme.colors.textMuted} />
                                         </TouchableOpacity>
                                     ) : (
                                         <TouchableOpacity onPress={() => unhideCourse(course.id)} style={{ padding: 4, marginLeft: 8 }}>
-                                            <Eye size={20} color="#4B5563" />
+                                            <Eye size={20} color={Theme.colors.textMuted} />
                                         </TouchableOpacity>
                                     )}
                                 </View>
@@ -101,23 +102,23 @@ const CourseItem = ({ course, deleteCourse, hideCourse, unhideCourse }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F7FA', 
+        backgroundColor: Theme.colors.canvas,
     },
     header: {
         paddingHorizontal: 20,
         paddingTop: 20,
         paddingBottom: 10,
-        backgroundColor: '#F5F7FA',
+        backgroundColor: Theme.colors.canvas,
     },
     headerTitle: {
         fontSize: 28,
         fontWeight: '800',
-        color: '#1E293B',
+        color: Theme.colors.text,
         letterSpacing: 0.5,
     },
     headerSubtitle: {
         fontSize: 14,
-        color: '#64748B',
+        color: Theme.colors.textMuted,
         marginTop: 4,
     },
     centerLoading: {
@@ -132,15 +133,13 @@ const styles = StyleSheet.create({
     },
     card: {
         flexDirection: 'row',
-        backgroundColor: '#fff',
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.md,
         marginBottom: 16,
         overflow: 'hidden',
-        shadowColor: '#64748B',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-        elevation: 3, 
+        borderWidth: 1,
+        borderColor: Theme.colors.border,
+        ...Theme.shadow,
     },
     cardImage: {
         width: 110,
@@ -167,7 +166,7 @@ const styles = StyleSheet.create({
     courseTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1E293B',
+        color: Theme.colors.text,
         marginBottom: 4,
         lineHeight: 22,
     },
@@ -179,17 +178,17 @@ const styles = StyleSheet.create({
     instructorIcon: {
         width: 14,
         height: 14,
-        tintColor: '#94A3B8',
+        tintColor: Theme.colors.textMuted,
         marginRight: 4,
     },
     instructorName: {
         fontSize: 13,
-        color: '#64748B',
+        color: Theme.colors.textMuted,
         fontWeight: '500',
     },
     actionButton: {
-        borderRadius: 8,
-        backgroundColor: '#2563EB', 
+        borderRadius: Theme.radius.pill,
+        backgroundColor: Theme.colors.primary,
         alignSelf: 'flex-start',
     },
     actionButtonLabel: {

@@ -13,6 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
 import { authApis, endpoints } from '../../utils/Apis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Theme from '../../styles/Theme';
 const { width } = Dimensions.get('window');
 
 const EditLesson = () => {
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
         paddingTop: Platform.OS === 'ios' ? 60 : 40,
         paddingHorizontal: 16,
         paddingBottom: 20,
-        backgroundColor: '#FFF',
+        backgroundColor: Theme.colors.surface,
     },
     backButton: {
         width: 40,
@@ -344,10 +345,10 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     card: {
-        backgroundColor: '#FFF',
+        backgroundColor: Theme.colors.surface,
         borderRadius: 16,
         padding: 16,
-        shadowColor: '#000',
+        shadowColor: Theme.colors.text,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 10,
@@ -379,7 +380,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         borderWidth: 1.5,
         borderStyle: 'dashed',
-        backgroundColor: '#FFF',
+        backgroundColor: Theme.colors.surface,
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',

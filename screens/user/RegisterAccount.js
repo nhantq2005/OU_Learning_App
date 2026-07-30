@@ -8,6 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import TextField from "../../components/components/TextField";
 import { RegisterContext } from "../../utils/MyContexts";
 import MyStyles from "../../styles/MyStyles";
+import Theme from '../../styles/Theme';
 
 const { width } = Dimensions.get('window');
 
@@ -76,11 +77,11 @@ const RegisterAccount = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+            <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.surface} />
             
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => nav.goBack()} style={styles.backButton}>
-                    <CircleArrowLeft size={28} color="#333" />
+                    <CircleArrowLeft size={28} color={Theme.colors.text} />
                 </TouchableOpacity>
                 <View style={styles.stepContainer}>
                     <Text style={styles.stepText}>Bước 2 trên 3</Text>
@@ -165,7 +166,7 @@ const RegisterAccount = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
     },
     header: {
         flexDirection: 'row',
@@ -254,7 +255,7 @@ const styles = StyleSheet.create({
     buttonLabel: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#fff',
+        color: Theme.colors.surface,
     },
     footer: {
         flexDirection: 'row',

@@ -10,6 +10,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import TextField from "../../components/components/TextField";
 import { RegisterContext } from "../../utils/MyContexts";
 import Apis, { endpoints } from "../../utils/Apis";
+import Theme from '../../styles/Theme';
 
 
 const RegisterInfo = () => {
@@ -161,11 +162,11 @@ const RegisterInfo = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+            <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.surface} />
 
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => nav.goBack()} style={styles.backButton}>
-                    <CircleArrowLeft size={28} color="#333" />
+                    <CircleArrowLeft size={28} color={Theme.colors.text} />
                 </TouchableOpacity>
                 <View style={styles.stepContainer}>
                     <Text style={styles.stepText}>Bước 3 trên 3</Text>
@@ -194,7 +195,7 @@ const RegisterInfo = () => {
                                 </View>
                             )}
                             <View style={styles.cameraBadge}>
-                                <Camera color="#fff" size={16} />
+                                <Camera color={Theme.colors.surface} size={16} />
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -271,7 +272,7 @@ const RegisterInfo = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
     },
     header: {
         flexDirection: 'row',
@@ -358,7 +359,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 3,
-        borderColor: '#fff',
+        borderColor: Theme.colors.surface,
     },
     formContainer: {
         marginBottom: 20,
@@ -393,7 +394,7 @@ const styles = StyleSheet.create({
         paddingLeft: 0, 
     },
     dropdownContainer: {
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
         borderColor: '#E2E8F0',
         borderRadius: 12,
         marginTop: 4,
@@ -426,7 +427,7 @@ const styles = StyleSheet.create({
     buttonLabel: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#fff',
+        color: Theme.colors.surface,
     },
 });
 

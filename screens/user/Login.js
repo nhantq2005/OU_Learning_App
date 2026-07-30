@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, StatusBar } from "react-native";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Platform, StatusBar } from "react-native";
 import { Button, HelperText, ActivityIndicator } from 'react-native-paper';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Eye, EyeOff, User, Lock } from 'lucide-react-native';
@@ -10,8 +10,64 @@ import { MyUserContext } from "../../utils/MyContexts";
 import TextField from "../../components/components/TextField";
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
+import Theme from '../../styles/Theme';
 const { width } = Dimensions.get('window');
 WebBrowser.maybeCompleteAuthSession();
+
+const GOOGLE_CLIENT_IDS = {
+    ios: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    android: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    web: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+};
+
+const hasGoogleOAuthConfig = Boolean(Platform.select({
+    ios: GOOGLE_CLIENT_IDS.ios,
+    android: GOOGLE_CLIENT_IDS.android,
+    web: GOOGLE_CLIENT_IDS.web,
+    default: false,
+}));
+
+const GoogleLoginButton = ({ loading, onAuthenticated, onError }) => {
+    const [request, response, promptAsync] = Google.useAuthRequest({
+        iosClientId: GOOGLE_CLIENT_IDS.ios,
+        androidClientId: GOOGLE_CLIENT_IDS.android,
+        webClientId: GOOGLE_CLIENT_IDS.web,
+        scopes: ['openid', 'profile', 'email'],
+        selectAccount: true,
+    });
+    const handledResponse = useRef(null);
+
+    useEffect(() => {
+        if (!response || handledResponse.current === response) return;
+        handledResponse.current = response;
+
+        if (response.type === 'success') {
+            const authentication = response.authentication;
+            if (authentication?.accessToken || authentication?.idToken) {
+                onAuthenticated(authentication);
+            } else {
+                onError('Google không trả về thông tin đăng nhập. Vui lòng thử lại.');
+            }
+        } else if (response.type === 'error') {
+            onError('Đăng nhập Google thất bại. Vui lòng thử lại.');
+        }
+    }, [response, onAuthenticated, onError]);
+
+    return (
+        <TouchableOpacity
+            style={[styles.googleButton, (!request || loading) && styles.googleButtonDisabled]}
+            onPress={() => promptAsync()}
+            disabled={!request || loading}
+            activeOpacity={0.8}
+        >
+            <Image
+                source={{ uri: 'https://img.icons8.com/color/48/000000/google-logo.png' }}
+                style={styles.googleIcon}
+            />
+            <Text style={styles.googleText}>Tiếp tục bằng Google</Text>
+        </TouchableOpacity>
+    );
+};
 
 const Login = () => {
     const [loading, setLoading] = useState(false);
@@ -20,28 +76,6 @@ const Login = () => {
     const [user, setUser] = useState({});
     const [, dispatch] = useContext(MyUserContext);
     const nav = useNavigation();
-
- const [request, response, promptAsync] = Google.useAuthRequest({
-        androidClientId: "",
-        webClientId: "",
-    });
-
-    useEffect(() => {
-        if (response) {
-            if (response.type === 'success') {
-                const { authentication } = response;
-                const accessToken = authentication?.accessToken || null;
-                const idToken = authentication?.idToken || null;
-               if (accessToken || idToken) {
-                    handleGoogleLogin(authentication);
-                } else {
-                    setErrorMsg("Không tìm thấy Token từ Google.");
-                }
-            } else if (response.type === 'error') {
-                setErrorMsg("Đăng nhập Google thất bại.");
-            }
-        }
-    }, [response]);
 
     const handleGoogleLogin = async (authentication) => {
         try {
@@ -70,18 +104,18 @@ const Login = () => {
             setLoading(false);
         }
     };
-    const PRIMARY_COLOR = "#1976D2";
+    const PRIMARY_COLOR = Theme.colors.primary;
 
     const info = [
         {
             label: 'Tên đăng nhập',
             field: 'username',
-            leadingIcon: <User color="#64748B" size={20} />
+            leadingIcon: <User color={Theme.colors.textMuted} size={20} />
         },
         {
             label: 'Mật khẩu',
             field: 'password',
-            leadingIcon: <Lock color="#64748B" size={20} />,
+            leadingIcon: <Lock color={Theme.colors.textMuted} size={20} />,
             secureTextEntry: isSecure
         }
     ];
@@ -131,7 +165,7 @@ const Login = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+            <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.canvas} />
             <KeyboardAwareScrollView
                 enableOnAndroid
                 keyboardShouldPersistTaps="handled"
@@ -165,8 +199,8 @@ const Login = () => {
                                     i.field === 'password' ? (
                                         <TouchableOpacity onPress={() => setIsSecure(!isSecure)}>
                                             {isSecure
-                                                ? <EyeOff color="#64748B" size={20} />
-                                                : <Eye color="#1976D2" size={20} />
+                                                ? <EyeOff color={Theme.colors.textMuted} size={20} />
+                                                : <Eye color={Theme.colors.primary} size={20} />
                                             }
                                         </TouchableOpacity>
                                     ) : null
@@ -198,19 +232,21 @@ const Login = () => {
                     </Button>
                 </View>
 
-                <View style={styles.dividerContainer}>
-                    <View style={styles.line} />
-                    <Text style={styles.dividerText}>Hoặc đăng nhập với</Text>
-                    <View style={styles.line} />
-                </View>
+                {hasGoogleOAuthConfig && (
+                    <>
+                        <View style={styles.dividerContainer}>
+                            <View style={styles.line} />
+                            <Text style={styles.dividerText}>Hoặc đăng nhập với</Text>
+                            <View style={styles.line} />
+                        </View>
 
-                <TouchableOpacity style={styles.googleButton} onPress={() => promptAsync()} activeOpacity={0.8}>
-                    <Image
-                        source={{ uri: 'https://img.icons8.com/color/48/000000/google-logo.png' }}
-                        style={styles.googleIcon}
-                    />
-                    <Text style={styles.googleText}>Tiếp tục bằng Google</Text>
-                </TouchableOpacity>
+                        <GoogleLoginButton
+                            loading={loading}
+                            onAuthenticated={handleGoogleLogin}
+                            onError={setErrorMsg}
+                        />
+                    </>
+                )}
 
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>Bạn chưa có tài khoản? </Text>
@@ -228,51 +264,51 @@ const Login = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.canvas,
     },
     scrollContent: {
         flexGrow: 1,
         justifyContent: 'center',
         paddingHorizontal: 24,
-        paddingBottom: 30,
+        paddingBottom: 36,
     },
     header: {
         alignItems: 'center',
         marginBottom: 30,
-        marginTop: 20,
+        marginTop: 28,
     },
     logo: {
-        width: 120,
-        height: 120,
-        marginBottom: 16,
+        width: 104,
+        height: 104,
+        marginBottom: 18,
     },
     title: {
-        fontSize: 26,
+        fontSize: 28,
         fontWeight: '800',
-        color: '#1E293B',
+        color: Theme.colors.text,
         marginBottom: 8,
     },
     subtitle: {
         fontSize: 15,
-        color: '#64748B',
+        color: Theme.colors.textMuted,
         textAlign: 'center',
     },
     formContainer: {
-        marginBottom: 20,
+        marginBottom: 24,
     },
     inputWrapper: {
-        marginBottom: 16,
+        marginBottom: 12,
     },
     textField: {
-        backgroundColor: '#F8FAFC',
-        borderRadius: 12,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.md,
     },
     forgotPassContainer: {
         alignSelf: 'flex-end',
         marginBottom: 20,
     },
     forgotPassText: {
-        color: '#1976D2',
+        color: Theme.colors.primary,
         fontWeight: '600',
         fontSize: 14,
     },
@@ -282,18 +318,14 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     loginButton: {
-        backgroundColor: '#1976D2',
-        borderRadius: 14,
-        elevation: 4,
-        shadowColor: '#1976D2',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
+        backgroundColor: Theme.colors.primary,
+        borderRadius: Theme.radius.md,
+        ...Theme.shadow,
     },
     loginButtonLabel: {
         fontSize: 16,
-        fontWeight: 'bold',
-        color: '#fff',
+        fontWeight: '800',
+        color: Theme.colors.surface,
     },
     dividerContainer: {
         flexDirection: 'row',
@@ -303,11 +335,11 @@ const styles = StyleSheet.create({
     line: {
         flex: 1,
         height: 1,
-        backgroundColor: '#E2E8F0',
+        backgroundColor: Theme.colors.border,
     },
     dividerText: {
         marginHorizontal: 12,
-        color: '#94A3B8',
+        color: Theme.colors.textMuted,
         fontSize: 14,
         fontWeight: '500',
     },
@@ -315,17 +347,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
         borderWidth: 1,
-        borderColor: '#E2E8F0',
-        borderRadius: 14,
-        paddingVertical: 12,
+        borderColor: Theme.colors.border,
+        borderRadius: Theme.radius.md,
+        paddingVertical: 13,
         marginBottom: 30,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 3,
-        elevation: 2,
+    },
+    googleButtonDisabled: {
+        opacity: 0.55,
     },
     googleIcon: {
         width: 24,
@@ -335,7 +365,7 @@ const styles = StyleSheet.create({
     googleText: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#1E293B',
+        color: Theme.colors.text,
     },
     footer: {
         flexDirection: 'row',
@@ -343,12 +373,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     footerText: {
-        color: '#64748B',
+        color: Theme.colors.textMuted,
         fontSize: 15,
     },
     registerLink: {
-        color: '#1976D2',
-        fontWeight: 'bold',
+        color: Theme.colors.primary,
+        fontWeight: '800',
         fontSize: 15,
     },
 });

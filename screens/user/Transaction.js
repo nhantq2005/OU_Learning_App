@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Apis, { authApis, endpoints } from '../../utils/Apis';
 import moment from 'moment';
 import 'moment/locale/vi';
+import Theme from '../../styles/Theme';
 
 moment.locale('vi');
 
@@ -18,7 +19,7 @@ const getStatusColor = (status) => {
         case 'pending': return '#F57C00'; 
         case 'failed': return '#D32F2F'; 
         case 'canceled': return '#757575'; 
-        default: return '#000';
+        default: return Theme.colors.text;
     }
 };
 
@@ -91,7 +92,7 @@ const Transaction = () => {
                             size={40}
                             icon={item.status === 'success' ? "check" : "history"}
                             color={getStatusColor(item.status)}
-                            style={{ backgroundColor: '#F5F5F5' }}
+                            style={{ backgroundColor: Theme.colors.canvas }}
                         />
                     </View>
 
@@ -110,10 +111,10 @@ const Transaction = () => {
                         </Text>
                     </View>
                 </View>}
-                ItemSeparatorComponent={() => <Divider style={{ backgroundColor: '#EEE' }} />}
+                ItemSeparatorComponent={() => <Divider style={{ backgroundColor: Theme.colors.surfaceMuted }} />}
                 contentContainerStyle={styles.listContent}
                 refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#000"]} />
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Theme.colors.text]} />
                 }
                 onEndReached={loadMore}
                 onEndReachedThreshold={0.3}
@@ -128,7 +129,7 @@ export default Transaction;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
     },
     center: {
         flex: 1,
@@ -137,14 +138,14 @@ const styles = StyleSheet.create({
     },
     header: {
         padding: 16,
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
         borderBottomWidth: 1,
         borderBottomColor: '#f0f0f0',
     },
     headerTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000',
+        color: Theme.colors.text,
     },
     listContent: {
         paddingBottom: 20,
@@ -164,13 +165,13 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 15,
-        color: '#333',
+        color: Theme.colors.text,
         fontWeight: '500',
         marginBottom: 4,
     },
     date: {
         fontSize: 13,
-        color: '#888',
+        color: Theme.colors.textMuted,
     },
     rightContainer: {
         alignItems: 'flex-end',
@@ -179,11 +180,11 @@ const styles = StyleSheet.create({
     amount: {
         fontSize: 15,
         fontWeight: 'bold',
-        color: '#000',
+        color: Theme.colors.text,
     },
     emptyText: {
         textAlign: 'center',
         marginTop: 50,
-        color: '#999',
+        color: Theme.colors.textMuted,
     }
 });

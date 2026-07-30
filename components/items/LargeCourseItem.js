@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { Star, Clock, User } from 'lucide-react-native'; 
+import Theme from '../../styles/Theme';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.6; 
@@ -39,7 +40,7 @@ const LargeCourseItem = ({ course }) => {
                     resizeMode="cover"
                 />
                 <View style={styles.categoryBadge}>
-                    <Text style={styles.categoryText}>{course.category.name}</Text>
+                    <Text style={styles.categoryText}>{course.category?.name || 'Khóa học'}</Text>
                 </View>
             </View>
 
@@ -49,22 +50,22 @@ const LargeCourseItem = ({ course }) => {
                 </Text>
 
                 <View style={styles.row}>
-                    <User size={14} color="#666" style={{ marginRight: 4 }} />
+                    <User size={14} color={Theme.colors.textMuted} style={{ marginRight: 5 }} />
                     <Text style={styles.instructor} numberOfLines={1}>
-                        {course.instructor.last_name + " " + course.instructor.first_name}
+                        {`${course.instructor?.last_name || ''} ${course.instructor?.first_name || ''}`.trim()}
                     </Text>
                 </View>
 
                 <View style={styles.metaContainer}>
                     <View style={styles.metaItem}>
-                        <Star size={14} color="#FFD700" fill="#FFD700" style={{ marginRight: 4 }} />
-                        <Text style={styles.metaText}>{course.avg_rating.toFixed(1)}</Text>
+                        <Star size={14} color={Theme.colors.warning} fill={Theme.colors.warning} style={{ marginRight: 4 }} />
+                        <Text style={styles.metaText}>{Number(course.avg_rating || 0).toFixed(1)}</Text>
                     </View>
                     
                     <View style={styles.separator} />
 
                     <View style={styles.metaItem}>
-                        <Clock size={14} color="#666" style={{ marginRight: 4 }} />
+                        <Clock size={14} color={Theme.colors.textMuted} style={{ marginRight: 4 }} />
                         <Text style={styles.metaText}>{convertDuration(course.total_duration)}</Text>
                     </View>
                 </View>
@@ -80,87 +81,86 @@ const LargeCourseItem = ({ course }) => {
 const styles = StyleSheet.create({
     container: {
         width: CARD_WIDTH,
-        backgroundColor: '#fff',
-        borderRadius: 16,
-        marginRight: 16,
-        marginVertical: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-        overflow: 'visible',
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.md,
+        marginRight: 14,
+        marginVertical: 8,
+        borderWidth: 1,
+        borderColor: Theme.colors.border,
+        ...Theme.shadow,
+        overflow: 'hidden',
     },
     imageContainer: {
         position: 'relative',
     },
     image: {
         width: '100%',
-        height: 150, 
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
+        height: 158,
+        borderTopLeftRadius: Theme.radius.md,
+        borderTopRightRadius: Theme.radius.md,
     },
     categoryBadge: {
         position: 'absolute',
-        top: 10,
-        left: 10,
-        backgroundColor: 'rgba(0,0,0,0.6)',
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 8,
+        top: 12,
+        left: 12,
+        backgroundColor: 'rgba(23,32,51,0.78)',
+        paddingHorizontal: 9,
+        paddingVertical: 5,
+        borderRadius: Theme.radius.pill,
     },
     categoryText: {
         color: '#fff',
         fontSize: 10,
-        fontWeight: '700',
+        fontWeight: '800',
         textTransform: 'uppercase',
     },
     content: {
-        padding: 12,
+        padding: 14,
     },
     title: {
         fontSize: 16,
-        fontWeight: 'bold',
-        color: '#1a1a1a', 
+        fontWeight: '800',
+        color: Theme.colors.text,
         lineHeight: 22,
-        marginBottom: 6,
-        height: 44, 
+        marginBottom: 8,
+        height: 44,
     },
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 12,
     },
     instructor: {
-        color: '#666',
+        color: Theme.colors.textMuted,
         fontSize: 13,
-        fontWeight: '500',
+        fontWeight: '600',
     },
     metaContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F5F7FA', 
-        padding: 8,
-        borderRadius: 8,
-        marginBottom: 10,
+        backgroundColor: Theme.colors.surfaceMuted,
+        paddingVertical: 8,
+        paddingHorizontal: 9,
+        borderRadius: 10,
+        marginBottom: 12,
     },
     metaItem: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     metaText: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#333',
+        fontSize: 11,
+        fontWeight: '700',
+        color: Theme.colors.text,
     },
     metaSubText: {
-        color: '#888',
+        color: Theme.colors.textMuted,
         fontWeight: '400',
     },
     separator: {
         width: 1,
         height: 12,
-        backgroundColor: '#ddd',
+        backgroundColor: Theme.colors.border,
         marginHorizontal: 10,
     },
     footer: {
@@ -170,9 +170,9 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     price: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#1976D2', 
+        fontSize: 17,
+        fontWeight: '800',
+        color: Theme.colors.primary,
     },
 });
 

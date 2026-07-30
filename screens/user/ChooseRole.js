@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { CircleArrowLeft, CheckCircle2 } from "lucide-react-native";
 import { RegisterContext } from "../../utils/MyContexts";
 import RoleCard from "../../components/components/RoleCard";
+import Theme from '../../styles/Theme';
 
 
 const ChooseRole = () => {
@@ -26,7 +27,7 @@ const ChooseRole = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+            <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.surface} />
 
             <View style={styles.header}>
                 <TouchableOpacity 
@@ -34,7 +35,7 @@ const ChooseRole = () => {
                     style={styles.backButton}
                     hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                 >
-                    <CircleArrowLeft size={32} color="#333" />
+                    <CircleArrowLeft size={32} color={Theme.colors.text} />
                 </TouchableOpacity>
             </View>
 
@@ -86,7 +87,7 @@ export default ChooseRole;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
     },
     header: {
         paddingHorizontal: 20,
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
     },
     footer: {
         padding: 24,
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
     },
     continueButton: {
         borderRadius: 16,
@@ -146,6 +147,6 @@ const styles = StyleSheet.create({
     buttonLabel: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#fff',
+        color: Theme.colors.surface,
     },
 });

@@ -10,6 +10,7 @@ import LessonsView from "../../components/views/LessonsView";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MyUserContext } from "../../utils/MyContexts";
 import MyStyles from "../../styles/MyStyles";
+import Theme from '../../styles/Theme';
 
 const LessonDetail = () => {
     const route = useRoute();
@@ -211,7 +212,7 @@ const LessonDetail = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#000" />
+            <StatusBar barStyle="light-content" backgroundColor={Theme.colors.text} />
 
             <View style={styles.videoContainer}>
                 <VideoView
@@ -270,7 +271,7 @@ const LessonDetail = () => {
                 <FAB
                     icon="plus"
                     style={MyStyles.fab}
-                    color="#fff"
+                    color={Theme.colors.surface}
                     onPress={() => nav.navigate('EditLesson', {  courseId: courseId })}
                 />
             )}
@@ -298,7 +299,7 @@ const styles = StyleSheet.create({
     videoContainer: {
         width: '100%',
         aspectRatio: 16 / 9,
-        backgroundColor: '#000',
+        backgroundColor: Theme.colors.text,
         elevation: 4, 
     },
     video: {
@@ -326,7 +327,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     descriptionBox: {
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
         padding: 16,
         borderRadius: 12,
         borderWidth: 1,

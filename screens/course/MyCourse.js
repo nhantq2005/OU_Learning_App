@@ -9,6 +9,7 @@ import SmallCourseItem from '../../components/items/SmallCourseItem';
 import { Edit, Eye, EyeOff, Trash } from 'lucide-react-native';
 import CourseItem from '../../components/items/CourseItem';
 import MyStyles from '../../styles/MyStyles';
+import Theme from '../../styles/Theme';
 
 
 const MyCourse = () => {
@@ -150,7 +151,7 @@ const MyCourse = () => {
 
             {loading && !refreshing ? (
                 <View style={styles.centerLoading}>
-                    <ActivityIndicator animating={true} color="#1565C0" size="large" />
+                    <ActivityIndicator animating={true} color={Theme.colors.primary} size="large" />
                 </View>
             ) : (
                 <FlatList
@@ -162,7 +163,7 @@ const MyCourse = () => {
                     onEndReachedThreshold={0.3}
                     showsVerticalScrollIndicator={false}
                     refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1565C0']} />
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Theme.colors.primary]} />
                     }
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
@@ -170,7 +171,7 @@ const MyCourse = () => {
                                 source={{ uri: 'https://cdni.iconscout.com/illustration/premium/thumb/empty-box-4085812-3385481.png' }}
                                 style={{ width: 200, height: 200, opacity: 0.8 }}
                             />
-                            <Text style={{ color: '#999', marginTop: 10 }}>Bạn chưa đăng ký khóa học nào.</Text>
+                            <Text style={{ color: Theme.colors.textMuted, marginTop: 10 }}>Bạn chưa đăng ký khóa học nào.</Text>
                         </View>
                     }
                 />
@@ -180,7 +181,7 @@ const MyCourse = () => {
                 <FAB
                     icon="plus"
                     style={MyStyles.fab}
-                    color="#fff"
+                    color={Theme.colors.surface}
                     onPress={() => nav.navigate('CreateCourse')}
                 />
             )}
@@ -193,23 +194,23 @@ export default MyCourse;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F7FA',
+        backgroundColor: Theme.colors.canvas,
     },
     header: {
         paddingHorizontal: 20,
         paddingTop: 20,
         paddingBottom: 10,
-        backgroundColor: '#F5F7FA',
+        backgroundColor: Theme.colors.canvas,
     },
     headerTitle: {
         fontSize: 28,
         fontWeight: '800',
-        color: '#1E293B',
-        letterSpacing: 0.5,
+        color: Theme.colors.text,
+        letterSpacing: -0.4,
     },
     headerSubtitle: {
         fontSize: 14,
-        color: '#64748B',
+        color: Theme.colors.textMuted,
         marginTop: 4,
     },
     centerLoading: {
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
     },
     card: {
         flexDirection: 'row',
-        backgroundColor: '#fff',
+        backgroundColor: Theme.colors.surface,
         borderRadius: 16,
         marginBottom: 16,
         overflow: 'hidden',

@@ -1,30 +1,43 @@
 import { TextInput } from 'react-native-paper';
-import { View } from 'react-native';
-import Spacing from '../../styles/Spacing';
+import { StyleSheet, View } from 'react-native';
+import Theme from '../../styles/Theme';
 
-const TextField = ({ left, right, ...props }) => {
+const TextField = ({ left, right, style, ...props }) => {
 
     return (
         <View
-            style={{
-                borderRadius: 20,
-                backgroundColor: 'white',
-                elevation: 8,
-                margin: Spacing.sm,
-                width: '100%',
-            }}
+            style={[styles.container, style]}
         >
             <TextInput
                 {...props}
                 autoCapitalize="none"
                 mode="outlined"
-                outlineStyle={{ borderWidth: 0, borderRadius: 20 }}
-                style={{ backgroundColor: 'transparent' }}
+                outlineColor={Theme.colors.border}
+                activeOutlineColor={Theme.colors.primary}
+                outlineStyle={styles.outline}
+                style={styles.input}
                 left={left ? <TextInput.Icon icon={() => left} /> : null}
                 right={right ? <TextInput.Icon icon={() => right} /> : null}
             />
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        width: '100%',
+        borderRadius: Theme.radius.md,
+        overflow: 'hidden',
+        backgroundColor: Theme.colors.surface,
+    },
+    outline: {
+        borderRadius: Theme.radius.md,
+        borderWidth: 1,
+    },
+    input: {
+        backgroundColor: Theme.colors.surface,
+        fontSize: 15,
+    },
+});
 
 export default TextField;

@@ -13,6 +13,7 @@ import { Star, User, Clock, MessageCircle } from "lucide-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MyUserContext } from "../../utils/MyContexts";
 import StudentView from "../../components/views/StudentView";
+import Theme from '../../styles/Theme';
 
 const { width } = Dimensions.get('window');
 
@@ -80,8 +81,8 @@ const CourseDetail = () => {
     if (loading || !currentCourse) {
         return (
             <View style={styles.centerContainer}>
-                <ActivityIndicator size="large" color="#1976D2" />
-                <Text style={{ marginTop: 10, color: '#666' }}>Đang tải khóa học...</Text>
+                <ActivityIndicator size="large" color={Theme.colors.primary} />
+                <Text style={{ marginTop: 10, color: Theme.colors.textMuted }}>Đang tải khóa học...</Text>
             </View>
         );
     }
@@ -98,7 +99,7 @@ const CourseDetail = () => {
 
 
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="#000" />
+            <StatusBar barStyle="light-content" backgroundColor={Theme.colors.text} />
 
             <View style={styles.videoContainer}>
                 <VideoView
@@ -115,7 +116,7 @@ const CourseDetail = () => {
 
                     <View style={styles.metaRow}>
                         <View style={styles.instructorInfo}>
-                            <User size={16} color="#666" />
+                            <User size={16} color={Theme.colors.textMuted} />
                             <Text style={styles.instructorName}>
                                 {currentCourse.instructor.last_name} {currentCourse.instructor.first_name}
                             </Text>
@@ -131,7 +132,7 @@ const CourseDetail = () => {
 
                                     }}
                                 >
-                                    <MessageCircle size={16} color="#fff" style={{ marginRight: 6 }} />
+                                    <MessageCircle size={16} color={Theme.colors.surface} style={{ marginRight: 6 }} />
                                     <Text style={styles.messageButtonText}>Nhắn tin</Text>
                                 </TouchableOpacity>
                             )}
@@ -139,7 +140,7 @@ const CourseDetail = () => {
 
                         <View style={styles.ratingBadge}>
                             <Text style={styles.ratingText}>{(currentCourse.avg_rating || 0).toFixed(1)}</Text>
-                            <Star size={14} color="#FFD700" fill="#FFD700" />
+                            <Star size={14} color={Theme.colors.warning} fill={Theme.colors.warning} />
                         </View>
                     </View>
 
@@ -154,7 +155,7 @@ const CourseDetail = () => {
                     buttons={buttons}
                     density="medium"
                     style={styles.tabs}
-                    theme={{ colors: { secondaryContainer: '#E3F2FD', onSecondaryContainer: '#1976D2' } }}
+                    theme={{ colors: { secondaryContainer: Theme.colors.primarySoft, onSecondaryContainer: Theme.colors.primary } }}
                 />
 
                 <View style={styles.viewContainer}>
@@ -179,7 +180,7 @@ export default CourseDetail;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F7FA',
+        backgroundColor: Theme.colors.canvas,
     },
     centerContainer: {
         flex: 1,
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
     videoContainer: {
         width: '100%',
         height: width * (9 / 16),
-        backgroundColor: '#000',
+        backgroundColor: Theme.colors.text,
     },
     video: {
         width: '100%',
@@ -197,19 +198,19 @@ const styles = StyleSheet.create({
     },
     contentSurface: {
         flex: 1,
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        marginTop: -15,
+        backgroundColor: Theme.colors.surface,
+        borderTopLeftRadius: Theme.radius.lg,
+        borderTopRightRadius: Theme.radius.lg,
+        marginTop: -18,
         paddingHorizontal: 20,
         paddingTop: 24,
         paddingBottom: 20,
         minHeight: 500,
     },
     title: {
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: '800',
-        color: '#212121',
+        color: Theme.colors.text,
         marginBottom: 8,
         lineHeight: 30,
     },
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 12,
+        marginBottom: 14,
     },
     instructorInfo: {
         flexDirection: 'row',
@@ -229,30 +230,26 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginLeft: 12,
-        backgroundColor: '#1976D2',
-        borderRadius: 8,
+        backgroundColor: Theme.colors.primary,
+        borderRadius: Theme.radius.pill,
         paddingHorizontal: 10,
         paddingVertical: 5,
-        shadowColor: '#1976D2',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.12,
-        shadowRadius: 4,
-        elevation: 2,
+        ...Theme.shadow,
     },
     messageButtonText: {
-        color: '#fff',
-        fontWeight: '600',
+        color: Theme.colors.surface,
+        fontWeight: '700',
         fontSize: 14,
     },
     instructorName: {
         fontSize: 14,
-        color: '#616161',
-        fontWeight: '500',
+        color: Theme.colors.textMuted,
+        fontWeight: '600',
     },
     ratingBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF8E1',
+        backgroundColor: Theme.colors.warningSoft,
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 8,
@@ -261,12 +258,12 @@ const styles = StyleSheet.create({
     ratingText: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#F57F17',
+        color: '#A65B00',
     },
     price: {
         fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1976D2',
+        fontWeight: '800',
+        color: Theme.colors.primary,
     },
     tabs: {
         marginBottom: 20,

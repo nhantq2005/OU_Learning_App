@@ -8,6 +8,8 @@ import MessageNavigation from './MessageNavigation';
 import { useContext } from 'react';
 import { NotificationContext } from '../utils/MyContexts';
 import AccountNavigation from './AccountNavigation';
+import { StyleSheet, View } from 'react-native';
+import Theme from '../styles/Theme';
 
 
 const TabNavigation = () => {
@@ -17,8 +19,11 @@ const TabNavigation = () => {
         <Tab.Navigator
             screenOptions={{
                 headerShown: false,
-                tabBarActiveTintColor: '#1976D2',
-                tabBarInactiveTintColor: '#999',
+                tabBarActiveTintColor: Theme.colors.primary,
+                tabBarInactiveTintColor: Theme.colors.textMuted,
+                tabBarStyle: styles.tabBar,
+                tabBarItemStyle: styles.tabItem,
+                tabBarLabelStyle: styles.tabLabel,
             }}
         >
             <Tab.Screen
@@ -26,8 +31,10 @@ const TabNavigation = () => {
                 component={StackNavigation}
                 options={{
                     title: 'Trang chủ',
-                    tabBarIcon: ({ color, size }) => (
-                        <HomeIcon color={color} size={size} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+                            <HomeIcon color={color} size={20} strokeWidth={focused ? 2.6 : 2} />
+                        </View>
                     ),
                 }}
             />
@@ -37,8 +44,10 @@ const TabNavigation = () => {
                 component={MyCourseNavigation}
                 options={{
                     title: 'Khóa học của tôi',
-                    tabBarIcon: ({ color, size }) => (
-                        <BookOpen color={color} size={size} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+                            <BookOpen color={color} size={20} strokeWidth={focused ? 2.6 : 2} />
+                        </View>
                     ),
                 }}
             />
@@ -48,8 +57,10 @@ const TabNavigation = () => {
                 component={MessageNavigation}
                 options={{
                     title: 'Tin nhắn',
-                    tabBarIcon: ({ color, size }) => (
-                        <MessageCircleMore color={color} size={size} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+                            <MessageCircleMore color={color} size={20} strokeWidth={focused ? 2.6 : 2} />
+                        </View>
                     ),
                     tabBarBadge: unreadCount > 0 ? unreadCount : null,
                 }}
@@ -61,8 +72,10 @@ const TabNavigation = () => {
                 component={AccountNavigation}
                 options={{
                     title: 'Người dùng',
-                    tabBarIcon: ({ color, size }) => (
-                        <User color={color} size={size} />
+                    tabBarIcon: ({ color, focused }) => (
+                        <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+                            <User color={color} size={20} strokeWidth={focused ? 2.6 : 2} />
+                        </View>
                     ),
                 }}
             />
@@ -71,3 +84,32 @@ const TabNavigation = () => {
 };
 
 export default TabNavigation;
+
+const styles = StyleSheet.create({
+    tabBar: {
+        height: 72,
+        paddingTop: 7,
+        paddingBottom: 9,
+        borderTopWidth: 0,
+        backgroundColor: Theme.colors.surface,
+        ...Theme.shadow,
+    },
+    tabItem: {
+        borderRadius: Theme.radius.md,
+    },
+    tabLabel: {
+        fontSize: 10,
+        fontWeight: '700',
+        marginTop: 1,
+    },
+    iconWrap: {
+        width: 38,
+        height: 28,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: Theme.radius.pill,
+    },
+    iconWrapActive: {
+        backgroundColor: Theme.colors.primarySoft,
+    },
+});

@@ -2,6 +2,7 @@ import {View, Image, Animated} from "react-native";
 import MyStyles from "../../styles/MyStyles";
 import {useEffect, useRef} from "react";
 import { useNavigation } from "@react-navigation/native";
+import Theme from '../../styles/Theme';
 
 
 
