@@ -1,22 +1,22 @@
 const Theme = {
     colors: {
-        primary: '#4F46E5',
-        primaryPressed: '#3730A3',
-        primarySoft: '#EEF2FF',
-        secondary: '#0F766E',
-        secondarySoft: '#E6FFFA',
-        canvas: '#F7F8FC',
+        primary: '#2563EB',       // Ocean Blue
+        primaryPressed: '#1D4ED8', // Darker Blue
+        primarySoft: '#EFF6FF',    // Light Blue
+        secondary: '#0EA5E9',      // Sky Blue accent
+        secondarySoft: '#F0F9FF',
+        canvas: '#F8FAFC',         // Slate 50
         surface: '#FFFFFF',
-        surfaceMuted: '#F1F4F9',
-        text: '#172033',
-        textMuted: '#6B778C',
-        border: '#E3E8F2',
-        warning: '#F59E0B',
-        warningSoft: '#FFF7E6',
-        danger: '#E5484D',
-        dangerSoft: '#FFF1F2',
-        success: '#16A34A',
-        successSoft: '#ECFDF3',
+        surfaceMuted: '#F1F5F9',   // Slate 100
+        text: '#0F172A',           // Slate 900
+        textMuted: '#64748B',      // Slate 500
+        border: '#E2E8F0',         // Slate 200
+        warning: '#F59E0B',        // Amber 500
+        warningSoft: '#FFFBEB',
+        danger: '#EF4444',         // Red 500
+        dangerSoft: '#FEF2F2',
+        success: '#10B981',        // Emerald 500
+        successSoft: '#ECFDF5',
     },
     radius: {
         sm: 10,
