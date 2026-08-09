@@ -1,20 +1,40 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home as HomeIcon, User, LogIn, UserPlus, BookOpen } from 'lucide-react-native';
-import Account from '../screens/user/Account';
-import { MessageCircleMore } from 'lucide-react-native/icons';
-import StackNavigation from './StackNavigation';
-import MyCourseNavigation from './MyCourseNavigation';
-import MessageNavigation from './MessageNavigation';
+import { Home as HomeIcon, User, BookOpen, MessageCircleMore } from 'lucide-react-native';
 import { useContext } from 'react';
-import { NotificationContext } from '../utils/MyContexts';
-import AccountNavigation from './AccountNavigation';
+import { NotificationContext, MyUserContext } from '../utils/MyContexts';
 import { StyleSheet, View } from 'react-native';
 import Theme from '../styles/Theme';
+import Home from '../screens/course/Home';
+import Statistic from '../screens/teacher/Statistic';
+import MyCourse from '../screens/course/MyCourse';
+import Message from '../screens/message/Message';
+import Account from '../screens/user/Account';
+import { RegisterProvider } from '../utils/providers/RegisterProvider';
 
+const Tab = createBottomTabNavigator();
+
+const HomeTab = (props) => {
+    const [user] = useContext(MyUserContext);
+    return user?.role === 'teacher' ? <Statistic {...props} /> : <Home {...props} />;
+};
+
+const AccountTab = (props) => (
+    <RegisterProvider>
+        <Account {...props} />
+    </RegisterProvider>
+);
 
 const TabNavigation = () => {
-    const Tab = createBottomTabNavigator();
+
     const unreadCount = useContext(NotificationContext);
+
+    const TABS = [
+        { name: 'HomeMain', component: HomeTab, title: 'Trang chủ', Icon: HomeIcon },
+        { name: 'MyCourses', component: MyCourse, title: 'Khóa học của tôi', Icon: BookOpen },
+        { name: 'Messages', component: Message, title: 'Tin nhắn', Icon: MessageCircleMore, badge: unreadCount > 0 ? unreadCount : null },
+        { name: 'Profile', component: AccountTab, title: 'Người dùng', Icon: User },
+    ];
+
     return (
         <Tab.Navigator
             screenOptions={{
@@ -26,59 +46,22 @@ const TabNavigation = () => {
                 tabBarLabelStyle: styles.tabLabel,
             }}
         >
-            <Tab.Screen
-                name="HomeMain"
-                component={StackNavigation}
-                options={{
-                    title: 'Trang chủ',
-                    tabBarIcon: ({ color, focused }) => (
-                        <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
-                            <HomeIcon color={color} size={20} strokeWidth={focused ? 2.6 : 2} />
-                        </View>
-                    ),
-                }}
-            />
-
-            <Tab.Screen
-                name="MyCourses"
-                component={MyCourseNavigation}
-                options={{
-                    title: 'Khóa học của tôi',
-                    tabBarIcon: ({ color, focused }) => (
-                        <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
-                            <BookOpen color={color} size={20} strokeWidth={focused ? 2.6 : 2} />
-                        </View>
-                    ),
-                }}
-            />
-
-            <Tab.Screen
-                name="Messages"
-                component={MessageNavigation}
-                options={{
-                    title: 'Tin nhắn',
-                    tabBarIcon: ({ color, focused }) => (
-                        <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
-                            <MessageCircleMore color={color} size={20} strokeWidth={focused ? 2.6 : 2} />
-                        </View>
-                    ),
-                    tabBarBadge: unreadCount > 0 ? unreadCount : null,
-                }}
-            
-            />
-
-            <Tab.Screen
-                name="Profile"
-                component={AccountNavigation}
-                options={{
-                    title: 'Người dùng',
-                    tabBarIcon: ({ color, focused }) => (
-                        <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
-                            <User color={color} size={20} strokeWidth={focused ? 2.6 : 2} />
-                        </View>
-                    ),
-                }}
-            />
+            {TABS.map(({ name, component, title, Icon, badge }) => (
+                <Tab.Screen
+                    key={name}
+                    name={name}
+                    component={component}
+                    options={{
+                        title,
+                        ...(badge !== undefined && { tabBarBadge: badge }),
+                        tabBarIcon: ({ color, focused }) => (
+                            <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+                                <Icon color={color} size={20} strokeWidth={focused ? 2.6 : 2} />
+                            </View>
+                        ),
+                    }}
+                />
+            ))}
         </Tab.Navigator>
     );
 };
@@ -87,27 +70,30 @@ export default TabNavigation;
 
 const styles = StyleSheet.create({
     tabBar: {
-        height: 72,
-        paddingTop: 7,
-        paddingBottom: 9,
-        borderTopWidth: 0,
+        height: 68,
+        paddingTop: 8,
+        paddingBottom: 10,
+        borderTopWidth: 1,
+        borderTopColor: '#f0f0f0',
         backgroundColor: Theme.colors.surface,
-        ...Theme.shadow,
+        elevation: 0,
+        shadowOpacity: 0,
     },
     tabItem: {
-        borderRadius: Theme.radius.md,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     tabLabel: {
-        fontSize: 10,
-        fontWeight: '700',
-        marginTop: 1,
+        fontSize: 11,
+        fontWeight: '600',
+        marginTop: 4,
     },
     iconWrap: {
-        width: 38,
+        width: 48,
         height: 28,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: Theme.radius.pill,
+        borderRadius: 14, // Tạo hình viên thuốc bo tròn vừa phải
     },
     iconWrapActive: {
         backgroundColor: Theme.colors.primarySoft,

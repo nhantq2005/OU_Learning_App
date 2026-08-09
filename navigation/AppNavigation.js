@@ -1,9 +1,8 @@
 import { useContext } from "react";
 import { MyUserContext } from "../utils/MyContexts";
 import { NavigationContainer } from "@react-navigation/native";
-import TabNavigation from "./TabNavigation";
+import MainNavigation from "./MainNavigation";
 import AuthNavigation from "./AuthNavigation";
-
 
 const AppNavigation = () => {
     const [user,] = useContext(MyUserContext);
@@ -14,7 +13,7 @@ const AppNavigation = () => {
                 user === null ?
                     <AuthNavigation />
                     :
-                    <TabNavigation />
+                    <MainNavigation />
             }
         </NavigationContainer>
     );
