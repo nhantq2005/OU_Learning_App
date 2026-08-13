@@ -12,24 +12,24 @@ const LessonsView = ({ lessons, onPressLesson, refresh, currentLessonId, deleteL
 
     return (
         <>
-        {loading ? <ActivityIndicator animating={true} /> :(
-        <FlatList
-            data={safeLessons}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} colors={['#1565C0']} />}
-            onEndReached={() => {
-                if (hasNext && !loading) {
-                    loadMore();
-                }
-            }}
-            onEndReachedThreshold={0.5}
-            renderItem={({ item }) => (
-                <LessonItem lesson={item} onPressLesson={onPressLesson} currentLessonId={currentLessonId} deleteLesson={deleteLesson} hideLesson={hideLesson} unhideLesson={unhideLesson} />
-            )}
-            ListEmptyComponent={<Text style={{padding: 20, textAlign: 'center'}}>Chưa có bài học nào.</Text>}
+            {loading ? <ActivityIndicator animating={true} /> : (
+                <FlatList
+                    data={safeLessons}
+                    keyExtractor={(item) => item.id.toString()}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} colors={['#1565C0']} />}
+                    onEndReached={() => {
+                        if (hasNext && !loading) {
+                            loadMore();
+                        }
+                    }}
+                    onEndReachedThreshold={0.5}
+                    renderItem={({ item }) => (
+                        <LessonItem lesson={item} onPressLesson={onPressLesson} currentLessonId={currentLessonId} deleteLesson={deleteLesson} hideLesson={hideLesson} unhideLesson={unhideLesson} />
+                    )}
+                    ListEmptyComponent={<Text style={{ padding: 20, textAlign: 'center' }}>Chưa có bài học nào.</Text>}
 
-        />)}
+                />)}
         </>
     );
 };

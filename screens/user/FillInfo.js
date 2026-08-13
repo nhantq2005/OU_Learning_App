@@ -8,6 +8,7 @@ import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import Apis, { endpoints } from '../../utils/Apis';
 import Theme from '../../styles/Theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const FillInfo = () => {
   const [document, setDocument] = useState(null);
@@ -67,52 +68,54 @@ const FillInfo = () => {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={64}
-    >
-      <ScrollView contentContainerStyle={{ padding: 24, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Đăng ký hồ sơ Giảng viên</Text>
+    <SafeAreaView style={MyStyles.container}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={64}
+      >
+        <ScrollView contentContainerStyle={{ padding: 24, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <Text style={styles.title}>Đăng ký hồ sơ Giảng viên</Text>
 
-        <Text style={styles.label}>Minh chứng xác thực <Text style={styles.required}>*</Text></Text>
-        <Text style={styles.desc}>Vui lòng cung cấp minh chứng bạn là giảng viên hoặc có chuyên môn.</Text>
-        <TouchableOpacity style={[styles.uploadBox, { width: '100%' }]} onPress={pickDocument}>
-          {document ? (
-            <Image source={{ uri: document }} style={styles.imagePreview} />
-          ) : (
-            <Text style={styles.uploadText}>Chọn hoặc chụp tài liệu</Text>
-          )}
-        </TouchableOpacity>
+          <Text style={styles.label}>Minh chứng xác thực <Text style={styles.required}>*</Text></Text>
+          <Text style={styles.desc}>Vui lòng cung cấp minh chứng bạn là giảng viên hoặc có chuyên môn.</Text>
+          <TouchableOpacity style={[styles.uploadBox, { width: '100%' }]} onPress={pickDocument}>
+            {document ? (
+              <Image source={{ uri: document }} style={styles.imagePreview} />
+            ) : (
+              <Text style={styles.uploadText}>Chọn hoặc chụp tài liệu</Text>
+            )}
+          </TouchableOpacity>
 
-        <Text style={styles.label}>Số tài khoản MoMo <Text style={styles.required}>*</Text></Text>
-        <Text style={styles.desc}>Hiện tại ứng dụng chỉ hỗ trợ tài khoản MoMo.</Text>
-        <TextField
-          style={styles.input}
-          value={bankAccount}
-          left={<CreditCard />}
-          onChangeText={setBankAccount}
-          placeholder="Nhập số tài khoản ngân hàng"
-          keyboardType="number-pad"
-        />
+          <Text style={styles.label}>Số tài khoản MoMo <Text style={styles.required}>*</Text></Text>
+          <Text style={styles.desc}>Hiện tại ứng dụng chỉ hỗ trợ tài khoản MoMo.</Text>
+          <TextField
+            style={styles.input}
+            value={bankAccount}
+            left={<CreditCard />}
+            onChangeText={setBankAccount}
+            placeholder="Nhập số tài khoản ngân hàng"
+            keyboardType="number-pad"
+          />
 
-        <Text style={styles.label}>Chuyên môn <Text style={styles.required}>*</Text></Text>
-        <TextField
-          style={styles.input}
-          value={expertise}
-          left={<BriefcaseBusiness />}
-          onChangeText={setExpertise}
-          placeholder="Ví dụ: Toán học, Lập trình, Tiếng Anh..."
-        />
+          <Text style={styles.label}>Chuyên môn <Text style={styles.required}>*</Text></Text>
+          <TextField
+            style={styles.input}
+            value={expertise}
+            left={<BriefcaseBusiness />}
+            onChangeText={setExpertise}
+            placeholder="Ví dụ: Toán học, Lập trình, Tiếng Anh..."
+          />
 
-        <TouchableOpacity
-          style={styles.submitBtn}
-          onPress={onSubmit}
-        >
-          <Text style={styles.submitText}>Gửi thông tin</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <TouchableOpacity
+            style={styles.submitBtn}
+            onPress={onSubmit}
+          >
+            <Text style={styles.submitText}>Gửi thông tin</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

@@ -115,7 +115,7 @@ const Message = () => {
     }
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={styles.safeArea} edges={['top']}>
             <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.surface} />
 
             <View style={styles.headerContainer}>

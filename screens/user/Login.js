@@ -11,6 +11,7 @@ import TextField from "../../components/components/TextField";
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import Theme from '../../styles/Theme';
+import { SafeAreaView } from "react-native-safe-area-context";
 const { width } = Dimensions.get('window');
 WebBrowser.maybeCompleteAuthSession();
 
@@ -164,7 +165,7 @@ const Login = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.canvas} />
             <KeyboardAwareScrollView
                 enableOnAndroid
@@ -256,7 +257,7 @@ const Login = () => {
                 </View>
 
             </KeyboardAwareScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 

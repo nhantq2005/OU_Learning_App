@@ -11,14 +11,21 @@ const Splash = ({}) => {
     const fadeAnimation = useRef(new Animated.Value(0)).current; 
 
     useEffect(() => {
+        let isMounted = true;
         Animated.timing(fadeAnimation, {
             toValue: 1,         
             duration: 1000,     
             useNativeDriver: true,
-        }).start(() => {
-            navigation.replace("Onboarding");
+        }).start(({ finished }) => {
+            if (isMounted) {
+                navigation.replace("Onboarding");
+            }
         });
-    }, [fadeAnimation]);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [fadeAnimation, navigation]);
     return (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F7F9FC'}}>
             <Animated.Image

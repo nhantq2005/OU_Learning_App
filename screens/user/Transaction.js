@@ -6,6 +6,7 @@ import Apis, { authApis, endpoints } from '../../utils/Apis';
 import moment from 'moment';
 import 'moment/locale/vi';
 import Theme from '../../styles/Theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 moment.locale('vi');
 
@@ -77,7 +78,7 @@ const Transaction = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Lịch sử giao dịch</Text>
             </View>
@@ -120,7 +121,7 @@ const Transaction = () => {
                 onEndReachedThreshold={0.3}
                 ListEmptyComponent={<Text style={styles.emptyText}>Chưa có giao dịch</Text>}
             />
-        </View>
+        </SafeAreaView>
     );
 };
 

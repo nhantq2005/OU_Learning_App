@@ -10,6 +10,7 @@ const DetailView = ({ currentCourse }) => {
     const [user,]= useContext(MyUserContext);
 
     return (
+        <>
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             {currentCourse.tags && currentCourse.tags.length > 0 && (
                 <View style={styles.section}>
@@ -36,7 +37,9 @@ const DetailView = ({ currentCourse }) => {
                 <Text style={styles.description}>{currentCourse.description}</Text>
             </View>
 
-            <View style={styles.actionContainer}>
+            
+        </ScrollView>
+        <View style={styles.actionContainer}>
                 <Button
                     mode="contained"
                     contentStyle={{ height: 50 }}
@@ -52,7 +55,7 @@ const DetailView = ({ currentCourse }) => {
                     {currentCourse.is_enrolled || user.role === 'teacher' ? 'Vào học ngay' : 'Đăng ký học ngay'}
                 </Button>
             </View>
-        </ScrollView>
+            </>
     );
 }
 

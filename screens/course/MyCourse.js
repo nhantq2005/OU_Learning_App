@@ -10,6 +10,7 @@ import { Edit, Eye, EyeOff, Trash } from 'lucide-react-native';
 import CourseItem from '../../components/items/CourseItem';
 import MyStyles from '../../styles/MyStyles';
 import Theme from '../../styles/Theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const MyCourse = () => {
@@ -143,7 +144,7 @@ const MyCourse = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['top']}>
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Khóa học của tôi</Text>
                 <Text style={styles.headerSubtitle}>Tiếp tục hành trình kiến thức 👋</Text>
@@ -185,7 +186,7 @@ const MyCourse = () => {
                     onPress={() => nav.navigate('CreateCourse')}
                 />
             )}
-        </View>
+        </SafeAreaView>
     );
 };
 

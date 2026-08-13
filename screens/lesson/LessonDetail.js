@@ -211,7 +211,7 @@ const LessonDetail = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={Theme.colors.text} />
 
             <View style={styles.videoContainer}>
@@ -275,7 +275,7 @@ const LessonDetail = () => {
                     onPress={() => nav.navigate('EditLesson', {  courseId: courseId })}
                 />
             )}
-        </View>
+        </SafeAreaView>
     );
 }
 

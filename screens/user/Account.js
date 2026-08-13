@@ -17,6 +17,7 @@ import {
 import { MyUserContext } from '../../utils/MyContexts';
 import MyStyles from '../../styles/MyStyles';
 import Theme from '../../styles/Theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Account = () => {
     const [user, dispatch] = useContext(MyUserContext);
@@ -55,7 +56,7 @@ const Account = () => {
     );
 
     return (
-        <View style={MyStyles.container}>
+        <SafeAreaView style={MyStyles.container} edges={['top']}>
             <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.canvas} />
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -144,7 +145,7 @@ const Account = () => {
                 <Text style={styles.versionText}>Phiên bản 1.0.0</Text>
 
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 

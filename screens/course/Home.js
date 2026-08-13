@@ -10,6 +10,7 @@ import { MyUserContext } from '../../utils/MyContexts';
 import SmallCourseItem from '../../components/items/SmallCourseItem';
 import BottomSheet from '../../components/views/BottomSheet';
 import Theme from '../../styles/Theme';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Home = () => {
     const [categories, setCategories] = useState([]);
@@ -145,7 +146,7 @@ const Home = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['top']}>
             <StatusBar barStyle="dark-content" backgroundColor={Theme.colors.canvas} />
 
             <View style={styles.headerContainer}>
@@ -288,7 +289,7 @@ const Home = () => {
             >
                 <BottomSheet filter={filter} setFilter={setFilter} />
             </RBSheet>
-        </View>
+        </SafeAreaView>
     )
 }
 

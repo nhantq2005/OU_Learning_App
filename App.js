@@ -7,12 +7,12 @@ import { NotificationProvider } from './utils/providers/NotificationProvider';
 
 export default function App() {
     return (
-        <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+        // <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
             <MyUserProvider>
                 <NotificationProvider>
                     <AppNavigation />
                 </NotificationProvider>
             </MyUserProvider>
-        </SafeAreaView>
+        // {/* </SafeAreaView> */}
     );
 }

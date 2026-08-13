@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MyUserContext } from "../../utils/MyContexts";
 import StudentView from "../../components/views/StudentView";
 import Theme from '../../styles/Theme';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get('window');
 
@@ -23,40 +24,52 @@ const CourseDetail = () => {
     const [user,] = useContext(MyUserContext);
     const [currentCourse, setCurrentCourse] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [view, setView] = useState('details');
     const nav = useNavigation();
-    const loadCourseDetails = async () => {
+    const loadCourseDetails = async (isMounted) => {
         try {
             setLoading(true);
+            setError(null);
             const token = await AsyncStorage.getItem("token");
             let res = await authApis(token).get(endpoints['course_detail'](courseId));
-            setCurrentCourse(res.data);
-            console.log("Course Details:", res.data);
-        } catch (error) {
-            console.error("Failed to load course details:", error);
+            if (isMounted) {
+                setCurrentCourse(res.data);
+                console.log("Course Details:", res.data);
+            }
+        } catch (err) {
+            console.error("Failed to load course details:", err);
+            if (isMounted) {
+                setError("Không thể tải thông tin khóa học. Vui lòng thử lại sau.");
+            }
         } finally {
-            setLoading(false);
+            if (isMounted) {
+                setLoading(false);
+            }
         }
     }
 
 
-    const loadStudents = async () => {
+    const loadStudents = async (isMounted) => {
         if (user.role !== 'teacher') return;
         try {
             const token = await AsyncStorage.getItem("token");
             let res = await authApis(token).get(endpoints['course_students'](courseId));
-            console.log("Course Students:", res.data);
+            if (isMounted) {
+                console.log("Course Students:", res.data);
+            }
         } catch (error) {
             console.error("Failed to load course students:", error);
         }
     }
 
     useEffect(() => {
+        let isMounted = true;
         if (courseId) {
-            loadCourseDetails();
-            loadStudents();
+            loadCourseDetails(isMounted);
+            loadStudents(isMounted);
         }
-        console.log("Course ID:", currentCourse);
+        return () => { isMounted = false; };
     }, [courseId]);
 
     const videoSource = currentCourse?.intro_video ?? '';
@@ -78,11 +91,22 @@ const CourseDetail = () => {
     }, [player]);
 
 
-    if (loading || !currentCourse) {
+    if (loading) {
         return (
             <View style={styles.centerContainer}>
                 <ActivityIndicator size="large" color={Theme.colors.primary} />
                 <Text style={{ marginTop: 10, color: Theme.colors.textMuted }}>Đang tải khóa học...</Text>
+            </View>
+        );
+    }
+
+    if (error || !currentCourse) {
+        return (
+            <View style={styles.centerContainer}>
+                <Text style={{ color: Theme.colors.error, fontSize: 16 }}>{error || "Không tìm thấy khóa học"}</Text>
+                <TouchableOpacity onPress={() => nav.goBack()} style={{ marginTop: 20 }}>
+                    <Text style={{ color: Theme.colors.primary, fontWeight: 'bold' }}>Quay lại</Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -96,9 +120,7 @@ const CourseDetail = () => {
 
 
     return (
-
-
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={Theme.colors.text} />
 
             <View style={styles.videoContainer}>
@@ -169,7 +191,7 @@ const CourseDetail = () => {
 
                 </View>
             </Surface>
-        </View>
+        </SafeAreaView>
     );
 }
 
